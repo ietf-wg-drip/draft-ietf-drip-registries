@@ -114,7 +114,7 @@ RAA:
 
 : Registered Assigning Authority. The 16 bit field identifying the Hierarchical HIT Assigning Authority.
 
-# Claims, Assertions, Attestations & Certificates
+<!-- # Claims, Assertions, Attestations & Certificates
 
 This section introduces the terms "Claims", "Assertions", "Attestations", and "Certificates" as used in DRIP. In DRIP certificate has a different context compared with security certificates and Public Key Infrastructure used in X.509.
 
@@ -132,7 +132,7 @@ Attestations:
 
 Certificates:
 
-> A certificate in DRIP is an attestation, strictly over identity information, signed by a third party. This third party should be one with no stake in the attestation(s) its signing over.
+> A certificate in DRIP is an attestation, strictly over identity information, signed by a third party. This third party should be one with no stake in the attestation(s) its signing over. -->
 
 # DRIP Attestations & Certificates
 
@@ -1344,9 +1344,7 @@ For this either Standard or Operator Assisted methods can be used.
 
 TODO
 
-# Acknowledgements
-
-Special thanks to:
+# Contributors
 
 - Scott Hollenbeck for his guidance with EPP/RDAP
 - Andrei Gurtov for his insights as a pilot
