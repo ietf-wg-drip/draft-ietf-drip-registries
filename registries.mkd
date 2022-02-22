@@ -3,7 +3,7 @@ coding: utf-8
 
 title: DRIP Registries
 abbrev: registries
-docname: draft-ietf-drip-registries-00
+docname: draft-ietf-drip-registries-01
 category: std
 
 ipr: trust200902
@@ -66,8 +66,10 @@ informative:
     RFC7519:
     RFC8392:
     drip-requirements: I-D.ietf-drip-reqs
+    drip-arch: I-D.ietf-drip-arch
     drip-rid: I-D.ietf-drip-uas-rid
     hhit-registries: I-D.moskowitz-hip-hhit-registries
+    drip-auth: I-D.ietf.drip-auth
     NPRM:
         title: "Notice of Proposed Rule Making on Remote Identification of Unmanned Aircraft Systems"
         author:
@@ -91,6 +93,16 @@ While most data to be sent via Broadcast or Network RID is public, much of the e
 The intent of the negative and positive access control requirements on registries is to ensure that no member of the public would be hindered from accessing public information, while only duly authorized parties would be enabled to access private information. Mitigation of Denial of Service attacks and refusal to allow database mass scraping would be based on those behaviors, not on identity or role of the party submitting the query per se, but querant identity information might be gathered (by security systems protecting DRIP implementations) on such misbehavior.
 
 Registration under DRIP is vital as the worry of collisions in the hash portion of the DET. Forgery of the DET is still possible, but including it as a part of a public registration mitigates a lot of the risk. This document creates the DRIP DET registration and discovery ecosystem.  This includes all components in the ecosystem (e.g., RAA, HDA, UA, GCS, USS).  The registration process will use the Extensible Provisioning Protocol (EPP) and other protocols.  The discovery process will leverage DNS and DNSSEC and related technology.  The DETs can be registered with as their "raw public keys" or in X.509 certificates.
+
+## Abstract Process & Reasoning
+
+In DRIP each entity (registries, operators and aircraft) is expected to generate a full DRIP Entity ID {{drip-rid}} on the local device their key is expected to be used. These are registered with a Public Information Registry within the hierarchy along with whatever data is required by the cognizant CAA and the registry. Any PII is stored in a Private Information Registry protected through industry practice AAA or better. In response, the entity will obtain an attestation or certificate from the registry proving such registration.
+
+Manufacturers that wish to participate in DRIP should not only support DRIP as a Session ID type for their aircraft but also generate a DET then encode it as a Serial Number. This would allow aircraft under CAA mandates to fly only ID Type 1 (Serial Number) could still use DRIP and all its benefits. Even if DRIP is not supported for Serial Numbers by a Manufacturer it is hoped that they would still run a registry to store their Serial Numbers and allow look ups for generic model information. This look up could be especially helpful in UTM for Situational Awareness when an aircraft flying with a Serial Number is detected and allow for an aircraft profile to be displayed.
+
+Operators are registered with a number of registries or their regional RAA. This acts as a verification check when a user performs other registration operations; such as provisioning an aircraft with a new Session ID. It is an open question if an Operator registers to their CAA (the RAA) or multiple USS's (HDA's). PII of the Operator would vary based on the CAA they are under and the registry.
+
+Finally aircraft that support using a DET would provision per flight to a USS, proposing a DET to the registry to generate a binding between the aircraft, operator and registry. Aircraft then follow {{drip-auth}} to meet various {{drip-requirements}}.
 
 # Terminology {#terminology}
 
@@ -135,6 +147,8 @@ Certificates:
 > A certificate in DRIP is an attestation, strictly over identity information, signed by a third party. This third party should be one with no stake in the attestation(s) its signing over. -->
 
 # DRIP Attestations & Certificates
+
+See {{drip-arch}} for definitions of claim, assertion, attestation and certificate as used in this document.
 
 ## Attestation Structure
 
@@ -202,12 +216,12 @@ Attestor Signature (64 bytes):
 This can be any one of the following:
 
 1. None
-2. Attestor HHIT: 16-bytes
+2. Attestor DET: 16-bytes
 2. Attestor SelfAttestation: 120-bytes
 
 A specific definition of an Attestation or Certificate defines which of these are used.
 
-Two Attestation's remove this field: MutualAttestation {{mutual-attestation}} and LinkAttestation {{link-attestation}} as their definition clearly states that the signer is the second party with their HHIT or SelfAttestation already embedded in the Attestation Data.
+Two Attestation's remove this field: MutualAttestation {{mutual-attestation}} and LinkAttestation {{link-attestation}} as their definition clearly states that the signer is the second party with their DET or SelfAttestation already embedded in the Attestation Data.
 
 ### Attestation Data
 
@@ -235,7 +249,7 @@ An EdDSA25519 signature using the signing parties private key over the preceding
 
 ### Self-Attestation (SA-xx) {#self-attestation}
 
-The only attestation to use a claim (the Host Identity) in the `Attestation Data` with the HHIT acting as the `Attestor Identity Information`.
+The only attestation to use a claim (the Host Identity) in the `Attestation Data` with the DET acting as the `Attestor Identity Information`.
 
 ~~~~
  0                   1                   2                   3
@@ -329,7 +343,7 @@ Length = 312-bytes
 
 ### Concise Attestation (CA-xy) {#concise-attestation}
 
-In constrained environments and when there is the guarantee of being able to lookup the HHITs to obtain HIs this attestation can be used.
+In constrained environments and when there is the guarantee of being able to lookup the DETs to obtain HIs this attestation can be used.
 
 ~~~~
  0                   1                   2                   3
@@ -419,7 +433,7 @@ Length = 384-bytes
 
 An attestations that perform a sign over an existing ConciseAttestation where the signer is the second party of the embedded attestation.
 
-This Attestation is one of two that does not fill in the `Attestor Identity Information` ({{attestor-identity-information}}) as the data is already present in the `Attestation Data` ({{attestation-data}}) in the form of Y's HHIT.
+This Attestation is one of two that does not fill in the `Attestor Identity Information` ({{attestor-identity-information}}) as the data is already present in the `Attestation Data` ({{attestation-data}}) in the form of Y's DET.
 
 The unique size of this attestation (176-bytes) allows for easy detection and subsequent decoding without issue.
 
@@ -692,11 +706,34 @@ Length = 576-bytes
 ~~~~
 {:fig #m-cxy-fig title="DRIP Mutual Certificate"}
 
+# X.509 Certificates
+
+Editor Note: to be provided by Bob M.
+
 # Registries
 
 ## Classes
 
 Under DRIP there 3 classes of registries, with specific variants in each.
+
+~~~~
+                +----------+
+                |   Root   | 
+                +-o------o-+
+                  |      |
+******************************************
+                  |      |
+            +-----o-+  +-o-----+
+RAAs        |  IRM  |  |  RAA  |
+            +---o---+  +---o---+
+                |          |
+******************************************
+                |          |
+            +---o---+  +---o---+
+HDAs        |  MRA  |  | RIDR  |
+            +-------+  +-------+
+~~~~
+{:fig #reg-class-fig title="Registry Hierarchy"}
 
 ### Root {#root}
 
@@ -724,7 +761,7 @@ It is holds the RAA value of 1 and HDA value of 0.
 
 A registry (HDA) run by a manufacturer of UAS systems that participate in Remote ID. Stores UAS Serial Numbers under a specific ICAO Manufacturer Code (assigned to the manufacturer by ICAO).
 
-A DET can be encoded into a Serial Number (Editor Note: link to -uas-rid) and when done so this registry would hold a mapping from the Serial Number to the DET and its artifacts.
+A DET can be encoded into a Serial Number (see {{drip-rid}}) and this registry would hold a mapping from the Serial Number to the DET and its artifacts.
 
 Hold RAA value of 1 and HDA values of 1+.
 
@@ -740,13 +777,11 @@ Hold RAA values of 2+ and HDA values of 1+.
 
 ## Federation
 
-(Editors Note: Due to nature of HHIT we could have multiple registries with same RAA/HDA pairings running and being federated together. How do we handle this?)
+(Editors Note: Due to nature of DET we could have multiple registries with same RAA/HDA pairings running and being federated together. How do we handle this?)
 
 # DRIP Fully Qualified Domain Names
 
 Under DRIP there are a number of FQDN forms used to allow lookups to take place.
-
-(Editor Note: copy in DET Section 5 here)
 
 ## Serial Number {#sn-fqdn}
 
@@ -757,10 +792,6 @@ Length Code: F
 ID: FZ2T7B8RA85D19LX
 FQDN: Z2T7B8RA85D19LX.F.8653.mfr.uas.icao.int
 ~~~~
-
-## Reverse SN
-
-(Editors Note: convert SN to DET format then perform reverse DET?)
 
 ## DET {#det-fqdn}
 
@@ -825,329 +856,105 @@ Raw key format here; for DTLS support. RFC6698
 
 # Registry Operations
 
-(Editors Note: General processing instructions here?)
-
 As a general rule the following processing performed for any registration operation:
 
-1. Verify SelfAttestation of registering party
-2. Populate DNS with required/optional records
-3. Populate Database with PII and other info
-4. Generate and return required/optional Attestations
+1. Verify input Attestations from registering party
+2. Check for collision of DET and HI
+3. Populate DNS with required/optional records
+4. Populate Database with PII and other info
+5. Generate and return required/optional Attestations/Certificates
 
-## Registering an RAA
+## Registering a Registry
 
-Specifically handled by the Root Registry ({{root}}).
+DRIP defines two levels of hierarchy maintained by the Registration Assigning Authority (RAA) and HHIT Domain Authority (HDA). The authors anticipate that an RAA is owned and operated by a regional CAA (or a delegated party by an CAA in a specific airspace region) with HDAs being contracted out. As such a chain of trust for registries is required to ensure trustworthiness is not compromised. More information on the registries can be found in {{?hhit-registries}}.
 
-### Inputs
+Both the RAA and HDA generate their own keypairs and self-signed attestations (Self-Attestation: RAA on RAA and Self-Attestation: HDA on HDA respectively). The HDA sends to the RAA its self-signed attestation to be added into the RAA DNS.
 
-Required:
+The RAA confirms the attestation received is valid and that no DET collisions occur before adding a HIP RR to its DNS for the new HDA. An Attestation: RAA on HDA (A-rh) is sent as a confirmation that provisioning was successful.
 
-1. SelfAttestation of RAA
-2. IP Address of RAA
+The HDA is now a valid “Registry” and uses its keypair and Self-Attestation: HDA on HDA (SA-hh) with all provisioning requests from downstream.
 
-### DNS Entries
-
-Required on Root:
-
-NS RR = `<raa_value>.det.remoteid.aero NS <raa_det_fqdn>`
-
-AAAA RR = `<raa_det_fqdn> AAAA ...`
-
-CERT RR = ???
-
-Required on RAA:
-
-HIP RR = `<raa_det_fqdn> HIP ...`
-
-CERT RR = ???
-
-### Database Entries
-
-### Outputs
-
-## Registering an IRM
+### Registering an RAA
 
 Specifically handled by the Root Registry ({{root}}).
 
-### Inputs
+| Inputs (Optional)         | DNS Entries (Optional)                                             | Outputs (Optional)                   |
+| ------------------------- | ------------------------------------------------------------------ | ------------------------------------ |
+| IP Address of RAA         | Root: `<raa_value>.det.remoteid.aero NS <raa_det_fqdn>`            | Attestation: Root, RAA               |
+| RAA Self-Attestation      | Root: `<raa_det_fqdn> AAAA <raa_ip>`                               | (Concise Attestation: Root, RAA)     |
+|                           | RAA: `<raa_det_fqdn> HIP <hip_rr_data>`                            | (Broadcast Attestation: Root, RAA)   |
+|                           | RAA: `<raa_det_fqdn> CERT <raa_self_attestation>`                  |                                      |
+|                           | (Root: `<raa_det_fqdn> CERT <attestation_root_raa>`)               |                                      |
+|                           | (Root: `<raa_det_fqdn> CERT <concise_attestation_root_raa>`)       |                                      |
+|                           | (Root: `<raa_det_fqdn> CERT <broadcast_attestation_root_raa>`)     |                                      |
+|                           | (RAA: `<raa_det_fqdn> CERT <attestation_root_raa>`)                |                                      |
+|                           | (RAA: `<raa_det_fqdn> CERT <concise_attestation_root_raa>`)        |                                      |
+|                           | (RAA: `<raa_det_fqdn> CERT <broadcast_attestation_root_raa>`)      |                                      |
 
-Required:
+### Registering an IRM
 
-1. Self-Attestation of IRM
-2. IP Address of IRM
+Specifically handled by the Root Registry ({{root}}).
 
-### DNS Entries
+| Inputs (Optional)         | DNS Entries (Optional)                                             | Outputs (Optional)                   |
+| ------------------------- | ------------------------------------------------------------------ | ------------------------------------ |
+| IP Address of IRM         | Root: `mfr.remoteid.aero NS <irm_det_fqdn>`                        | Attestation: Root, IRM               |
+| IRM Self-Attestation      | Root: `1.det.remoteid.aero NS <irm_det_fqdn>`                      | (Concise Attestation: Root, IRM)     |
+|                           | Root: `<irm_det_fqdn> AAAA <irm_ip>`                               | (Broadcast Attestation: Root, IRM)   |
+|                           | IRM: `<irm_det_fqdn> HIP <hip_rr_data>`                            |                                      |
+|                           | IRM: `<irm_det_fqdn> CERT <irm_self_attestation>`                  |                                      |
+|                           | (Root: `<irm_det_fqdn> CERT <attestation_root_irm>`)               |                                      |
+|                           | (Root: `<irm_det_fqdn> CERT <concise_attestation_root_irm>`)       |                                      |
+|                           | (Root: `<irm_det_fqdn> CERT <broadcast_attestation_root_irm>`)     |                                      |
+|                           | (IRM: `<irm_det_fqdn> CERT <attestation_root_irm>`)                |                                      |
+|                           | (IRM: `<irm_det_fqdn> CERT <concise_attestation_root_irm>`)        |                                      |
+|                           | (IRM: `<irm_det_fqdn> CERT <broadcast_attestation_root_irm>`)      |                                      |
 
-Required on Root:
-
-NS RR = `mfr.remoteid.aero NS <irm_det_fqdn>`
-
-NS RR = `1.det.remoteid.aero NS <irm_det_fqdn>`
-
-AAAA RR = `<irm_det_fqdn> AAAA ...`
-
-CERT RR = ???
-
-Required on IRM:
-
-HIP RR = `<irm_det_fqdn> HIP ...`
-
-CERT RR = ???
-
-### Database Entries
-
-### Outputs
-
-Required:
-
-1. Attestation: Root on IRM
-
-## Registering an HDA
+### Registering an HDA
 
 Specifically handled by an RAA ({{raa}}).
 
-### Inputs
+| Inputs (Optional)         | DNS Entries (Optional)                                             | Outputs (Optional)                   |
+| ------------------------- | ------------------------------------------------------------------ | ------------------------------------ |
+| IP Address of HDA         | RAA: `<hda_value>.<raa_value>.det.remoteid.aero NS <hda_det_fqdn>` | Attestation: RAA, HDA                |
+| HDA Self-Attestation      | RAA: `<hda_det_fqdn> AAAA <hda_ip>`                                | (Concise Attestation: RAA, HDA)      |
+|                           | RAA: `<hda_det_fqdn> HIP <hip_rr_data>`                            | (Broadcast Attestation: RAA, HDA)    |
+|                           | HDA: `<hda_det_fqdn> CERT <hda_self_attestation>`                  |                                      |
+|                           | (RAA: `<hda_det_fqdn> CERT <attestation_raa_hda>`)                 |                                      |
+|                           | (RAA: `<hda_det_fqdn> CERT <concise_attestation_raa_hda>`)         |                                      |
+|                           | (RAA: `<hda_det_fqdn> CERT <broadcast_attestation_raa_hda>`)       |                                      |
+|                           | (HDA: `<hda_det_fqdn> CERT <attestation_raa_hda>`)                 |                                      |
+|                           | (HDA: `<hda_det_fqdn> CERT <concise_attestation_raa_hda>`)         |                                      |
+|                           | (HDA: `<hda_det_fqdn> CERT <broadcast_attestation_raa_hda>`)       |                                      |
 
-Required:
-
-1. Self-Attestation of HDA
-2. IP Address of HDA
-
-### DNS Entries
-
-Required on RAA:
-
-NS RR = `<hda_value>.<raa_value>.det.remoteid.aero NS <hda_det_fqdn>`
-
-AAAA RR = `<hda_det_fqdn> AAAA ...`
-
-CERT RR = ???
-
-Required on HDA:
-
-HIP RR = `<hda_det_fqdn> HIP ...`
-
-### Database Entries
-
-### Outputs
-
-## Registering an MRA
+### Registering an MRA
 
 Specifically handled by the IRM Registry ({{irm}}).
 
-### Inputs
-
-Required:
-
-1. ICAO Manufacturer Code
-2. Self-Attestation of MRA
-3. IP Address of MRA
-
-### DNS Entries
-
-Required on IRM:
-
-NS RR = `<icao_mfr_code>.mfr.remoteid.aero NS <mra_det_fqdn>`
-
-NS RR = `<hda_value>.1.det.remoteid.aero NS <mra_det_fqdn>`
-
-AAAA RR = `<mra_det_fqdn> AAAA ...`
-
-CERT RR = ???
-
-Required on MRA:
-
-HIP RR = `<mra_det_fqdn> HIP ...`
-
-CERT RR = ???
-
-### Database Entries
-
-(HDA value, MRA Details)
-
-### Outputs
-
-Required:
-
-1. Attestation: IRM on MRA
+| Inputs (Optional)         | DNS Entries (Optional)                                             | Outputs (Optional)                   |
+| ------------------------- | ------------------------------------------------------------------ | ------------------------------------ |
+| IP Address of MRA         | IRM: `<icao_mfr_code>.mfr.remoteid.aero NS <mra_det_fqdn>`         | Attestation: IRM, MRA                |
+| MRA Self-Attestation      | IRM: `<hda_value>.1.det.remoteid.aero NS <mra_det_fqdn>`           | (Concise Attestation: IRM, MRA)      |
+| ICAO Manufacturer Code    | IRM: `<mra_det_fqdn> AAAA <mra_ip>`                                | (Broadcast Attestation: IRM, MRA)    |
+|                           | MRA: `<mra_det_fqdn> HIP <hip_rr_data>`                            |                                      |
+|                           | MRA: `<mra_det_fqdn> CERT <mra_self_attestation>`                  |                                      |
+|                           | (IRM: `<mra_det_fqdn> CERT <attestation_irm_mra>`)                 |                                      |
+|                           | (IRM: `<mra_det_fqdn> CERT <concise_attestation_irm_mra>`)         |                                      |
+|                           | (IRM: `<mra_det_fqdn> CERT <broadcast_attestation_irm_mra>`)       |                                      |
+|                           | (MRA: `<mra_det_fqdn> CERT <attestation_irm_mra>`)                 |                                      |
+|                           | (MRA: `<mra_det_fqdn> CERT <concise_attestation_irm_mra>`)         |                                      |
+|                           | (MRA: `<mra_det_fqdn> CERT <broadcast_attestation_irm_mra>`)       |                                      |
 
 ## Registering a Serial Number
 
 Specifically handled by a MRA ({{mra}}).
 
-### Inputs
-
-Required:
-
-1. Serial Number
-2. Aircraft Metadata
-
-Optional:
-
-1. SelfAttestation: Aircraft on Aircraft (if DET encoded)
-
-### DNS Entries
-
-Required on MRA:
-
-A/AAAA with Serial Number FQDN ({{sn-fqdn}})
-
-Optional on MRA:
-
-HIP RR of Aircraft with DET FQDN ({{det-fqdn}}) (`<sn_det_fqdn> HIP ...`)
-
-CERT RRs of SelfAttestation and BroadcastAttestation
-
-### Database Entries
-
-(Serial Number, \[DET\], Metadata, \[SelfAttestation\])
-
-### Outputs
-
-Optional:
-
-1. BroadcastAttestation: Mfr on Aircraft
-
-## Registering an Operator
-
-Specifically handled by a RIDR ({{ridr}}).
-
-### Inputs
-
-Required:
-
-1. SelfAttestation: Operator on Operator
-2. Operator PII
-
-Optional: TODO
-
-### DNS Entries
-
-Optional on RIDR:
-
-HIP RR of Operator
-
-CERT RRs SelfAttestation of Operator, A-ro
-
-### Database Entries
-
-TODO
-
-### Outputs
-
-Required:
-
-1. Attestation (A-ro) - using SA-rr and SA-oo
-
-Optional:
-
-1. ConciseAttestation (CA-ro) - using SA-oo
-2. BroadcastAttestation (BA-ro) - using SA-oo
-
-## Registering a Session ID
-
-Specifically handled by a RIDR ({{ridr}}).
-
-### Inputs
-
-Required:
-
-1. Attestation: Registry on Operator
-2. Attestation: Operator on Aircraft
-3. UAS Serial Number
-
-Optional:
-
-1. ConciseAttestation: Operator on Aircraft
-2. MutualAttestation: Operator on Aircraft
-3. LinkAttestation: Operator on Aircraft
-4. Operational Intent ID (GUFI)
-
-### DNS Entries
-
-Required on RIDR:
-
-HIP RR of Aircraft with DET FQDN ({{det-fqdn}}) (`<session_det_fqdn> HIP ...`)
-
-CERT RRs for SelfAttestation of Aircraft, BroadcastAttestation
-
-### Database Entries
-
-(Session ID, Serial Number, GUFI, A-oa, BA-ra, AC-roa)
-
-### Outputs
-
-Required:
-
-1. BroadcastAttestation (BA-ra) - generated using the embedded SA-aa from A-oa
-2. AttestationCertificate (AC-roa) - using A-oa
-
-Optional:
-
-1. MutualCertificate (MC-roa) - using MA-oa
-2. ConciseCertificate (CC-roa) - using CA-oa
-3. LinkCertificate (LC-roa) - using LA-oa
-4. BroadcastAttestation's of parent Registries in chain
-
-# Provisioning
-
-Under DRIP UAS RID a special provisioning procedure is required to properly generate and distribute the certificates and attestations to all parties in the USS/UTM ecosystem using DRIP RID.
-
-Keypairs are expected to be generated on the device hardware it will be used on. Due to hardware limitations (see {{security-considerations}}) and connectivity it is acceptable under DRIP RID to generate keypairs for the Aircraft on Operator devices and later securely inject them into the Aircraft (as defined in {{operator-assisted-provisioning}}). The methods to securely inject and store keypair information in a “secure element” of the Aircraft is out of scope of this document.
-
-## Overview of Transactions
-
-In DRIP, each Operator MUST generate a Host Identity of the Operator (HIo) and derived Hierarchical HIT of the Operator (HHITo).  These are registered with a Private Information Registry along with whatever Operator data (inc.  PII) is required by the cognizant CAA and the registry.  In response, the Operator will obtain an attestation from the Registry, Attestation: Registry on Operator (A-ro), signed with the Host Identity of the Registry private key (HIr(priv)) proving such registration.
-
-An Operator may now claim one or more UA.
-
-- An Operator MUST generate a Host Identity of the Aircraft (HIa) and derived Hierarchical HIT of the Aircraft (HHITa)
-- Create an attestation from the Operator on the Aircraft (A-oa) signed with the Host Identity of the Operator private key (HIo(priv)) to associate the UA with its Operator
-- Register them with a Private Information Registry along with whatever UAS data is required by the cognizant CAA and Registry
-- Obtain an attestation from the Registry on the Operator and Aircraft ("AC-roa") signed with the HIr(priv) proving such registration
-- And obtain a broadcast attestation from the Registry on the Aircraft (BA-ra) signed with HIr(priv) proving UA registration in that specific registry while preserving Operator privacy.
-
-The operator then MUST provision the UA with HIa, HIa(priv), HHITa and B-Ara.
-
-- UA engaging in Broadcast RID MUST use HIa(priv) to sign Authentication Messages and MUST periodically broadcast BA-ra.
-- UAS engaging in Network RID MUST use HIa(priv) to sign Authentication Messages.
-- Observers MUST use HIa from received BA-ra to verify received Broadcast RID Authentication messages.
-- Observers without Internet connectivity MAY use BA-ra to identify the trust class of the UAS based on known registry vetting.
-- Observers with Internet connectivity MAY use HHITa to perform lookups in the Public Information Registry and MAY then query the Private Information Registry which MUST enforce AAA policy on Operator PII and other sensitive information
-
-## HHIT Delegation
-
-Under the FAA {{NPRM}}, it is expecting that IDs for UAS are assigned by the UTM and are generally one-time use. The methods for this however are unspecified leaving two options.
-
-1
-: The entity generates its own HHIT, discovering and using thr RAA and HDA for the target Registry. The method for discovering a Registry's RAA and HDA is out of scope here. This allows for the device to generate an HHIT to send to the Registry to be accepted (thus generating the required Host Identity Claim) or denied.
-
-2
-: The entity sends to the Registry its HI for it to be hashed and result in the HHIT. The Registry would then either accept (returning the HHIT to the device) or deny this pairing.
-
-In either case the Registry must decide on if the HI/HHIT pairing is valid. This in its simplest form is checking the current Registry for a collision on the HHIT.
-
-Upon accepting a HI/HHIT pair the Registry MUST populate the required the DNS serving the HDA with the HIP RR and other relevant RR types (such as TXT and CERT). The Registry MUST also generate the appropriate Attestation for the given operation.
-
-If the Registry denied the HI/HHIT pair, because there was a HHIT collision or any other reason, the Registry MUST signal back to the device being provisioned that a new HI needs to be generated.
-
-## Registry
-
-(Editor Note: this should break down the individual registrations between Root/RAA, RAA/HDA and their special variants).
-
-~~~~
-TODO
-~~~~
-
-DRIP UAS RID defines two levels of hierarchy maintained by the Registration Assigning Authority (RAA) and HHIT Domain Authority (HDA). The authors anticipate that an RAA is owned and operated by a regional CAA (or a delegated party by an CAA in a specific airspace region) with HDAs being contracted out. As such a chain of trust for registries is required to ensure trustworthiness is not compromised. More information on the registries can be found in {{?hhit-registries}}.
-
-Both the RAA and HDA generate their own keypairs and self-signed attestations (SelfAttestation: RAA on RAA and SelfAttestation: HDA on HDA respectively). The HDA sends to the RAA its self-signed attestation to be added into the RAA DNS.
-
-The RAA confirms the attestation received is valid and that no HHIT collisions occur before added a HIP RR to its DNS for the new HDA. An Attestation: RAA on HDA (A-rh) is sent as a confirmation that provisioning was successful.
-
-The HDA is now a valid “Registry” and uses its keypair and SelfAttestation: HDA on HDA (SA-hh) with all provisioning requests from downstream.
-
-## Manufacturer
+| Inputs (Optional)         | DNS Entries (Optional)                                             | Outputs (Optional)                   |
+| ------------------------- | ------------------------------------------------------------------ | ------------------------------------ |
+| Serial Number             | `<sn_det_fqdn> HIP <hip_rr_data>`                                  | Attestation: MRA, UA                 |
+| (UA Self-Attestation)     | (`<sn_det_fqdn> CERT <sn_self_attestation>`)                       | Broadcast Attestation: MRA, UA       |
+| UA Metadata               | (`<sn_det_fqdn> CERT <attestation_mra_sn>`)                        | (Concise Attestation: MRA, UA)       |
+|                           | (`<sn_det_fqdn> CERT <concise_attestation_mra_sn>`)                |                                      |
+|                           | (`<sn_det_fqdn> CERT <broadcast_attestation_mra_sn>`)              |                                      |
 
 ~~~~
     +--------------+    SA-a0a0 +-----------------+
@@ -1165,13 +972,23 @@ SA-a0a0 |    |   A-ma0
 ~~~~
 {:fig title="Manufacturer Provision"}
 
-During the initial configuration and production at the factory the Aircraft MUST be configured to have a serial number. ASTM defines this to be an ANSI/CTA-2063A. Under DRIP a HHIT can be encoded as such to be able to convert back and forth between them. This is out of scope for this document. TODO: link from UAS RID document.
+During the initial configuration and production at the factory the Aircraft MUST be configured to have a serial number. ASTM defines this to be an ANSI/CTA-2063A. Under DRIP a DET can be encoded as such to be able to convert back and forth between them. This is covered in {{drip-rid}}.
 
-Under DRIP the Manufacturer SHOULD be using HHITs and have their own keypair and SA-mm (SelfAttestation: Manufacturer on Manufacturer). (Ed. Note: some words on aircraft keypair and certs here?).
+Under DRIP the Manufacturer SHOULD be using DETs and have their own keypair and SA-mm (Self-Attestation: Manufacturer on Manufacturer). (Ed. Note: some words on aircraft keypair and certs here?).
 
-SelfAttestation: Aircraft 0 on Aircraft 0 (SA-a0a0) is extracted by the manufacturer and sent to their Certificate Authority (CA) to be verified and added. A resulting attestation (Attestation: Manufacturer on Aircraft 0 \[A-ma0\]) SHOULD be a DRIP Attestation – however this could be a X.509 certificate binding the serial number to the manufacturer.
+Self-Attestation: Aircraft 0 on Aircraft 0 (SA-a0a0) is extracted by the manufacturer and sent to their Certificate Authority (CA) to be verified and added. A resulting attestation (Attestation: Manufacturer on Aircraft 0 \[A-ma0\]) SHOULD be a DRIP Attestation – however this could be a X.509 certificate binding the serial number to the manufacturer.
 
-## Operator
+## Registering an Operator
+
+Specifically handled by a RIDR ({{ridr}}).
+
+| Inputs (Optional)         | DNS Entries (Optional)                                             | Outputs (Optional)                    |
+| ------------------------- | ------------------------------------------------------------------ | ------------------------------------- |
+| Operator Self-Attestation | `<op_det_fqdn> HIP <hip_rr_data>`                                  | Attestation: RIDR, Operator           |
+| Operator PII              | (`<op_det_fqdn> CERT <op_self_attestation>`)                       | Broadcast Attestation: RIDR, Operator |
+|                           | (`<op_det_fqdn> CERT <attestation_ridr_op>`)                       | (Concise Attestation: RIDR, Operator) |
+|                           | (`<op_det_fqdn> CERT <concise_attestation_ridr_op>`)               |                                       |
+|                           | (`<op_det_fqdn> CERT <broadcast_attestation_ridr_op>`)             |                                       |
 
 ~~~~
 +----------+            +---------+
@@ -1189,13 +1006,27 @@ Coo |   | Aro
 ~~~~
 {:fig title="Operator Provision"}
 
-The Operator generates a keypair and HHIT as specified in DRIP UAS RID. A self-signed attestation (Attestation: Operator on Operator \[SA-oo\]) is generated and sent to the desired Registry (HDA). Other relevant information and possibly personally identifiable information needed may also be required to be sent to the Registry (all over a secure channel – the method of which is out of scope for this document).
+The Operator generates a keypair and DET as specified in DRIP UAS RID. A self-signed attestation (Self-Attestation: Operator on Operator \[SA-oo\]) is generated and sent to the desired Registry (HDA). Other relevant information and possibly personally identifiable information needed may also be required to be sent to the Registry (all over a secure channel – the method of which is out of scope for this document).
 
-The Registry cross checks any personally identifiable information as required. Certificate: Operator on Operator is verified (both using the expiration timestamp and signature). The HHIT is searched in the Registries database to confirm that no collision occurs. A new attestation is generated (Attestation: Registry on Operator) and sent securely back to the Operator. Optionally the HHIT/HI pairing can be added to the Registries DNS in to form of a HIP Resource Record (RR). Other RRs, such as CERT and TXT, may also be used to hold public information.
+The Registry cross checks any personally identifiable information as required. Certificate: Operator on Operator is verified (both using the expiration timestamp and signature). The DET is searched in the Registries database to confirm that no collision occurs. A new attestation is generated (Attestation: Registry on Operator) and sent securely back to the Operator. Optionally the DET/HI pairing can be added to the Registries DNS in to form of a HIP Resource Record (RR). Other RRs, such as CERT and TXT, may also be used to hold public information.
 
 With the receipt of Attestation: Registry on Operator (A-ro) the provisioning of an Operator is complete.
 
-## Aircraft
+## Registering a Session ID
+
+Specifically handled by a RIDR ({{ridr}}).
+
+| Inputs (Optional)                   | DNS Entries (Optional)                                             | Outputs (Optional)                          |
+| ----------------------------------- | ------------------------------------------------------------------ | ------------------------------------------- |
+| Attestation: RIDR, Operator         | `<session_det_fqdn> HIP <hip_rr_data>`                             | Attestation: RIDR, Operator                 |
+| Attestation: Operator, UA           | `<session_det_fqdn> CERT <session_self_attestation>`               | Broadcast Attestation: RIDR, Operator       |
+| Serial Number                       | `<session_det_fqdn> CERT <broadcast_attestation_ridr_session>`     | Attestation Certificate: RIDR, Operator, UA |
+| (Concise Attestation: Operator, UA) | (`<session_det_fqdn> CERT <attestation_ridr_session>`)             | (Concise Attestation: RIDR, Operator)       |
+| (Mutual Attestation: Operator, UA)  | (`<session_det_fqdn> CERT <concise_attestation_ridr_session>`)     | (Mutual Certificate: RIDR, Operator, UA)    |
+| (Link Attestation: Operator, UA)    |                                                                    | (Concise Certificate: RIDR, Operator, UA)   |
+| (Operational Intent)                |                                                                    | (Link Certificate: RIDR, Operator, UA)      |
+|                                     |                                                                    | (Broadcast Attestation: RAA, RIDR)          |
+|                                     |                                                                    | (Broadcast Attestation: Root, RAA)          |
 
 ### Standard Provisioning
 
@@ -1217,9 +1048,9 @@ Under standard provisioning the Aircraft has its own connectivity to the Registr
 ~~~~
 {:fig title="Standard Provision: Step 1"}
 
-Through mechanisms not specified in this document the Aircraft should have methods to instruct the Aircraft onboard systems to generate a keypair and certificate. This certificate is chained to the factory provisioned certificate (SelfAttestation: Aircraft 0 on Aircraft 0 \[SA-a0a0\]). This new attestation (Attestation: Aircraft 0 on Aircraft N \[A-a0aN\]) is securely extracted by the Operator.
+Through mechanisms not specified in this document the Operator should have methods to instruct the Aircraft onboard systems to generate a keypair and certificate. This certificate is chained to the factory provisioned certificate (Self-Attestation: Aircraft 0 on Aircraft 0 \[SA-a0a0\]). This new attestation (Attestation: Aircraft 0 on Aircraft N \[A-a0aN\]) is securely extracted by the Operator.
 
-With A-a0aN the sub-attestation (SelfAttestation: Aircraft N on Aircraft N \[SA-aNaN\]) is used by the Operator to generate Attestation: Operator on Aircraft N (A-oaN). This along with Attestation: Registry on Operator (A-ro) is sent to the Registry.
+With A-a0aN the sub-attestation (Self-Attestation: Aircraft N on Aircraft N \[SA-aNaN\]) is used by the Operator to generate Attestation: Operator on Aircraft N (A-oaN). This along with Attestation: Registry on Operator (A-ro) is sent to the Registry.
 
 ~~~~
 +----------+
@@ -1266,9 +1097,9 @@ Upon receipt of this token, the Operator injects it into the Aircraft and its us
 ~~~~
 {:fig title="Standard Provision: Step 3"}
 
-The Registry uses Attestation: Manufacturer on Aircraft 0 (with an external database if supported) to confirm the validity of the Aircraft. Attestation: Aircraft 0 on Aircraft N is correlated with Attestation: Operator on Aircraft N and Attestation: Manufacturer on Aircraft 0 to see the chain of ownership. The new HHIT tied to Aircraft N is then checked for collisions in the HDA. With the information the Registry generates two items: AttestationCertificate: Registry on Operator on Aircraft N (AC-roaN) and BroadcastAttestation: Registry on Aircraft N (BA-raN). A HIP RR (and other RR types as needed) are generated and inserted into the HDA.
+The Registry uses Attestation: Manufacturer on Aircraft 0 (with an external database if supported) to confirm the validity of the Aircraft. Attestation: Aircraft 0 on Aircraft N is correlated with Attestation: Operator on Aircraft N and Attestation: Manufacturer on Aircraft 0 to see the chain of ownership. The new DET tied to Aircraft N is then checked for collisions in the HDA. With the information the Registry generates two items: AttestationCertificate: Registry on Operator on Aircraft N (AC-roaN) and BroadcastAttestation: Registry on Aircraft N (BA-raN). A HIP RR (and other RR types as needed) are generated and inserted into the HDA.
 
-AC-roaN is sent via a secure channel back to the Operator to be stored. ABA-raN is sent to the Aircraft to be used in Broadcast RID as specified in (Editors Note: add link to -auth-formats).
+AC-roaN is sent via a secure channel back to the Operator to be stored. BA-raN is sent to the Aircraft to be used in Broadcast RID as specified in {{drip-auth}}.
 
 ### Operator Assisted Provisioning
 
@@ -1326,7 +1157,7 @@ Attestation: Manufacturer on Aircraft 0 (A-ma0) and Attestation: Aircraft 0 on A
 ~~~~
 {:fig title="Operator Assisted Provision: Step 3"}
 
-On the Registry validation checks are done on all attestations as per the previous sections. Once complete then the Registry checks for a HHIT collision, adding to the HDA if clear and generates AttestationCertificate: Registry on Operator on Aircraft N (AC-roaN) and BroadcastAttestation: Registry on Aircraft N (BA-raN). Both are sent back to the Operator.
+On the Registry validation checks are done on all attestations as per the previous sections. Once complete then the Registry checks for a DET collision, adding to the HDA if clear and generates AttestationCertificate: Registry on Operator on Aircraft N (AC-roaN) and BroadcastAttestation: Registry on Aircraft N (BA-raN). Both are sent back to the Operator.
 
 The Operator securely inject BA-raN and securely stores AC-roaN of Aircraft N.
 
@@ -1336,13 +1167,37 @@ A special form of provisioning is used when the Aircraft is first sold to an Ope
 
 For this either Standard or Operator Assisted methods can be used.
 
+# EPP Definitions
+
+TODO
+
+# RDAP Definitions
+
+TODO
+
 # IANA Considerations
 
 (Editor Note: EPP/RDAP adds to existing registries, CERT RR update, HIP RR update)
 
 # Security Considerations
 
-TODO
+## DET Generation
+
+Under the FAA {{NPRM}}, it is expecting that IDs for UAS are assigned by the UTM and are generally one-time use. The methods for this however are unspecified leaving two options.
+
+1
+: The entity generates its own DET, discovering and using thr RAA and HDA for the target Registry. The method for discovering a Registry's RAA and HDA is out of scope here. This allows for the device to generate an DET to send to the Registry to be accepted (thus generating the required Host Identity Claim) or denied.
+
+2
+: The entity sends to the Registry its HI for it to be hashed and result in the DET. The Registry would then either accept (returning the DET to the device) or deny this pairing.
+
+Keypairs are expected to be generated on the device hardware it will be used on. Due to hardware limitations (see {{security-considerations}}) and connectivity it is acceptable under DRIP to generate keypairs for the Aircraft on Operator devices and later securely inject them into the Aircraft (as defined in {{operator-assisted-provisioning}}). The methods to securely inject and store keypair information in a “secure element” of the Aircraft is out of scope of this document.
+
+In either case the Registry must decide on if the HI/DET pairing is valid. This in its simplest form is checking the current Registry for a collision on the DET.
+
+Upon accepting a HI/DET pair the Registry MUST populate the required the DNS serving the HDA with the HIP RR and other relevant RR types (such as TXT and CERT). The Registry MUST also generate the appropriate Attestation for the given operation.
+
+If the Registry denied the HI/DET pair, because there was a DET collision or any other reason, the Registry MUST signal back to the device being provisioned that a new HI needs to be generated.
 
 # Contributors
 
