@@ -126,33 +126,13 @@ RAA:
 
 : Registered Assigning Authority. The 16 bit field identifying the Hierarchical HIT Assigning Authority.
 
-<!-- # Claims, Assertions, Attestations & Certificates
-
-This section introduces the terms "Claims", "Assertions", "Attestations", and "Certificates" as used in DRIP. In DRIP certificate has a different context compared with security certificates and Public Key Infrastructure used in X.509.
-
-Claims:
-
-> A claim in DRIP is a predicate (e.g., "X is Y", "X has property Y", and most importantly "X owns Y" or "X is owned by Y").  
-
-Assertions:
-
-> An assertion in DRIP is a set of claims.  This definition is borrowed from JWT {{RFC7519}} and CWT {{RFC8392}}.  
-
-Attestations:  
-
-> An attestation in DRIP is a signed assertion. The signer may be the claimant or a related party with stake in the assertion(s). Under DRIP this is normally used when an entity asserts a relationship with another entity, along with other information, and the asserting entity signs the assertion, thereby making it an attestation.
-
-Certificates:
-
-> A certificate in DRIP is an attestation, strictly over identity information, signed by a third party. This third party should be one with no stake in the attestation(s) its signing over. -->
-
 # DRIP Attestations & Certificates
 
 See {{drip-arch}} for definitions of claim, assertion, attestation and certificate as used in this document.
 
 ## Attestation Structure
 
-All Attestations and Certificates under DRIP share the following format:
+All Attestations and Certificates under DRIP share the following format structure:
 
 {:fig: artwork-align="center"}
 ~~~~
@@ -217,11 +197,9 @@ This can be any one of the following:
 
 1. None
 2. Attestor DET: 16-bytes
-2. Attestor SelfAttestation: 120-bytes
+3. Attestor Self-Attestation: 120-bytes
 
 A specific definition of an Attestation or Certificate defines which of these are used.
-
-Two Attestation's remove this field: MutualAttestation {{mutual-attestation}} and LinkAttestation {{link-attestation}} as their definition clearly states that the signer is the second party with their DET or SelfAttestation already embedded in the Attestation Data.
 
 ### Attestation Data
 
@@ -256,8 +234,8 @@ The only attestation to use a claim (the Host Identity) in the `Attestation Data
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 +---------------+---------------+---------------+---------------+
 |                                                               |
-|                          Hierarchical                         |
-|                       Host Identity Tag                       |
+|                              DRIP                             |
+|                           Entity Tag                          |
 |                                                               |
 +---------------+---------------+---------------+---------------+
 |                                                               |
@@ -297,7 +275,7 @@ Length = 120-bytes
 
 ### Attestation (A-xy) {#attestation}
 
-(Editors Note: blurb here?)
+The standard first level DRIP Attestation form using a Self-Attestations of the signer and of the data being signed.
 
 ~~~~
  0                   1                   2                   3
@@ -350,13 +328,13 @@ In constrained environments and when there is the guarantee of being able to loo
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 +---------------+---------------+---------------+---------------+
 |                                                               |
-|                          Hierarchical                         |
-|                    Host Identity Tag of X                     |
+|                             DRIP                              |
+|                        Entity Tag of X                        |
 |                                                               |
 +---------------+---------------+---------------+---------------+
 |                                                               |
-|                          Hierarchical                         |
-|                    Host Identity Tag of Y                     |
+|                             DRIP                              |
+|                        Entity Tag of Y                        |
 |                                                               |
 +---------------+---------------+---------------+---------------+
 |                      Trust Timestamp by X                     |
@@ -387,15 +365,16 @@ Length = 104-bytes
 
 ### Mutual Attestation (MA-xy) {#mutual-attestation}
 
-An attestation that perform a sign over an existing Attestation where the signer is the second party of the embedded attestation.
-
-This Attestation is one of two that does not fill in the `Attestor Identity Information` ({{attestor-identity-information}}) as the data is already present in the `Attestation Data` ({{attestation-data}}) in the form of Y's SelfAttestation.
-
-The unique size of this attestation (384-bytes) allows for easy detection and subsequent decoding without issue.
+An attestation that perform a sign over an existing Attestation where the signer is the second party of the embedded attestation. The DET of party Y is used as the `Attestor Identity Information` ({{attestor-identity-information}}).
 
 ~~~~
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                             DRIP                              |
+|                        Entity Tag of Y                        |
+|                                                               |
 +---------------+---------------+---------------+---------------+
 |                                                               |
 .                                                               .
@@ -425,21 +404,22 @@ The unique size of this attestation (384-bytes) allows for easy detection and su
 |                                                               |
 +---------------+---------------+---------------+---------------+
 
-Length = 384-bytes
+Length = 400-bytes
 ~~~~
 {:fig #m-axy-fig title="DRIP Mutual Attestation"}
 
 ### Link Attestation (LA-xy) {#link-attestation}
 
-An attestations that perform a sign over an existing ConciseAttestation where the signer is the second party of the embedded attestation.
-
-This Attestation is one of two that does not fill in the `Attestor Identity Information` ({{attestor-identity-information}}) as the data is already present in the `Attestation Data` ({{attestation-data}}) in the form of Y's DET.
-
-The unique size of this attestation (176-bytes) allows for easy detection and subsequent decoding without issue.
+An attestations that perform a sign over an existing Concise Attestation where the signer is the second party of the embedded attestation. The DET of party Y is used as the `Attestor Identity Information` ({{attestor-identity-information}}).
 
 ~~~~
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                             DRIP                              |
+|                        Entity Tag of Y                        |
+|                                                               |
 +---------------+---------------+---------------+---------------+
 |                                                               |
 .                                                               .
@@ -469,26 +449,26 @@ The unique size of this attestation (176-bytes) allows for easy detection and su
 |                                                               |
 +---------------+---------------+---------------+---------------+
 
-Length = 176-bytes
+Length = 192-bytes
 ~~~~
 {:fig #l-axy-fig title="DRIP Link Attestation"}
 
 ### Broadcast Attestation (BA-xy) {#broadcast-attestation}
 
-Required by DRIP Authentication Formats for Broadcast RID (Editor Note: add link to draft here) to satisfy {{?drip-requirements}} GEN-1 and GEN-3.
+Required by DRIP Authentication Formats for Broadcast RID ({{drip-auth}}) to satisfy {{?drip-requirements}} GEN-1 and GEN-3.
 
 ~~~~
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 +---------------+---------------+---------------+---------------+
 |                                                               |
-|                          Hierarchical                         |
-|                    Host Identity Tag of X                     |
+|                             DRIP                              |
+|                        Entity Tag of X                        |
 |                                                               |
 +---------------+---------------+---------------+---------------+
 |                                                               |
-|                          Hierarchical                         |
-|                    Host Identity Tag of Y                     |
+|                             DRIP                              |
+|                        Entity Tag of Y                        |
 |                                                               |
 +---------------+---------------+---------------+---------------+
 |                                                               |
@@ -583,8 +563,8 @@ Length = 504-bytes
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 +---------------+---------------+---------------+---------------+
 |                                                               |
-|                          Hierarchical                         |
-|                    Host Identity Tag of Z                     |
+|                             DRIP                              |
+|                        Entity Tag of Z                        |
 |                                                               |
 +---------------+---------------+---------------+---------------+
 |                                                               |
@@ -626,8 +606,8 @@ Length = 192-bytes
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 +---------------+---------------+---------------+---------------+
 |                                                               |
-|                          Hierarchical                         |
-|                    Host Identity Tag of Z                     |
+|                             DRIP                              |
+|                        Entity Tag of Z                        |
 |                                                               |
 +---------------+---------------+---------------+---------------+
 |                                                               |
@@ -708,7 +688,9 @@ Length = 576-bytes
 
 # X.509 Certificates
 
-Editor Note: to be provided by Bob M.
+TODO
+
+<!-- Author Note (atw): to be provided by Bob M.-->
 
 # Registries
 
@@ -739,11 +721,11 @@ HDAs        |  MRA  |  | RIDR  |
 
 This is a special registry holding the RAA value of 0 and HDA value of 0. It delegates out RAA values only to registries that wish to act as an RAA.
 
-(Editors Note: we contemplate this is ICAO running this server or federation of them)
+<!-- Editors Note: we contemplate ICAO running this server or a federation of them -->
 
 ### Registered Assigning Authorities {#raa}
 
-RAA's are the upper hierarchy in DRIP. Most are contemplated to be Civil Aviation Authorities (CAAs) then delegate HDAs to manage their NAS. This is does not preclude other entities to operate an RAA if the Root server allows it.
+RAA's are the upper hierarchy in DRIP. Most are contemplated to be Civil Aviation Authorities (CAAs) that then delegate HDAs to manage their NAS. This is does not preclude other entities to operate an RAA if the Root server allows it.
 
 All RAA's use an HDA value of 0 and have their RAA value delegated to them by the Root.
 
@@ -753,7 +735,7 @@ A special RAA that hands out HDA values to participating Manufacturer's that hol
 
 It is holds the RAA value of 1 and HDA value of 0.
 
-(Editors Note: we contemplate this is ICAO running this server or federation of them)
+<!-- Editors Note: we contemplate ICAO running this server or a federation of them -->
 
 ### Hierarchial HIT Domain Authorities {#hda}
 
@@ -775,9 +757,15 @@ As part of the UTM system they also hold a binding between a UAS ID (Serial Numb
 
 Hold RAA values of 2+ and HDA values of 1+.
 
-## Federation
+## Key Rollover & Federation
 
-(Editors Note: Due to nature of DET we could have multiple registries with same RAA/HDA pairings running and being federated together. How do we handle this?)
+During key rollover the entity MUST inform all children and parents of the change - using best standard practices of a key rollover. At time of writing this is signing over the new key with the previous key in a secure fashion and it being validated by others before changing any links (in DRIPs case the NS RRs in the parent registry).
+
+A DET has a natural ability for a single entity to hold different cryptographic identities under the same HID values. This is due to the lower 64-bits of the DET being a hash of the public key and the HID of the DET being generated. As such during key rollover, only the lower 64-bits would change and a check for a collision would be required.
+
+This attribute of the DET to have different identities could also allow for a single registry to be "federated" across them if they share the same HID value. This method of deployment has not been thoroughly studied at this time.
+
+<!-- Editors Note: does someone want to explore this option of federating across multiple DETs with same HID? -->
 
 # DRIP Fully Qualified Domain Names
 
@@ -831,7 +819,7 @@ MRA and RIDR servers will also have HIP RRs for their registered parties (aircra
 
 ## CERT RR
 
-Most attestations can be placed into DNS. An exception to this is the AttestationCertificate made during Session ID registration.
+Most attestations can be placed into DNS. An exception to this is the Attestation Certificate made during Session ID registration. This is as this particular certificate acts similar to a car registration.
 
 ## NS RR
 
@@ -840,7 +828,7 @@ Along with their associated "glue" record (A/AAAA) supports the traversal in DNS
 1. `<mfr.remoteid.aero>` on Root points to specific DET FQDN of IRM
 2. `<icao_mfr_code>.mfr.remoteid.aero` on IRM points to specific DET FQDN of MRA
 3. `<raa_value>.det.remoteid.aero` on Root pointing to DET FQDN of matching RAA
-4. `<hda_value>.<raa_value>.det.remoteid.aero` on RAA Registry pointing to DET FQDN of matching HDA
+4. `<hda_value>.<raa_value>.det.remoteid.aero` on RAA pointing to DET FQDN of matching HDA
 
 ## AAAA RR
 
@@ -848,11 +836,17 @@ DRIP requires the use of IPv6.
 
 ## SVR RR
 
-TODO -- points to server for RDAP stuff
+The SVR RR for DRIP always is populated at the "local" registry level. That is an HDA's DNS would hold the SVR RR that points to that HDAs private registry for all data it manages. This data includes data being stored on its children.
+
+The best example of this is RIDR would have a SVR RR that points to a database that contains any extra information of a Session ID it has registered. Another example is the MRA has a SVR RR pointing to where the metadata of a UA registered in the MRA can be located.
+
+In all cases the server being pointed to MUST be protected using AAA, specifically using RDAP.
 
 ## TLSA RR
 
-Raw key format here; for DTLS support. RFC6698
+This RR is mainly used to support DTLS deployments where the DET is used in Network RID and the wider UTM system.
+
+<!-- Editors Note: RFC6698 applies here, but how? -->
 
 # Registry Operations
 
@@ -868,15 +862,17 @@ As a general rule the following processing performed for any registration operat
 
 DRIP defines two levels of hierarchy maintained by the Registration Assigning Authority (RAA) and HHIT Domain Authority (HDA). The authors anticipate that an RAA is owned and operated by a regional CAA (or a delegated party by an CAA in a specific airspace region) with HDAs being contracted out. As such a chain of trust for registries is required to ensure trustworthiness is not compromised. More information on the registries can be found in {{?hhit-registries}}.
 
-Both the RAA and HDA generate their own keypairs and self-signed attestations (Self-Attestation: RAA on RAA and Self-Attestation: HDA on HDA respectively). The HDA sends to the RAA its self-signed attestation to be added into the RAA DNS.
+<!-- Author Note (atw): is the hhit-registries draft and reference needed anymore? -->
 
-The RAA confirms the attestation received is valid and that no DET collisions occur before adding a HIP RR to its DNS for the new HDA. An Attestation: RAA on HDA (A-rh) is sent as a confirmation that provisioning was successful.
+Both the parent and child generate their own keypairs and self-signed attestations if not generated previously. The child sends to the parent its self-signed attestation to be added into the parent DNS.
 
-The HDA is now a valid “Registry” and uses its keypair and Self-Attestation: HDA on HDA (SA-hh) with all provisioning requests from downstream.
+The parent confirms the attestation received is valid and that no DET collisions occur before adding a NS RR (and CERT RRs) to its DNS for the new child. An attestation, parent on child, is sent as a confirmation that provisioning was successful.
+
+The child is now a valid member of the registry tree and uses its keypair and Self-Attestation with all provisioning requests towards it. The HIP RR for the child is populated into the local DNS along with any CERT RRs.
 
 ### Registering an RAA
 
-Specifically handled by the Root Registry ({{root}}).
+Specifically handled by the Root ({{root}}).
 
 | Inputs (Optional)         | DNS Entries (Optional)                                             | Outputs (Optional)                   |
 | ------------------------- | ------------------------------------------------------------------ | ------------------------------------ |
@@ -893,7 +889,7 @@ Specifically handled by the Root Registry ({{root}}).
 
 ### Registering an IRM
 
-Specifically handled by the Root Registry ({{root}}).
+Specifically handled by the Root ({{root}}).
 
 | Inputs (Optional)         | DNS Entries (Optional)                                             | Outputs (Optional)                   |
 | ------------------------- | ------------------------------------------------------------------ | ------------------------------------ |
@@ -928,7 +924,7 @@ Specifically handled by an RAA ({{raa}}).
 
 ### Registering an MRA
 
-Specifically handled by the IRM Registry ({{irm}}).
+Specifically handled by the IRM ({{irm}}).
 
 | Inputs (Optional)         | DNS Entries (Optional)                                             | Outputs (Optional)                   |
 | ------------------------- | ------------------------------------------------------------------ | ------------------------------------ |
@@ -946,15 +942,17 @@ Specifically handled by the IRM Registry ({{irm}}).
 
 ## Registering a Serial Number
 
-Specifically handled by a MRA ({{mra}}).
+Specifically handled by an MRA ({{mra}}).
 
 | Inputs (Optional)         | DNS Entries (Optional)                                             | Outputs (Optional)                   |
 | ------------------------- | ------------------------------------------------------------------ | ------------------------------------ |
-| Serial Number             | `<sn_det_fqdn> HIP <hip_rr_data>`                                  | Attestation: MRA, UA                 |
-| (UA Self-Attestation)     | (`<sn_det_fqdn> CERT <sn_self_attestation>`)                       | Broadcast Attestation: MRA, UA       |
+| Serial Number             | (`<sn_det_fqdn> HIP <hip_rr_data>`)                                | (Attestation: MRA, UA)               |
+| (UA Self-Attestation)     | (`<sn_det_fqdn> CERT <sn_self_attestation>`)                       | (Broadcast Attestation: MRA, UA      |
 | UA Metadata               | (`<sn_det_fqdn> CERT <attestation_mra_sn>`)                        | (Concise Attestation: MRA, UA)       |
 |                           | (`<sn_det_fqdn> CERT <concise_attestation_mra_sn>`)                |                                      |
 |                           | (`<sn_det_fqdn> CERT <broadcast_attestation_mra_sn>`)              |                                      |
+
+<!-- Author Note (atw): when registering a SN it could either be a DRIP encoded SN or it could be a non-DRIP SN. In the former case Attestations are both provided and generated during the registration process. The later case there will be no DRIP Attestations produced and most likely an X.509? Also there would be no RRs - so what do we point to to avoid NXDOMAINs; perhaps SVR/AAAA records? -->
 
 ~~~~
     +--------------+    SA-a0a0 +-----------------+
@@ -982,6 +980,8 @@ Self-Attestation: Aircraft 0 on Aircraft 0 (SA-a0a0) is extracted by the manufac
 
 Specifically handled by a RIDR ({{ridr}}).
 
+<!-- Author Note (atw): this could also be handled by the RAA run by the CAA and act as a registration point for Operators in their NAS in general. Many CAAs, for example the FAA, already have separate systems deployed to handle this information. We could be asking a lot of the user (registering to another place and specifically for DRIP) and CAA to deploy this new database in an attempt to unify the system -->
+
 | Inputs (Optional)         | DNS Entries (Optional)                                             | Outputs (Optional)                    |
 | ------------------------- | ------------------------------------------------------------------ | ------------------------------------- |
 | Operator Self-Attestation | `<op_det_fqdn> HIP <hip_rr_data>`                                  | Attestation: RIDR, Operator           |
@@ -1006,9 +1006,9 @@ Coo |   | Aro
 ~~~~
 {:fig title="Operator Provision"}
 
-The Operator generates a keypair and DET as specified in DRIP UAS RID. A self-signed attestation (Self-Attestation: Operator on Operator \[SA-oo\]) is generated and sent to the desired Registry (HDA). Other relevant information and possibly personally identifiable information needed may also be required to be sent to the Registry (all over a secure channel – the method of which is out of scope for this document).
+The Operator generates a keypair and DET as specified in DRIP UAS RID. A self-signed attestation (Self-Attestation: Operator on Operator \[SA-oo\]) is generated and sent to the desired registry (HDA). Other relevant information and possibly personally identifiable information needed may also be required to be sent to the registry (all over a secure channel – the method of which is out of scope for this document).
 
-The Registry cross checks any personally identifiable information as required. Certificate: Operator on Operator is verified (both using the expiration timestamp and signature). The DET is searched in the Registries database to confirm that no collision occurs. A new attestation is generated (Attestation: Registry on Operator) and sent securely back to the Operator. Optionally the DET/HI pairing can be added to the Registries DNS in to form of a HIP Resource Record (RR). Other RRs, such as CERT and TXT, may also be used to hold public information.
+The registry cross checks any personally identifiable information as required. Certificate: Operator on Operator is verified (both using the expiration timestamp and signature). The DET is searched in the Registries database to confirm that no collision occurs. A new attestation is generated (Attestation: Registry on Operator) and sent securely back to the Operator. Optionally the DET/HI pairing can be added to the Registries DNS in to form of a HIP Resource Record (RR). Other RRs, such as CERT and TXT, may also be used to hold public information.
 
 With the receipt of Attestation: Registry on Operator (A-ro) the provisioning of an Operator is complete.
 
@@ -1030,7 +1030,7 @@ Specifically handled by a RIDR ({{ridr}}).
 
 ### Standard Provisioning
 
-Under standard provisioning the Aircraft has its own connectivity to the Registry, the method which is out of scope for this document.
+Under standard provisioning the Aircraft has its own connectivity to the registry, the method which is out of scope for this document.
 
 ~~~~
 +----------+
@@ -1050,7 +1050,7 @@ Under standard provisioning the Aircraft has its own connectivity to the Registr
 
 Through mechanisms not specified in this document the Operator should have methods to instruct the Aircraft onboard systems to generate a keypair and certificate. This certificate is chained to the factory provisioned certificate (Self-Attestation: Aircraft 0 on Aircraft 0 \[SA-a0a0\]). This new attestation (Attestation: Aircraft 0 on Aircraft N \[A-a0aN\]) is securely extracted by the Operator.
 
-With A-a0aN the sub-attestation (Self-Attestation: Aircraft N on Aircraft N \[SA-aNaN\]) is used by the Operator to generate Attestation: Operator on Aircraft N (A-oaN). This along with Attestation: Registry on Operator (A-ro) is sent to the Registry.
+With A-a0aN the sub-attestation (Self-Attestation: Aircraft N on Aircraft N \[SA-aNaN\]) is used by the Operator to generate Attestation: Operator on Aircraft N (A-oaN). This along with Attestation: Registry on Operator (A-ro) is sent to the registry.
 
 ~~~~
 +----------+
@@ -1068,9 +1068,9 @@ With A-a0aN the sub-attestation (Self-Attestation: Aircraft N on Aircraft N \[SA
 ~~~~
 {:fig title="Standard Provision: Step 2"}
 
-On the Registry, A-ro is verified and used as confirmation that the Operator is already registered. A-oaN also undergoes a validation check and used to generate a token to return to the Operator to continue provisioning.
+On the registry, A-ro is verified and used as confirmation that the Operator is already registered. A-oaN also undergoes a validation check and used to generate a token to return to the Operator to continue provisioning.
 
-Upon receipt of this token, the Operator injects it into the Aircraft and its used to form a secure connection to the Registry. The Aircraft then sends Attestation: Manufacturer on Aircraft 0 (A-ma0) and Attestation: Aircraft 0 to Aircraft N (A-a0aN).  
+Upon receipt of this token, the Operator injects it into the Aircraft and its used to form a secure connection to the registry. The Aircraft then sends Attestation: Manufacturer on Aircraft 0 (A-ma0) and Attestation: Aircraft 0 to Aircraft N (A-a0aN).  
 
 ~~~~
 +---------+
@@ -1097,13 +1097,13 @@ Upon receipt of this token, the Operator injects it into the Aircraft and its us
 ~~~~
 {:fig title="Standard Provision: Step 3"}
 
-The Registry uses Attestation: Manufacturer on Aircraft 0 (with an external database if supported) to confirm the validity of the Aircraft. Attestation: Aircraft 0 on Aircraft N is correlated with Attestation: Operator on Aircraft N and Attestation: Manufacturer on Aircraft 0 to see the chain of ownership. The new DET tied to Aircraft N is then checked for collisions in the HDA. With the information the Registry generates two items: AttestationCertificate: Registry on Operator on Aircraft N (AC-roaN) and BroadcastAttestation: Registry on Aircraft N (BA-raN). A HIP RR (and other RR types as needed) are generated and inserted into the HDA.
+The registry uses Attestation: Manufacturer on Aircraft 0 (with an external database if supported) to confirm the validity of the Aircraft. Attestation: Aircraft 0 on Aircraft N is correlated with Attestation: Operator on Aircraft N and Attestation: Manufacturer on Aircraft 0 to see the chain of ownership. The new DET tied to Aircraft N is then checked for collisions in the HDA. With the information the registry generates two items: Attestation Certificate: Registry on Operator on Aircraft N (AC-roaN) and Broadcast Attestation: Registry on Aircraft N (BA-raN). A HIP RR (and other RR types as needed) are generated and inserted into the HDA.
 
 AC-roaN is sent via a secure channel back to the Operator to be stored. BA-raN is sent to the Aircraft to be used in Broadcast RID as specified in {{drip-auth}}.
 
 ### Operator Assisted Provisioning
 
-This provisioning scheme is for when the Aircraft is unable to connect to the Registry itself or does not have the hardware required to generate keypairs and certificates.
+This provisioning scheme is for when the Aircraft is unable to connect to the registry itself or does not have the hardware required to generate keypairs and certificates.
 
 ~~~~
 +----------+
@@ -1157,7 +1157,7 @@ Attestation: Manufacturer on Aircraft 0 (A-ma0) and Attestation: Aircraft 0 on A
 ~~~~
 {:fig title="Operator Assisted Provision: Step 3"}
 
-On the Registry validation checks are done on all attestations as per the previous sections. Once complete then the Registry checks for a DET collision, adding to the HDA if clear and generates AttestationCertificate: Registry on Operator on Aircraft N (AC-roaN) and BroadcastAttestation: Registry on Aircraft N (BA-raN). Both are sent back to the Operator.
+On the registry validation checks are done on all attestations as per the previous sections. Once complete then the registry checks for a DET collision, adding to the HDA if clear and generates Attestation Certificate: Registry on Operator on Aircraft N (AC-roaN) and Broadcast Attestation: Registry on Aircraft N (BA-raN). Both are sent back to the Operator.
 
 The Operator securely inject BA-raN and securely stores AC-roaN of Aircraft N.
 
@@ -1165,19 +1165,137 @@ The Operator securely inject BA-raN and securely stores AC-roaN of Aircraft N.
 
 A special form of provisioning is used when the Aircraft is first sold to an Operator. Instead of generating a new keypair, the built in keypair and certificate done by the Manufacturer is used to provision and register the aircraft to the owner.
 
+<!-- Author Note (atw): this action of registration is the same as an owner needed to use something like FAA DroneZone to register the SN of the aircraft to their CAA Assigned ID. So it doesn't make a whole lot of sense to do this at the HDA level (then it would need to be done for every HDA the user wants to fly under - potentially many). Is this a concern? -->
+
 For this either Standard or Operator Assisted methods can be used.
 
-# EPP Definitions
+# EPP Command Mappings
 
+## EPP Query Commands
+
+### EPP \<check> Command {#epp-query-check}
+
+### EPP \<info> Command {#epp-query-info}
+
+### EPP \<transfer> Command {#epp-query-transfer}
+
+## EPP Transform Commands
+
+### EPP \<create> Command {#epp-transform-create}
+
+#### Registry {#epp-create-registry}
+
+Example:
+
+~~~xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
+  <command>
+    <create>
+      <registry:create xmlns:registry="urn:ietf:params:xml:ns:registry-1.0">
+        <registry:postalInfo type="int">
+          <registry:name>Federal Aviation Administration</registry:name>
+          <registry:phys_addr>
+            <registry:street1>Orville Wright Federal Building</registry:street1>
+            <registry:street2>800 Independence Avenue SW</registry:street2>
+            <registry:city>Washington</registry:city>
+            <registry:sp>DC</registry:sp>
+            <registry:pc>20591</registry:pc>
+            <registry:cc>US</registry:cc>
+          </registry:phys_addr>
+        </registry:postalInfo>
+        <registry:voice x="1234">1 (866) 835-5322</registry:voice>
+        <registry:email>stephen.dickson@faa.gov</registry:email>
+      </registry:create>
+    </create>
+    <clTRID>ADD-REGIS</clTRID>
+  </command>
+</epp>
+~~~
+
+#### Operator {#epp-create-operator}
+
+Example:
+
+~~~xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
+  <command>
+    <create>
+      <operator:create xmlns:operator="urn:ietf:params:xml:ns:operator-1.0">
+        <operator:postalInfo type="int">
+          <operator:name>John Doe</operator:name>
+          <operator:phys_addr>
+            <operator:street1>123 Example Dr.</operator:street1>
+            <operator:street2>Suite 100</operator:street2>
+            <operator:city>Dulles</operator:city>
+            <operator:sp>VA</operator:sp>
+            <operator:pc>20166-6503</operator:pc>
+            <operator:cc>US</operator:cc>
+          </operator:phys_addr>
+          <operator:ma_addr>
+            <operator:street1>123 Example Dr.</operator:street1>
+            <operator:street2>Suite 100</operator:street2>
+            <operator:city>Dulles</operator:city>
+            <operator:sp>VA</operator:sp>
+            <operator:pc>20166-6503</operator:pc>
+            <operator:cc>US</operator:cc>
+          </operator:ma_addr>
+        </operator:postalInfo>
+        <operator:voice x="1234">+1.7035555555</operator:voice>
+        <operator:email>jdoe@example.com</operator:email>
+        <operator:part107_acct_name>some_faa_account</operator:part107_acct_name>
+        <operator:rec_flyer_id>123456</operator:rec_flyer_id>
+      </operator:create>
+    </create>
+    <clTRID>ADD-OPER</clTRID>
+  </command>
+</epp>
+~~~
+
+#### Aircraft Serial Number {#epp-create-sn}
+
+Example:
+
+~~~xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
+  <command>
+    <create>
+      <aircraft:create xmlns:aircraft="urn:ietf:params:xml:ns:aircraft-1.0">
+        <aircraft:serial>0000F000000000000000</aircraft:serial>
+        <aircraft:voice x="1234">1 (866) 835-5322</aircraft:voice>
+        <aircraft:fa3>N1232456</aircraft:fa3>
+        <aircraft:manufacturer>Drones R Us</aircraft:manufacturer>
+        <aircraft:model>Fast Drone 9000</aircraft:model>
+      </aircraft:create>
+    </create>
+    <clTRID>ADD-AIRCRFT</clTRID>
+  </command>
+</epp>
+~~~
+
+#### Aircraft Session ID {#epp-create-session}
+
+Example:
+
+~~~xml
 TODO
+~~~
+
+### EPP \<delete> Command {#epp-transform-delete}
+
+### EPP \<renew> Command {#epp-transform-renew}
+
+### EPP \<transfer> Command {#epp-transform-transfer}
+
+### EPP \<update> Command {#epp-transform-update}
 
 # RDAP Definitions
 
-TODO
-
 # IANA Considerations
 
-(Editor Note: EPP/RDAP adds to existing registries, CERT RR update, HIP RR update)
+<!-- Author Note (atw): need help here: EPP/RDAP adds to existing registries, CERT RR update, HIP RR update -->
 
 # Security Considerations
 
@@ -1186,18 +1304,18 @@ TODO
 Under the FAA {{NPRM}}, it is expecting that IDs for UAS are assigned by the UTM and are generally one-time use. The methods for this however are unspecified leaving two options.
 
 1
-: The entity generates its own DET, discovering and using thr RAA and HDA for the target Registry. The method for discovering a Registry's RAA and HDA is out of scope here. This allows for the device to generate an DET to send to the Registry to be accepted (thus generating the required Host Identity Claim) or denied.
+: The entity generates its own DET, discovering and using the RAA and HDA for the target registry. The method for discovering a registry's RAA and HDA is out of scope here. This allows for the device to generate an DET to send to the registry to be accepted (thus generating the required Self-Attestation) or denied.
 
 2
-: The entity sends to the Registry its HI for it to be hashed and result in the DET. The Registry would then either accept (returning the DET to the device) or deny this pairing.
+: The entity sends to the registry its HI for it to be hashed and result in the DET. The registry would then either accept (returning the DET to the device) or deny this pairing.
 
 Keypairs are expected to be generated on the device hardware it will be used on. Due to hardware limitations (see {{security-considerations}}) and connectivity it is acceptable under DRIP to generate keypairs for the Aircraft on Operator devices and later securely inject them into the Aircraft (as defined in {{operator-assisted-provisioning}}). The methods to securely inject and store keypair information in a “secure element” of the Aircraft is out of scope of this document.
 
-In either case the Registry must decide on if the HI/DET pairing is valid. This in its simplest form is checking the current Registry for a collision on the DET.
+In either case the registry must decide on if the HI/DET pairing is valid. This in its simplest form is checking the current registry for a collision on the DET and HI.
 
-Upon accepting a HI/DET pair the Registry MUST populate the required the DNS serving the HDA with the HIP RR and other relevant RR types (such as TXT and CERT). The Registry MUST also generate the appropriate Attestation for the given operation.
+Upon accepting a HI/DET pair the registry MUST populate the required the DNS serving the HDA with the HIP RR and other relevant RR types (such as TXT and CERT). The registry MUST also generate the appropriate attestations/certificates for the given operation.
 
-If the Registry denied the HI/DET pair, because there was a DET collision or any other reason, the Registry MUST signal back to the device being provisioned that a new HI needs to be generated.
+If the registry denied the HI/DET pair, because there was a DET collision or any other reason, the registry MUST signal back to the device being provisioned that a new HI needs to be generated.
 
 # Contributors
 
