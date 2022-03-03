@@ -1,0 +1,69 @@
+{ // RAA Metadata -- stored by Root
+    "raa": 0,
+    "det": "", // DET of RAA
+    "hi": "",  // host identity of DET in bytes
+    "org": "",
+    "address": "",
+    "contact" : "",  // name, address, email, phone?
+    "name": "",
+    "short_name": ""  // Max 6 characters, all uppercase; also stored in TXT RR?
+}
+
+{ // HDA Metadata -- Stored by RAA
+    "hda": 0,
+    "det": "", // DET of HDA
+    "hi": "",  // host identity of DET in bytes
+    "org": "",
+    "address": "",
+    "contact" : "",  // name, address, email, phone?
+    "mfr_code": "",  // only used by IRM
+    "name": "",
+    "short_name": ""  // Max 6 characters, all uppercase; also stored in TXT RR?
+}
+
+{ // Serial Metadata -- Stored by MRA (an HDA)
+    "serial": "MFR0F000000000000001",
+    "make": "",
+    "model": "",
+    "color": "",
+    "material": "",
+    "weight": 0.0,
+    "length": 0.0,
+    "width": 0.0,
+    "height": 0.0,
+    "num_rotors": 4,
+    "prop_length": 0.0,
+    "battery_capacity": 0.0,
+    "battery_voltage": 0.0,
+    "battery_weight": 0.0,
+    "battery_chemistry": "",
+    "take_off_weight": 0.0,
+    "max_take_off_weight": 0.0,
+    "max_payload_weight": 0.0,
+    "max_flight_time": 0.0,
+    "min_operating_temp": 0.0,
+    "max_operating_temp": 0.0,
+    "ip_rating": "",
+    // optional fields when using DRIP
+    "det": "", // DET; should be what is encoded into SN
+    "hi": ""  // host identity of DET in bytes
+}
+
+{ // Operator Metadata -- stored by HDA
+    "det": "", // DET of Operator
+    "hi": "",  // host identity of DET in bytes
+    "f_name": "",
+    "l_name": "",
+    "address": "",
+    "email": "",
+    "caa_id": "",  // Assigned by CAA
+    "part107": ""
+}
+
+{ // Session ID Metadata -- Stored by HDA
+    "uas_id": "",  // SN, DET to be used for flight
+    "serial": "MFR0F000000000000001",  // Treat as bytes (will ultimately be encrypted blob)
+    "operational_intent": "",  // UUIDv4 from UTM  -- optional if known; could be filled in later somehow...
+    "operator": "",  // DET of operator performing registration (from A-ro or A-oa)
+    "hi": "",  // host identity of DET in bytes -- required when using DET as UAS ID
+}
