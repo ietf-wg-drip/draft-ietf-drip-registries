@@ -48,10 +48,9 @@ author:
     name: Jim Reid
     org: RTFM llp
     street: St Andrews House
-    city: 382 Hillington Road
-    region: Glasgow
+    city: 382 Hillington Road, Glasgow Scotland
     code: G51 4BL
-    country: Scotland
+    country: UK
     email: jim@rfc1035.com
 
 
@@ -69,7 +68,7 @@ informative:
     drip-arch: I-D.ietf-drip-arch
     drip-rid: I-D.ietf-drip-uas-rid
     hhit-registries: I-D.moskowitz-hip-hhit-registries
-    drip-auth: I-D.ietf.drip-auth
+    drip-auth: I-D.ietf-drip-auth
     NPRM:
         title: "Notice of Proposed Rule Making on Remote Identification of Unmanned Aircraft Systems"
         author:
