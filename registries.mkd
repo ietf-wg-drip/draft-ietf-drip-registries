@@ -1170,6 +1170,13 @@ For this either Standard or Operator Assisted methods can be used.
 
 # EPP Command Mappings
 
+## Common Attributes
+
+There are a number of common attributes between the various EPP commands under DRIP that has specific encoding rules.
+
+- The `hi` attribute is a Base64 encoding of the Host Identity.
+- The `det` attribute is a string from of the DET.
+
 ## EPP Query Commands
 
 ### EPP \<check> Command {#epp-query-check}
@@ -1178,11 +1185,21 @@ For this either Standard or Operator Assisted methods can be used.
 
 ### EPP \<transfer> Command {#epp-query-transfer}
 
+Transfer semantics do not apply in DRIP, so there is no mapping defined for the EPP \<transfer> command.
+
 ## EPP Transform Commands
+
+<!-- Author TODO: add DET/HI pairs to examples -->
 
 ### EPP \<create> Command {#epp-transform-create}
 
 #### Registry {#epp-create-registry}
+
+The `abbreviation` field has a max of 6 characters, and is used by RID receivers to display a short decoded form for display of a received DET in the form of `{RAA Abbreviation} {HDA Abbreviation} {Last 4 of DET Hash}`. An example of this would be `US FAA FE23`. If the abbreviation is unknown then the receiver SHOULD use the hexadecimal encoding of the respective RAA/HDA field of the HID as the value in the form. For example if the HDA is unknown and the HDA value is 20 then the decoded display would be: `DE 14 FE23`. Typically for RAAs the `abbreviation` is RECOMMENDED to be set to the ISO 3166 country code (either Alpha-2 or Alpha-3) for the CAA. Dashes or underscores should be used in place of spaces.
+
+<!-- Author Note: does the above text need to be moved to DET draft instead (and possible expanded)? -->
+
+The `mfrCode` field is only used by an MRA ({{mra}}) when registering with an IRM ({{irm}}) and holds the ICAO assigned Manufacturer Code for ANSI CTA2063-A Serial Numbers. It has a max of 4 characters.
 
 Example:
 
@@ -1191,21 +1208,27 @@ Example:
 <epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
   <command>
     <create>
-      <registry:create xmlns:registry="urn:ietf:params:xml:ns:registry-1.0">
-        <registry:postalInfo type="int">
-          <registry:name>Federal Aviation Administration</registry:name>
-          <registry:phys_addr>
-            <registry:street1>Orville Wright Federal Building</registry:street1>
-            <registry:street2>800 Independence Avenue SW</registry:street2>
-            <registry:city>Washington</registry:city>
-            <registry:sp>DC</registry:sp>
-            <registry:pc>20591</registry:pc>
-            <registry:cc>US</registry:cc>
-          </registry:phys_addr>
-        </registry:postalInfo>
-        <registry:voice x="1234">1 (866) 835-5322</registry:voice>
-        <registry:email>stephen.dickson@faa.gov</registry:email>
-      </registry:create>
+      <dripRegistry:create xmlns:dripRegistry="urn:ietf:params:xml:ns:dripRegistry-1.0">
+        <dripRegistry:det>2001:0030:00a0:0145:a3ad:1952:0ad0:a69e</dripRegistry:det>
+        <dripRegistry:hi></dripRegistry:hi>
+        <dripRegistry:raa>10</dripRegistry:raa>
+        <dripRegistry:hda>20</dripRegistry:hda>
+        <dripRegistry:abbreviation>FAA</dripRegistry:abbreviation>
+        <dripRegistry:mfrCode>MFR0</dripRegistry:mfrCode>
+        <dripRegistry:postalInfo type="int">
+          <dripRegistry:name>Federal Aviation Administration</dripRegistry:name>
+          <dripRegistry:phys_addr>
+            <dripRegistry:street1>Orville Wright Federal Building</dripRegistry:street1>
+            <dripRegistry:street2>800 Independence Avenue SW</dripRegistry:street2>
+            <dripRegistry:city>Washington</dripRegistry:city>
+            <dripRegistry:sp>DC</dripRegistry:sp>
+            <dripRegistry:pc>20591</dripRegistry:pc>
+            <dripRegistry:cc>US</dripRegistry:cc>
+          </dripRegistry:phys_addr>
+        </dripRegistry:postalInfo>
+        <dripRegistry:voice x="1234">1 (866) 835-5322</dripRegistry:voice>
+        <dripRegistry:email>stephen.dickson@faa.gov</dripRegistry:email>
+      </dripRegistry:create>
     </create>
     <clTRID>ADD-REGIS</clTRID>
   </command>
@@ -1221,31 +1244,34 @@ Example:
 <epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
   <command>
     <create>
-      <operator:create xmlns:operator="urn:ietf:params:xml:ns:operator-1.0">
-        <operator:postalInfo type="int">
-          <operator:name>John Doe</operator:name>
-          <operator:phys_addr>
-            <operator:street1>123 Example Dr.</operator:street1>
-            <operator:street2>Suite 100</operator:street2>
-            <operator:city>Dulles</operator:city>
-            <operator:sp>VA</operator:sp>
-            <operator:pc>20166-6503</operator:pc>
-            <operator:cc>US</operator:cc>
-          </operator:phys_addr>
-          <operator:ma_addr>
-            <operator:street1>123 Example Dr.</operator:street1>
-            <operator:street2>Suite 100</operator:street2>
-            <operator:city>Dulles</operator:city>
-            <operator:sp>VA</operator:sp>
-            <operator:pc>20166-6503</operator:pc>
-            <operator:cc>US</operator:cc>
-          </operator:ma_addr>
-        </operator:postalInfo>
-        <operator:voice x="1234">+1.7035555555</operator:voice>
-        <operator:email>jdoe@example.com</operator:email>
-        <operator:part107_acct_name>some_faa_account</operator:part107_acct_name>
-        <operator:rec_flyer_id>123456</operator:rec_flyer_id>
-      </operator:create>
+      <dripOperator:create xmlns:dripOperator="urn:ietf:params:xml:ns:dripOperator-1.0">
+        <dripOperator:postalInfo type="int">
+          <dripOperator:name>John Doe</dripOperator:name>
+          <dripOperator:phys_addr>
+            <dripOperator:street1>123 Example Dr.</dripOperator:street1>
+            <dripOperator:street2>Suite 100</dripOperator:street2>
+            <dripOperator:city>Dulles</dripOperator:city>
+            <dripOperator:sp>VA</dripOperator:sp>
+            <dripOperator:pc>20166-6503</dripOperator:pc>
+            <dripOperator:cc>US</dripOperator:cc>
+          </dripOperator:phys_addr>
+          <dripOperator:ma_addr>
+            <dripOperator:street1>123 Example Dr.</dripOperator:street1>
+            <dripOperator:street2>Suite 100</dripOperator:street2>
+            <dripOperator:city>Dulles</dripOperator:city>
+            <dripOperator:sp>VA</dripOperator:sp>
+            <dripOperator:pc>20166-6503</dripOperator:pc>
+            <dripOperator:cc>US</dripOperator:cc>
+          </dripOperator:ma_addr>
+        </dripOperator:postalInfo>
+        <dripOperator:voice x="1234">+1.7035555555</dripOperator:voice>
+        <dripOperator:email>jdoe@example.com</dripOperator:email>
+        <dripOperator:part107_acct_name>some_faa_account</dripOperator:part107_acct_name>
+        <dripOperator:rec_flyer_id>123456</dripOperator:rec_flyer_id>
+        <dripOperator:caaId></dripOperator:caaId>
+        <dripOperator:det></dripOperator:det>
+        <dripOperator:hi></dripOperator:hi>
+      </dripOperator:create>
     </create>
     <clTRID>ADD-OPER</clTRID>
   </command>
@@ -1261,13 +1287,33 @@ Example:
 <epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
   <command>
     <create>
-      <aircraft:create xmlns:aircraft="urn:ietf:params:xml:ns:aircraft-1.0">
-        <aircraft:serial>0000F000000000000000</aircraft:serial>
-        <aircraft:voice x="1234">1 (866) 835-5322</aircraft:voice>
-        <aircraft:fa3>N1232456</aircraft:fa3>
-        <aircraft:manufacturer>Drones R Us</aircraft:manufacturer>
-        <aircraft:model>Fast Drone 9000</aircraft:model>
-      </aircraft:create>
+      <dripSerial:create xmlns:dripSerial="urn:ietf:params:xml:ns:dripSerial-1.0">
+        <dripSerial:serial>0000F000000000000000</dripSerial:serial>
+        <dripSerial:det></dripSerial:det>
+        <dripSerial:hi></dripSerial:hi>
+        <dripSerial:manufacturer>Drones R Us</dripSerial:manufacturer>
+        <dripSerial:make>Fast Drone</dripSerial:make>
+        <dripSerial:model>9000</dripSerial:model>
+        <dripSerial:color>White</dripSerial:color>
+        <dripSerial:material>Plastic</dripSerial:material>
+        <dripSerial:weight>12.0</dripSerial:weight>
+        <dripSerial:length>5.0</dripSerial:length>
+        <dripSerial:width>4.0</dripSerial:width>
+        <dripSerial:height>3.0</dripSerial:height>
+        <dripSerial:numRotors>4</dripSerial:numRotors>
+        <dripSerial:propLength>2.0</dripSerial:propLength>
+        <dripSerial:batteryCapacity>5000</dripSerial:batterCapacity>
+        <dripSerial:batteryVoltage>12</dripSerial:batteryVoltage>
+        <dripSerial:batteryWeight>5.2</dripSerial:batteryWeight>
+        <dripSerial:batteryChemistry>Lithium-Ion</dripSerial:batteryChemistry>
+        <dripSerial:takeOffWeight>15</dripSerial:takeOffWeight>
+        <dripSerial:maxTakeOffWeight>25</dripSerial:maxTakeOffWeight>
+        <dripSerial:maxPayloadWeight>10</dripSerial:maxPayloadWeight>
+        <dripSerial:maxFlightTime>15</dripSerial:maxFlightTime>
+        <dripSerial:minOperatingTemp>35</dripSerial:minOperatingTemp>
+        <dripSerial:maxOperatingTemp>90</dripSerial:maxOperatingTemp>
+        <dripSerial:ipRating>55</dripSerial:ipRating>
+      </dripSerial:create>
     </create>
     <clTRID>ADD-AIRCRFT</clTRID>
   </command>
@@ -1279,16 +1325,52 @@ Example:
 Example:
 
 ~~~xml
-TODO
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
+  <command>
+    <create>
+      <dripSession:create xmlns:dripSession="urn:ietf:params:xml:ns:dripSession-1.0">
+        <dripSession:serial>0000F000000000000000</dripSession:serial>
+        <dripSession:uasId></dripSession:uasId>
+        <dripSession:sessionHi></dripSession:sessionHi>
+        <dripSession:operationalIntent></dripSession:operationalIntent>
+        <dripSession:operatorId>NOP123456</dripSession:operatorId>
+        <dripSession:operatorDet></dripSession:operatorDet>
+        <dripSession:fa3>N1232456</dripSession:fa3>
+      </dripSession:create>
+    </create>
+    <clTRID>ADD-SID</clTRID>
+  </command>
+</epp>
 ~~~
 
 ### EPP \<delete> Command {#epp-transform-delete}
 
+#### Registry {#epp-delete-registry}
+
+#### Operator {#epp-delete-operator}
+
+#### Aircraft Serial Number {#epp-delete-serial}
+
+#### Aircraft Session ID {#epp-delete-session}
+
 ### EPP \<renew> Command {#epp-transform-renew}
+
+Renewal semantics do not apply in DRIP, so there is no mapping defined for the EPP \<renew> command.
 
 ### EPP \<transfer> Command {#epp-transform-transfer}
 
+Transfer semantics do not apply in DRIP, so there is no mapping defined for the EPP \<transfer> command.
+
 ### EPP \<update> Command {#epp-transform-update}
+
+#### Registry {#epp-update-registry}
+
+#### Operator {#epp-update-operator}
+
+#### Aircraft Serial Number {#epp-update-serial}
+
+#### Aircraft Session ID {#epp-update-session}
 
 # RDAP Definitions
 
