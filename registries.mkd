@@ -101,7 +101,7 @@ Manufacturers that wish to participate in DRIP should not only support DRIP as a
 
 Operators are registered with a number of registries or their regional RAA. This acts as a verification check when a user performs other registration operations; such as provisioning an aircraft with a new Session ID. It is an open question if an Operator registers to their CAA (the RAA) or multiple USS's (HDA's). PII of the Operator would vary based on the CAA they are under and the registry.
 
-Finally aircraft that support using a DET would provision per flight to a USS, proposing a DET to the registry to generate a binding between the aircraft, operator and registry. Aircraft then follow {{drip-auth}} to meet various {{drip-requirements}}.
+Finally aircraft that support using a DET would provision per flight to a USS, proposing a DET to the registry to generate a binding between the aircraft (Session ID, Serial Number and Operational Intent), operator and registry. Aircraft then follow {{drip-auth}} to meet various {{drip-requirements}} during flight.
 
 # Terminology {#terminology}
 
@@ -125,572 +125,6 @@ RAA:
 
 : Registered Assigning Authority. The 16 bit field identifying the Hierarchical HIT Assigning Authority.
 
-# DRIP Attestations & Certificates
-
-See {{drip-arch}} for definitions of claim, assertion, attestation and certificate as used in this document.
-
-## Attestation Structure
-
-All Attestations and Certificates under DRIP share the following format structure:
-
-{:fig: artwork-align="center"}
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                 Attestor Identity Information                 .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                       Attestation Data                        .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|               Expiration Timestamp by Attestor                |
-+---------------+---------------+---------------+---------------+
-|                 Signing Timestamp by Attestor                 |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                     Signature by Attestor                     |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-Attestor Identity Information: (0, 16-bytes or 120-bytes)
-    Field containing Attestor Identity Information in various forms.
-
-Attestation Data:
-    A field of variable length containing the attestation data.
-
-Expiration Timestamp by Attestor (4 bytes):
-    Timestamp denoting recommended time to trust data to.
-
-Signing Timestamp by Attestor (4 bytes):
-    Current time at signing.
-
-Attestor Signature (64 bytes):
-    Signature over preceding fields using the keypair of 
-    the Attestor.
-~~~~
-{:fig #att-struct title="Attestation Structure"}
-
-### Attestor Identity Information
-
-This can be any one of the following:
-
-1. None
-2. Attestor DET: 16-bytes
-3. Attestor Self-Attestation: 120-bytes
-
-A specific definition of an Attestation or Certificate defines which of these are used.
-
-### Attestation Data
-
-The data being attested to. It can be one of the following forms:
-
-1. Claims
-2. Assertions
-3. Attestations
-
-This field is variable length with no limit and specific definitions of an Attestation or Certificate indicate the fields, size and ordering of any subfields.
-
-### Expiration Timestamp
-
-A UTC timestamp set some time into the future to indicate a point the Attestation Structure should not be trusted.
-
-### Signing Timestamp
-
-A UTC timestamp set to the time when the Attestation Structure was signed.
-
-### Signature
-
-An EdDSA25519 signature using the signing parties private key over the preceding fields in the Attestation Structure.
-
-## Attestations
-
-### Self-Attestation (SA-xx) {#self-attestation}
-
-The only attestation to use a claim (the Host Identity) in the `Attestation Data` with the DET acting as the `Attestor Identity Information`.
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                              DRIP                             |
-|                           Entity Tag                          |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                          Host Identity                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                         Trust Timestamp                       |
-+---------------+---------------+---------------+---------------+
-|                        Signing Timestamp                      |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                            Signature                          |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-Length = 120-bytes
-~~~~
-{:fig #axx-fig title="DRIP Self-Attestation"}
-
-### Attestation (A-xy) {#attestation}
-
-The standard first level DRIP Attestation form using a Self-Attestations of the signer and of the data being signed.
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                             SA-xx                             .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                             SA-yy                             .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                      Trust Timestamp by X                     |
-+---------------+---------------+---------------+---------------+
-|                     Signing Timestamp by X                    |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                         Signature by X                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-Length = 312-bytes
-~~~~
-{:fig #axy-fig title="DRIP Attestation"}
-
-### Concise Attestation (CA-xy) {#concise-attestation}
-
-In constrained environments and when there is the guarantee of being able to lookup the DETs to obtain HIs this attestation can be used.
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                             DRIP                              |
-|                        Entity Tag of X                        |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                             DRIP                              |
-|                        Entity Tag of Y                        |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                      Trust Timestamp by X                     |
-+---------------+---------------+---------------+---------------+
-|                     Signing Timestamp by X                    |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                         Signature by X                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-Length = 104-bytes
-~~~~
-{:fig #c-axy-fig title="DRIP Concise Attestation"}
-
-### Mutual Attestation (MA-xy) {#mutual-attestation}
-
-An attestation that perform a sign over an existing Attestation where the signer is the second party of the embedded attestation. The DET of party Y is used as the `Attestor Identity Information` ({{attestor-identity-information}}).
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                             DRIP                              |
-|                        Entity Tag of Y                        |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                              A-xy                             .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                      Trust Timestamp by Y                     |
-+---------------+---------------+---------------+---------------+
-|                     Signing Timestamp by Y                    |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                         Signature by Y                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-Length = 400-bytes
-~~~~
-{:fig #m-axy-fig title="DRIP Mutual Attestation"}
-
-### Link Attestation (LA-xy) {#link-attestation}
-
-An attestations that perform a sign over an existing Concise Attestation where the signer is the second party of the embedded attestation. The DET of party Y is used as the `Attestor Identity Information` ({{attestor-identity-information}}).
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                             DRIP                              |
-|                        Entity Tag of Y                        |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                             CA-xy                             .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                      Trust Timestamp by Y                     |
-+---------------+---------------+---------------+---------------+
-|                     Signing Timestamp by Y                    |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                         Signature by Y                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-Length = 192-bytes
-~~~~
-{:fig #l-axy-fig title="DRIP Link Attestation"}
-
-### Broadcast Attestation (BA-xy) {#broadcast-attestation}
-
-Required by DRIP Authentication Formats for Broadcast RID ({{drip-auth}}) to satisfy {{?drip-requirements}} GEN-1 and GEN-3.
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                             DRIP                              |
-|                        Entity Tag of X                        |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                             DRIP                              |
-|                        Entity Tag of Y                        |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                       Host Identity of Y                      |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                      Trust Timestamp by X                     |
-+---------------+---------------+---------------+---------------+
-|                     Signing Timestamp by X                    |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                         Signature by X                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-Length = 136-bytes
-~~~~
-{:fig #b-axy-fig title="DRIP Broadcast Attestation"}
-
-## Certificates
-
-In DRIP certificates are signed by a third party that has no stake in the claims/assertions/attestations being attested to.
-
-It is analogous to a third party in legal system that signs a document as a "witness" and bears no responsibility in the document.
-
-### Attestation Certificate (AC-zxy) {#attestation-certificate}
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                             SA-zz                             .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                              A-xy                             .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                      Trust Timestamp by Z                     |
-+---------------+---------------+---------------+---------------+
-|                     Signing Timestamp by Z                    |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                         Signature by Z                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-Length = 504-bytes
-~~~~
-{:fig #a-cxy-fig title="DRIP Attestation Certificate"}
-
-### Concise Certificate (CC-zxy) {#concise-certificate}
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                             DRIP                              |
-|                        Entity Tag of Z                        |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                             CA-xy                             .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                      Trust Timestamp by Z                     |
-+---------------+---------------+---------------+---------------+
-|                     Signing Timestamp by Z                    |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                         Signature by Z                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-Length = 192-bytes
-~~~~
-{:fig #c-cxy-fig title="DRIP Concise Certificate"}
-
-### Link Certificate (LC-zxy) {#link-certificate}
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                             DRIP                              |
-|                        Entity Tag of Z                        |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                             LA-xy                             .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                      Trust Timestamp by Z                     |
-+---------------+---------------+---------------+---------------+
-|                     Signing Timestamp by Z                    |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                         Signature by Z                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-Length = 300-bytes
-~~~~
-{:fig #l-cxy-fig title="DRIP Link Certificate"}
-
-### Mutual Certificate (MC-zxy) {#mutual-certificate}
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                             SA-zz                             .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                             MA-xy                             .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                      Trust Timestamp by Z                     |
-+---------------+---------------+---------------+---------------+
-|                     Signing Timestamp by Z                    |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                         Signature by Z                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-Length = 576-bytes
-~~~~
-{:fig #m-cxy-fig title="DRIP Mutual Certificate"}
-
-# X.509 Certificates
-
-TODO
-
-<!-- Author Note (atw): to be provided by Bob M.-->
-
 # Registries
 
 ## Classes
@@ -702,25 +136,27 @@ Under DRIP there 3 classes of registries, with specific variants in each.
                 |   Root   | 
                 +-o------o-+
                   |      |
-******************************************
+******************|******|*****************************
                   |      |
             +-----o-+  +-o-----+
-RAAs        |  IRM  |  |  RAA  |
-            +---o---+  +---o---+
-                |          |
-******************************************
-                |          |
-            +---o---+  +---o---+
-HDAs        |  MRA  |  | RIDR  |
-            +-------+  +-------+
+RAAs        |  IRM  |  |  RAA  o------.
+            +---o---+  +---o---+      '
+                |          |          |
+****************|**********|**********|****************
+                |          |          |
+            +---o---+  +---o---+  +---o---+
+HDAs        |  MRA  |  | RIDR  |  |  HDA  |
+            +-------+  +-------+  +-------+
 ~~~~
 {:fig #reg-class-fig title="Registry Hierarchy"}
+
+<!-- Author Note (atw): above figure should match docs/registry-diagram.png -->
 
 ### Root {#root}
 
 This is a special registry holding the RAA value of 0 and HDA value of 0. It delegates out RAA values only to registries that wish to act as an RAA.
 
-<!-- Editors Note: we contemplate ICAO running this server or a federation of them -->
+<!-- Author Note (atw): we contemplate ICAO running this server or a federation of them -->
 
 ### Registered Assigning Authorities {#raa}
 
@@ -734,7 +170,7 @@ A special RAA that hands out HDA values to participating Manufacturer's that hol
 
 It is holds the RAA value of 1 and HDA value of 0.
 
-<!-- Editors Note: we contemplate ICAO running this server or a federation of them -->
+<!-- Author Note (atw): we contemplate ICAO running this server or a federation of them -->
 
 ### Hierarchial HIT Domain Authorities {#hda}
 
@@ -752,7 +188,7 @@ Registry that holds the binding between a UAS Session ID (for DRIP the DET) and 
 
 As part of the UTM system they also hold a binding between a UAS ID (Serial Number or Session ID) and an Operational Intent.
 
-(Editors Note: these are contemplated to be part of a USS as a function or a standalone SDSP in the UTM system)
+<!-- Author Note (atw): these are contemplated to be part of a USS as a function or a standalone SDSP in the UTM system -->
 
 Hold RAA values of 2+ and HDA values of 1+.
 
@@ -764,11 +200,13 @@ A DET has a natural ability for a single entity to hold different cryptographic 
 
 This attribute of the DET to have different identities could also allow for a single registry to be "federated" across them if they share the same HID value. This method of deployment has not been thoroughly studied at this time.
 
-<!-- Editors Note: does someone want to explore this option of federating across multiple DETs with same HID? -->
+<!-- Author Note (atw): does someone want to explore this option of federating across multiple DETs with same HID? -->
 
 # DRIP Fully Qualified Domain Names
 
 Under DRIP there are a number of FQDN forms used to allow lookups to take place.
+
+The individual DETs may be potentially too numerous (e.g., 60 - 600M) and dynamic (e.g., new DETs every minute for some HDAs) to store in a signed, DNS zone. The HDA SHOULD provide DNS service for its zone and provide the HHIT detail response. A secure connection (e.g., DNS over TLS) to the authoritative zone may be a viable alternative to DNSSEC.
 
 ## Serial Number {#sn-fqdn}
 
@@ -781,6 +219,8 @@ FQDN: Z2T7B8RA85D19LX.F.8653.mfr.uas.icao.int
 ~~~~
 
 ## DET {#det-fqdn}
+
+The DET reverse lookup can be a standard IPv6 reverse look up, or it can leverage off the HHIT structure. If we assume a prefix of 2001:30::/28:
 
 ~~~~
 DET: 2001:0030:00a0:0145:a3ad:1952:0ad0:a69e
@@ -798,6 +238,9 @@ When building a DET FQDN the following two things must be done:
 2. The FQDN must be built using the expanded form of the IPv6 address
 
 The prefix is included in the FQDN form to support other potential prefixes being used.
+
+<!-- Author Note (atw): we need a section detailing the potential prefixes to be seen and from whom and why we would want to support such a thing -->
+<!-- Author Note (atw): need a section on different TLDs supported - uas.icao.int, remoteid.aero, rid.aero? -->
 
 ## Reverse DET
 
@@ -818,7 +261,7 @@ MRA and RIDR servers will also have HIP RRs for their registered parties (aircra
 
 ## CERT RR
 
-Most attestations can be placed into DNS. An exception to this is the Attestation Certificate made during Session ID registration. This is as this particular certificate acts similar to a car registration.
+Most attestations can be placed into DNS. An exception to this is the Attestation Certificate made during Session ID registration. This is as this particular certificate acts similar to a car registration and should be held safe by the operator.
 
 ## NS RR
 
@@ -845,7 +288,7 @@ In all cases the server being pointed to MUST be protected using AAA, specifical
 
 This RR is mainly used to support DTLS deployments where the DET is used in Network RID and the wider UTM system.
 
-<!-- Editors Note: RFC6698 applies here, but how? -->
+<!-- Author Note (atw): RFC6698 applies here, but how? Bob M. was the one originally mentioning this to me but context has been lost to time -->
 
 # Registry Operations
 
@@ -969,9 +412,9 @@ SA-a0a0 |    |   A-ma0
 ~~~~
 {:fig title="Manufacturer Provision"}
 
-During the initial configuration and production at the factory the Aircraft MUST be configured to have a serial number. ASTM defines this to be an ANSI/CTA-2063A. Under DRIP a DET can be encoded as such to be able to convert back and forth between them. This is covered in {{drip-rid}}.
+During the initial configuration and production at the factory the Aircraft MUST be configured to have a serial number. ASTM defines this to be an ANSI/CTA-2063A Serial Number for UAS. Under DRIP a DET can be encoded as such to be able to convert back and forth between them. This is covered in {{drip-rid}}.
 
-Under DRIP the Manufacturer SHOULD be using DETs and have their own keypair and SA-mm (Self-Attestation: Manufacturer on Manufacturer). (Ed. Note: some words on aircraft keypair and certs here?).
+Under DRIP the Manufacturer SHOULD be using DETs and have their own keypair and Self-Attestation: Manufacturer (SA-m). (Ed. Note: some words on aircraft keypair and certs here?).
 
 Self-Attestation: Aircraft 0 on Aircraft 0 (SA-a0a0) is extracted by the manufacturer and sent to their Certificate Authority (CA) to be verified and added. A resulting attestation (Attestation: Manufacturer on Aircraft 0 \[A-ma0\]) SHOULD be a DRIP Attestation – however this could be a X.509 certificate binding the serial number to the manufacturer.
 
@@ -1011,7 +454,7 @@ The registry cross checks any personally identifiable information as required. C
 
 With the receipt of Attestation: Registry on Operator (A-ro) the provisioning of an Operator is complete.
 
-## Registering a Session ID
+## Registering a Session ID {#sid-registration}
 
 Specifically handled by a RIDR ({{ridr}}).
 
@@ -1102,7 +545,7 @@ AC-roaN is sent via a secure channel back to the Operator to be stored. BA-raN i
 
 ### Operator Assisted Provisioning
 
-This provisioning scheme is for when the Aircraft is unable to connect to the registry itself or does not have the hardware required to generate keypairs and certificates.
+This provisioning scheme is for when the Aircraft is unable to connect to the registry itself or does not have the hardware required to generate keypairs and attestations.
 
 ~~~~
 +----------+
@@ -1181,7 +624,23 @@ There are a number of common attributes between the various EPP commands under D
 
 ### EPP \<check> Command {#epp-query-check}
 
+#### Registry {#epp-check-registry}
+
+#### Operator {#epp-check-operator}
+
+#### Aircraft Serial Number {#epp-check-serial}
+
+#### Aircraft Session ID {#epp-check-session}
+
 ### EPP \<info> Command {#epp-query-info}
+
+#### Registry {#epp-info-registry}
+
+#### Operator {#epp-info-operator}
+
+#### Aircraft Serial Number {#epp-info-serial}
+
+#### Aircraft Session ID {#epp-info-session}
 
 ### EPP \<transfer> Command {#epp-query-transfer}
 
@@ -1189,7 +648,7 @@ Transfer semantics do not apply in DRIP, so there is no mapping defined for the 
 
 ## EPP Transform Commands
 
-<!-- Author TODO: add DET/HI pairs to examples -->
+<!-- Author Note (atw): TODO: add DET/HI pairs to examples -->
 
 ### EPP \<create> Command {#epp-transform-create}
 
@@ -1197,7 +656,7 @@ Transfer semantics do not apply in DRIP, so there is no mapping defined for the 
 
 The `abbreviation` field has a max of 6 characters, and is used by RID receivers to display a short decoded form for display of a received DET in the form of `{RAA Abbreviation} {HDA Abbreviation} {Last 4 of DET Hash}`. An example of this would be `US FAA FE23`. If the abbreviation is unknown then the receiver SHOULD use the hexadecimal encoding of the respective RAA/HDA field of the HID as the value in the form. For example if the HDA is unknown and the HDA value is 20 then the decoded display would be: `DE 14 FE23`. Typically for RAAs the `abbreviation` is RECOMMENDED to be set to the ISO 3166 country code (either Alpha-2 or Alpha-3) for the CAA. Dashes or underscores should be used in place of spaces.
 
-<!-- Author Note: does the above text need to be moved to DET draft instead (and possible expanded)? -->
+<!-- Author Note (atw): does the above text need to be moved to DET draft instead (and possible expanded)? -->
 
 The `mfrCode` field is only used by an MRA ({{mra}}) when registering with an IRM ({{irm}}) and holds the ICAO assigned Manufacturer Code for ANSI CTA2063-A Serial Numbers. It has a max of 4 characters.
 
@@ -1334,6 +793,7 @@ Example:
         <dripSession:uasId></dripSession:uasId>
         <dripSession:sessionHi></dripSession:sessionHi>
         <dripSession:operationalIntent></dripSession:operationalIntent>
+        <dripSession:operationalIntentSrc>uss.example.com</dripSession:operationalIntentSrc>
         <dripSession:operatorId>NOP123456</dripSession:operatorId>
         <dripSession:operatorDet></dripSession:operatorDet>
         <dripSession:fa3>N1232456</dripSession:fa3>
@@ -1348,11 +808,76 @@ Example:
 
 #### Registry {#epp-delete-registry}
 
+Example:
+
+~~~xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
+  <command>
+    <delete>
+      <dripRegistry:delete xmlns:dripRegistry="urn:ietf:params:xml:ns:dripRegistry-1.0">
+        <dripRegistry:det>2001:0030:00a0:0145:a3ad:1952:0ad0:a69e</dripRegistry:det>
+      </dripRegistry:delete>
+    </delete>
+    <clTRID>DEL-REGIS</clTRID>
+  </command>
+</epp>
+~~~
+
 #### Operator {#epp-delete-operator}
+
+Example:
+
+~~~xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
+  <command>
+    <delete>
+      <dripOperator:delete xmlns:dripOperator="urn:ietf:params:xml:ns:dripOperator-1.0">
+        <dripOperator:caaId></dripOperator:caaId>
+        <dripOperator:det></dripOperator:det>
+      </dripOperator:delete>
+    </delete>
+    <clTRID>DEL-OPER</clTRID>
+  </command>
+</epp>
+~~~
 
 #### Aircraft Serial Number {#epp-delete-serial}
 
+Example:
+
+~~~xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
+  <command>
+    <delete>
+      <dripSerial:delete xmlns:dripSerial="urn:ietf:params:xml:ns:dripSerial-1.0">
+        <dripSerial:serial>0000F000000000000000</dripSerial:serial>
+      </dripSerial:delete>
+    </delete>
+    <clTRID>DEL-AIRCRFT</clTRID>
+  </command>
+</epp>
+~~~
+
 #### Aircraft Session ID {#epp-delete-session}
+
+Example:
+
+~~~xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
+  <command>
+    <delete>
+      <dripSession:delete xmlns:dripSession="urn:ietf:params:xml:ns:dripSession-1.0">
+        <dripSession:uasId></dripSession:uasId>
+      </dripSession:delete>
+    </delete>
+    <clTRID>DEL-SID</clTRID>
+  </command>
+</epp>
+~~~
 
 ### EPP \<renew> Command {#epp-transform-renew}
 
@@ -1402,3 +927,610 @@ If the registry denied the HI/DET pair, because there was a DET collision or any
 
 - Scott Hollenbeck for his guidance with EPP/RDAP
 - Andrei Gurtov for his insights as a pilot
+
+--- back
+
+# DRIP Attestations & Certificates
+
+See {{drip-arch}} for definitions of claim, assertion, attestation and certificate as used in this document.
+
+## Attestation Structure
+
+All Attestations ({{attestations}}) and Certificates ({{certificates}}) under DRIP share the following format structure:
+
+{:fig: artwork-align="center"}
+~~~~
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|                                                               |
+.                                                               .
+.                 Attestor Identity Information                 .
+.                                                               .
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+.                                                               .
+.                       Attestation Data                        .
+.                                                               .
+|                                                               |
++---------------+---------------+---------------+---------------+
+|               Expiration Timestamp by Attestor                |
++---------------+---------------+---------------+---------------+
+|                 Signing Timestamp by Attestor                 |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                     Signature by Attestor                     |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+
+Attestor Identity Information: (0, 16-bytes or 120-bytes)
+    Field containing Attestor Identity Information in various forms.
+
+Attestation Data:
+    A field of variable length containing the attestation data.
+
+Expiration Timestamp by Attestor (4 bytes):
+    Timestamp denoting recommended time to trust data to.
+
+Signing Timestamp by Attestor (4 bytes):
+    Current time at signing.
+
+Attestor Signature (64 bytes):
+    Signature over preceding fields using the keypair of 
+    the Attestor.
+~~~~
+{:fig #att-struct title="Attestation Structure"}
+
+### Attestor Identity Information
+
+This can be either of the following:
+
+1. Attestor DET: 16-bytes
+2. Attestor Self-Attestation: 120-bytes
+
+A specific definition of an Attestation ({{attestations}}) or Certificate ({{certificates}}) defines which of these are used.
+
+### Attestation Data
+
+The data being attested to. It can be one of the following forms:
+
+1. Claims
+2. Assertions
+3. Attestations
+
+This field is variable length with no limit and specific definitions of an Attestation ({{attestations}}) or Certificate ({{certificates}}) indicate the fields, size and ordering of any subfields.
+
+### Expiration Timestamp
+
+A UTC timestamp set some time into the future to indicate a point the Attestation Structure should not be trusted.
+
+<!-- Author Note (atw): we need to highlight here how important the delta needs to be, but not over constrain -->
+
+The time delta into the future is of important concern as replay attacks on during flight could compromise the goals of DRIP. Attestations and certificates intended for public use and lower in the tree (importantly any generated for a Session ID ({{sid-registration}})).
+
+For this reason deltas SHOULD be kept as short as possible for the given use-case to avoid issues with replays.
+
+### Signing Timestamp
+
+A UTC timestamp set to the time when the Attestation Structure was signed.
+
+### Signature
+
+An EdDSA25519 signature using the signing parties private key over the preceding fields in the Attestation Structure.
+
+>> Note: the preceding fields of the Attestation Structure actually form an Assertion, with all fields acting as Claims
+
+## Attestations
+
+### Self-Attestation (SA-x) {#self-attestation}
+
+The only attestation to use a claim (the Host Identity) in the `Attestation Data` with the DET acting as the `Attestor Identity Information`.
+
+~~~~
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                              DRIP                             |
+|                           Entity Tag                          |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                          Host Identity                        |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                         Trust Timestamp                       |
++---------------+---------------+---------------+---------------+
+|                        Signing Timestamp                      |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                            Signature                          |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+
+Length = 120-bytes
+~~~~
+{:fig #axx-fig title="DRIP Self-Attestation"}
+
+### Attestation (A-x.y) {#attestation}
+
+The standard first level DRIP Attestation form using a Self-Attestations of the signer and of the data being signed.
+
+~~~~
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|                                                               |
+.                                                               .
+.                             SA-xx                             .
+.                                                               .
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+.                                                               .
+.                             SA-yy                             .
+.                                                               .
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                      Trust Timestamp by X                     |
++---------------+---------------+---------------+---------------+
+|                     Signing Timestamp by X                    |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                         Signature by X                        |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+
+Length = 312-bytes
+~~~~
+{:fig #axy-fig title="DRIP Attestation"}
+
+### Concise Attestation (CA-x.y) {#concise-attestation}
+
+In constrained environments and when there is the guarantee of being able to lookup the DETs to obtain HIs this attestation can be used.
+
+~~~~
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                             DRIP                              |
+|                        Entity Tag of X                        |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                             DRIP                              |
+|                        Entity Tag of Y                        |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                      Trust Timestamp by X                     |
++---------------+---------------+---------------+---------------+
+|                     Signing Timestamp by X                    |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                         Signature by X                        |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+
+Length = 104-bytes
+~~~~
+{:fig #c-axy-fig title="DRIP Concise Attestation"}
+
+### Mutual Attestation (MA-x.y) {#mutual-attestation}
+
+An attestation that perform a sign over an existing Attestation where the signer is the second party of the embedded attestation. The DET of party Y is used as the `Attestor Identity Information` ({{attestor-identity-information}}).
+
+~~~~
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                             DRIP                              |
+|                        Entity Tag of Y                        |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+.                                                               .
+.                              A-xy                             .
+.                                                               .
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                      Trust Timestamp by Y                     |
++---------------+---------------+---------------+---------------+
+|                     Signing Timestamp by Y                    |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                         Signature by Y                        |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+
+Length = 400-bytes
+~~~~
+{:fig #m-axy-fig title="DRIP Mutual Attestation"}
+
+### Link Attestation (LA-x.y) {#link-attestation}
+
+An attestations that perform a sign over an existing Concise Attestation where the signer is the second party of the embedded attestation. The DET of party Y is used as the `Attestor Identity Information` ({{attestor-identity-information}}).
+
+~~~~
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                             DRIP                              |
+|                        Entity Tag of Y                        |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+.                                                               .
+.                             CA-xy                             .
+.                                                               .
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                      Trust Timestamp by Y                     |
++---------------+---------------+---------------+---------------+
+|                     Signing Timestamp by Y                    |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                         Signature by Y                        |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+
+Length = 192-bytes
+~~~~
+{:fig #l-axy-fig title="DRIP Link Attestation"}
+
+### Broadcast Attestation (BA-x.y) {#broadcast-attestation}
+
+Required by DRIP Authentication Formats for Broadcast RID ({{drip-auth}}) to satisfy {{?drip-requirements}} GEN-1 and GEN-3.
+
+~~~~
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                             DRIP                              |
+|                        Entity Tag of X                        |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                             DRIP                              |
+|                        Entity Tag of Y                        |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                       Host Identity of Y                      |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                      Trust Timestamp by X                     |
++---------------+---------------+---------------+---------------+
+|                     Signing Timestamp by X                    |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                         Signature by X                        |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+
+Length = 136-bytes
+~~~~
+{:fig #b-axy-fig title="DRIP Broadcast Attestation"}
+
+## Certificates
+
+In DRIP certificates are signed by a third party that has no stake in the claims/assertions/attestations being attested to.
+
+It is analogous to a third party in legal system that signs a document as a "witness" and bears no responsibility in the document.
+
+### Attestation Certificate (AC-z.x.y) {#attestation-certificate}
+
+~~~~
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|                                                               |
+.                                                               .
+.                             SA-zz                             .
+.                                                               .
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+.                                                               .
+.                              A-xy                             .
+.                                                               .
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                      Trust Timestamp by Z                     |
++---------------+---------------+---------------+---------------+
+|                     Signing Timestamp by Z                    |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                         Signature by Z                        |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+
+Length = 504-bytes
+~~~~
+{:fig #a-cxy-fig title="DRIP Attestation Certificate"}
+
+### Concise Certificate (CC-z.x.y) {#concise-certificate}
+
+~~~~
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                             DRIP                              |
+|                        Entity Tag of Z                        |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+.                                                               .
+.                             CA-xy                             .
+.                                                               .
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                      Trust Timestamp by Z                     |
++---------------+---------------+---------------+---------------+
+|                     Signing Timestamp by Z                    |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                         Signature by Z                        |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+
+Length = 192-bytes
+~~~~
+{:fig #c-cxy-fig title="DRIP Concise Certificate"}
+
+### Link Certificate (LC-z.x.y) {#link-certificate}
+
+~~~~
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                             DRIP                              |
+|                        Entity Tag of Z                        |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+.                                                               .
+.                             LA-xy                             .
+.                                                               .
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                      Trust Timestamp by Z                     |
++---------------+---------------+---------------+---------------+
+|                     Signing Timestamp by Z                    |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                         Signature by Z                        |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+
+Length = 300-bytes
+~~~~
+{:fig #l-cxy-fig title="DRIP Link Certificate"}
+
+### Mutual Certificate (MC-z.x.y) {#mutual-certificate}
+
+~~~~
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|                                                               |
+.                                                               .
+.                             SA-zz                             .
+.                                                               .
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+.                                                               .
+.                             MA-xy                             .
+.                                                               .
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                      Trust Timestamp by Z                     |
++---------------+---------------+---------------+---------------+
+|                     Signing Timestamp by Z                    |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                         Signature by Z                        |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+
+Length = 576-bytes
+~~~~
+{:fig #m-cxy-fig title="DRIP Mutual Certificate"}
+
+## Abbreviations & File Naming Conventions
+
+The names of attestation and certificates can become quite long and tedious to write out. As such this section provides a guide to a somewhat standardized way they are written in text.
+
+### In Text Abbreviation
+
+In a long form the name of a particular attestation/certification can be written as follows:
+
+- `Self-Attestation: Unmanned Aircraft`
+- `Attestation: Operator on Aircraft` or `Attestation: Operator, Aircraft`
+- `Attestation Certificate: Registry on Operator on Aircraft` or `Attestation Certificate: Registry, Operator, Aircraft`
+
+When multiple entities are listed they can be separated by either `on` or by `,`. These long forms can be shortened:
+
+- `SA(Unmanned Aircraft)` or `SA-ua`
+- `A(Operator, Unmanned Aircraft)` or `A-op.ua`
+- `AC(Registry, Operator, Aircraft)` or `AC-reg.op.ua`
+
+Typical abbreviations for the entity can be used such as `Unmanned Aircraft` being shorthanded to `ua`.
+
+### File Naming
+
+For file naming of various certificates a similar format to the short form is used:
+
+- `sa-{hash of entity}`
+- `a-{hash of entity x}_{hash of entity y}`
+- `ac-{hash of entity z}_{hash of entity x}_{hash of entity y}`
+
+Some examples of file names:
+
+- `sa-79d8a404d48f2ef9.cert`
+- `a-120b8f25b198c1e1_79d8a404d48f2ef9.cert`
+- `ac-aac6b00abba268b7_120b8f25b198c1e1_79d8a404d48f2ef9.cert`
+
+# X.509 Certificates
+
+<!-- Author Note (atw): to be provided by Bob M.-->
