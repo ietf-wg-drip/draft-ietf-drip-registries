@@ -1,9 +1,9 @@
 ---
 coding: utf-8
 
-title: DRIP Registries
+title: DRIP Entity Tag Registration & Lookup
 abbrev: registries
-docname: draft-ietf-drip-registries-01
+docname: draft-ietf-drip-registries-02
 category: std
 
 ipr: trust200902
@@ -17,7 +17,7 @@ pi: [toc, sortrefs, symrefs, comments]
 
 author:
 
--   ins: A. Wiethuechter
+-   ins: A. Wiethuechter (Editor)
     name: Adam Wiethuechter
     org: AX Enterprize, LLC
     street: 4947 Commercial Drive
@@ -64,7 +64,7 @@ normative:
 informative:
     RFC7519:
     RFC8392:
-    drip-requirements: I-D.ietf-drip-reqs
+    drip-requirements: RFC9153
     drip-arch: I-D.ietf-drip-arch
     drip-rid: I-D.ietf-drip-uas-rid
     hhit-registries: I-D.moskowitz-hip-hhit-registries
@@ -160,9 +160,13 @@ This is a special registry holding the RAA value of 0 and HDA value of 0. It del
 
 ### Registered Assigning Authorities {#raa}
 
-RAA's are the upper hierarchy in DRIP. Most are contemplated to be Civil Aviation Authorities (CAAs) that then delegate HDAs to manage their NAS. This is does not preclude other entities to operate an RAA if the Root server allows it.
+RAA's are the upper hierarchy in DRIP (denoted by a 14-bit field (16,384 RAAs) of a DET). An RAA is a business or organization that manages a registry of HDAs ({{hda}}). Most are contemplated to be Civil Aviation Authorities (CAA), such as the Federal Aviation Authority (FAA), that then delegate HDAs to manage their NAS. This is does not preclude other entities to operate an RAA if the Root server allows it.
 
-All RAA's use an HDA value of 0 and have their RAA value delegated to them by the Root.
+The ICAO registration process will be available from ICAO. Once ICAO accepts an RAA, it will assign a number and create a zone delegation under the `uas.icao.int.` DNS zone for the RAA.
+
+As HHITs may be used in many different domains, RAA should be allocated in blocks with consideration on the likely size of a particular usage. Alternatively, different prefixes can be used to separate different domains of use of HHITs.
+
+An RAA must provide a set of services to allocate HDAs to organizations. It must have a public policy on what is necessary to obtain an HDA. It must maintain a DNS zone minimally for discovering HID RVS servers. All RAA's use an HDA value of 0 and have their RAA value delegated to them by the Root.
 
 #### ICAO Registry of Manufacturer's (IRM) {#irm}
 
@@ -173,6 +177,12 @@ It is holds the RAA value of 1 and HDA value of 0.
 <!-- Author Note (atw): we contemplate ICAO running this server or a federation of them -->
 
 ### Hierarchial HIT Domain Authorities {#hda}
+
+An HDA may be an ISP or any third party that takes on the business to provide RVS and other needed services such as those required for HIP-enabled devices.
+
+The HDA is an 14-bit field (16,384 HDAs per RAA) of a DET assigned by an RAA. An HDA should maintain a set of RVS servers for UAS clients that may use HIP. How this is done and scales to the potentially millions of customers are outside the scope of this document. This service should be discoverable through the DNS zone maintained by the HDA's RAA.
+
+An RAA may assign a block of values to an individual organization. This is completely up to the individual RAA's published policy for delegation. Such policy is out of scope.
 
 #### Manufacturer's Registry of Aircraft (MRA) {#mra}
 
@@ -923,9 +933,12 @@ Upon accepting a HI/DET pair the registry MUST populate the required the DNS ser
 
 If the registry denied the HI/DET pair, because there was a DET collision or any other reason, the registry MUST signal back to the device being provisioned that a new HI needs to be generated.
 
-# Contributors
+# Acknowledgements
 
 - Scott Hollenbeck for his guidance with EPP/RDAP
+
+# Contributors
+
 - Andrei Gurtov for his insights as a pilot
 
 --- back
@@ -1534,3 +1547,88 @@ Some examples of file names:
 # X.509 Certificates
 
 <!-- Author Note (atw): to be provided by Bob M.-->
+
+# Blockchain-based Registries
+
+The implementation of the registries and Network Remote Identification
+(Network RID; identify a UA through the network) in DRIP
+is yet to be determined. Blockchain, being synonymous with ledger,
+is a technology that could naturally fulfil the role of a registry, while
+simultaneously offering its benefits such as auditability, persistency
+and decentralization. We suggest that blockchain is an
+ample candidate to be used as registry within DRIP. We also show
+that it can be used to effectively leverage Network RID in certain
+scenarios. Thus 1) We propose a novel drone ID architecture based on Hyperledger
+Iroha and describe its proof-of-concept implementation with DRIP.
+2) Its performance and scalability is empirically evaluated. 3) We
+perform an informal security analysis of the system against various
+types of attacks [[Secure Drone Identification with Hyperledger Iroha]].
+
+
+Figure 1: Architecture using blockchain as registry for DRIP
+
+
+The proposed architecture is presented in Fig. 1. It consists of the
+usual actors in a UAS network, along with the blockchain registry
+based on Hyperledger Iroha. Key components:
+• Authorized users (administrators) can register new UAs to
+the network, and store with them any relevant data such as
+public keys and certificates.
+
+Drones can either send location updates directly to the blockchain,
+given that they are connected to the Internet, or send location
+updates to their connected Ground Control Station (GCS)
+that forwards it on behalf of the drones.
+• Observers can receive drone messages either through bluetooth
+and WiFi broadcasts from drones, or by polling the
+blockchain. They can also fetch the public key associated
+with a drone in order to validate its messages.
+• The blockchain network and its nodes are an entirely separate
+entity, no other actor participates in the consensus of
+new blocks.
+
+
+Actors within DRIP (except observers) will be registered as accounts
+on the blockchain network. Each of these accounts will have their
+DRIP identities, certificates and public keys stored and available so
+that they can be validated and used for validation by any account
+on the blockchain. Note that DRIP crypto key-pairs are separate
+from the blockchain crypto key-pairs. DRIP key-pairs are used to
+sign, verify and validate DRIP identities and messages, while the
+blockchain key-pairs are used to sign, verify and validate transactions
+on the blockchain.
+
+
+The DRIP requirements for a registry are the following:
+(1) REG-1: Public lookup
+(2) REG-2: Private lookup
+(3) REG-3: Provisioning (of static/dynamic data of UAs)
+(4) REG-4: AAA Policy
+
+
+REG-1 & REG-2. In Hyperledger Iroha, accounts are created
+on domains. The same account name can be used for multiple domains,
+and these are seen as separate accounts on Iroha. PII for
+an account can therefore be stored on a separate account (with
+the same account name) existing on a separate domain, that only
+allows certain accounts to view its account details. Accordingly, a
+registry using Iroha would need at least two domains associated
+with it for any given account, one for public lookup and one for
+private lookup.
+
+
+REG-3 & REG-4. The details for an account are set with a
+key/value pair. Key/value pairs can not be removed once they are
+set, values can only be modified through the corresponding key.
+Furthermore, the account that sets a key/value pair is included in
+the account details as a key/value pair itself, meaning one account
+can not modify details set by another account. See Listing 1 for
+clarification. Notice that both accounts have set the same key but
+contain different values. This sort of implementation supports both
+non-repudiation, but also trust in the sense that a drone (assuming
+the drone is not compromised) can always trust its own data, and
+does not have to interpret data coming from other accounts. Similarly,
+other accounts accessing another account’s data can trust
+that it is set by the corresponding account (e.g. fetching gps data).
+
+[Secure Drone Identification with Hyperledger Iroha]: https://doi.org/10.1145/3479243.3487305
