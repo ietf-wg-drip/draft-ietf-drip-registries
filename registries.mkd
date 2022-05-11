@@ -3,7 +3,7 @@ coding: utf-8
 
 title: DRIP Entity Tag Registration & Lookup
 abbrev: registries
-docname: draft-ietf-drip-registries-02
+docname: draft-ietf-drip-registries-03
 category: std
 
 ipr: trust200902
@@ -64,10 +64,13 @@ normative:
 informative:
     RFC7519:
     RFC8392:
+    RFC6698:
     drip-requirements: RFC9153
     drip-arch: I-D.ietf-drip-arch
     drip-rid: I-D.ietf-drip-uas-rid
     hhit-registries: I-D.moskowitz-hip-hhit-registries
+    drip-secure-nrid-c2: I-D.moskowitz-drip-secure-nrid-c2
+    dane-clients: I-D.ietf-dance-client-auth
     drip-auth: I-D.ietf-drip-auth
     NPRM:
         title: "Notice of Proposed Rule Making on Remote Identification of Unmanned Aircraft Systems"
@@ -674,34 +677,30 @@ Example:
 
 ~~~xml
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
-  <command>
-    <create>
-      <dripRegistry:create xmlns:dripRegistry="urn:ietf:params:xml:ns:dripRegistry-1.0">
-        <dripRegistry:det>2001:0030:00a0:0145:a3ad:1952:0ad0:a69e</dripRegistry:det>
-        <dripRegistry:hi></dripRegistry:hi>
-        <dripRegistry:raa>10</dripRegistry:raa>
-        <dripRegistry:hda>20</dripRegistry:hda>
-        <dripRegistry:abbreviation>FAA</dripRegistry:abbreviation>
-        <dripRegistry:mfrCode>MFR0</dripRegistry:mfrCode>
-        <dripRegistry:postalInfo type="int">
-          <dripRegistry:name>Federal Aviation Administration</dripRegistry:name>
-          <dripRegistry:phys_addr>
-            <dripRegistry:street1>Orville Wright Federal Building</dripRegistry:street1>
-            <dripRegistry:street2>800 Independence Avenue SW</dripRegistry:street2>
-            <dripRegistry:city>Washington</dripRegistry:city>
-            <dripRegistry:sp>DC</dripRegistry:sp>
-            <dripRegistry:pc>20591</dripRegistry:pc>
-            <dripRegistry:cc>US</dripRegistry:cc>
-          </dripRegistry:phys_addr>
-        </dripRegistry:postalInfo>
-        <dripRegistry:voice x="1234">1 (866) 835-5322</dripRegistry:voice>
-        <dripRegistry:email>stephen.dickson@faa.gov</dripRegistry:email>
-      </dripRegistry:create>
-    </create>
-    <clTRID>ADD-REGIS</clTRID>
-  </command>
-</epp>
+<extension>
+  <dripRegistry:dripRegistry xmlns:dripRegistry="urn:ietf:params:xml:ns:dripRegistry-1.0">
+    <dripRegistry:det>2001:0030:00a0:0145:a3ad:1952:0ad0:a69e</dripRegistry:det>
+    <dripRegistry:hi></dripRegistry:hi>
+    <dripRegistry:selfAttestation>Hex of SelfAttestation(Registry)</dripRegistry:selfAttestation>
+    <dripRegistry:raa>10</dripRegistry:raa>
+    <dripRegistry:hda>20</dripRegistry:hda>
+    <dripRegistry:abbreviation>FAA</dripRegistry:abbreviation>
+    <dripRegistry:mfrCode>MFR0</dripRegistry:mfrCode>
+    <dripRegistry:postalInfo type="int">
+      <dripRegistry:name>Federal Aviation Administration</dripRegistry:name>
+      <dripRegistry:phys_addr>
+        <dripRegistry:street1>Orville Wright Federal Building</dripRegistry:street1>
+        <dripRegistry:street2>800 Independence Avenue SW</dripRegistry:street2>
+        <dripRegistry:city>Washington</dripRegistry:city>
+        <dripRegistry:sp>DC</dripRegistry:sp>
+        <dripRegistry:pc>20591</dripRegistry:pc>
+        <dripRegistry:cc>US</dripRegistry:cc>
+      </dripRegistry:phys_addr>
+    </dripRegistry:postalInfo>
+    <dripRegistry:voice x="1234">1 (866) 835-5322</dripRegistry:voice>
+    <dripRegistry:email>stephen.dickson@faa.gov</dripRegistry:email>
+  </dripRegistry:dripRegistry>
+</extension>
 ~~~
 
 #### Operator {#epp-create-operator}
@@ -710,41 +709,27 @@ Example:
 
 ~~~xml
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
-  <command>
-    <create>
-      <dripOperator:create xmlns:dripOperator="urn:ietf:params:xml:ns:dripOperator-1.0">
-        <dripOperator:postalInfo type="int">
-          <dripOperator:name>John Doe</dripOperator:name>
-          <dripOperator:phys_addr>
-            <dripOperator:street1>123 Example Dr.</dripOperator:street1>
-            <dripOperator:street2>Suite 100</dripOperator:street2>
-            <dripOperator:city>Dulles</dripOperator:city>
-            <dripOperator:sp>VA</dripOperator:sp>
-            <dripOperator:pc>20166-6503</dripOperator:pc>
-            <dripOperator:cc>US</dripOperator:cc>
-          </dripOperator:phys_addr>
-          <dripOperator:ma_addr>
-            <dripOperator:street1>123 Example Dr.</dripOperator:street1>
-            <dripOperator:street2>Suite 100</dripOperator:street2>
-            <dripOperator:city>Dulles</dripOperator:city>
-            <dripOperator:sp>VA</dripOperator:sp>
-            <dripOperator:pc>20166-6503</dripOperator:pc>
-            <dripOperator:cc>US</dripOperator:cc>
-          </dripOperator:ma_addr>
-        </dripOperator:postalInfo>
-        <dripOperator:voice x="1234">+1.7035555555</dripOperator:voice>
-        <dripOperator:email>jdoe@example.com</dripOperator:email>
-        <dripOperator:part107_acct_name>some_faa_account</dripOperator:part107_acct_name>
-        <dripOperator:rec_flyer_id>123456</dripOperator:rec_flyer_id>
-        <dripOperator:caaId></dripOperator:caaId>
-        <dripOperator:det></dripOperator:det>
-        <dripOperator:hi></dripOperator:hi>
-      </dripOperator:create>
-    </create>
-    <clTRID>ADD-OPER</clTRID>
-  </command>
-</epp>
+<extension>
+  <dripOperator:dripOperator xmlns:dripOperator="urn:ietf:params:xml:ns:dripOperator-1.0">
+    <dripOperator:postalInfo type="int">
+      <dripOperator:phys_addr>
+        <dripOperator:street1>123 Example Dr.</dripOperator:street1>
+        <dripOperator:street2>Suite 100</dripOperator:street2>
+        <dripOperator:city>Dulles</dripOperator:city>
+        <dripOperator:sp>VA</dripOperator:sp>
+        <dripOperator:pc>20166-6503</dripOperator:pc>
+        <dripOperator:cc>US</dripOperator:cc>
+      </dripOperator:phys_addr>
+    </dripOperator:postalInfo>
+    <dripOperator:part107_acct_name>some_faa_account</dripOperator:part107_acct_name>
+    <dripOperator:rec_flyer_id>123456</dripOperator:rec_flyer_id>
+    <dripOperator:caaId></dripOperator:caaId>
+    <dripOperator:det></dripOperator:det>
+    <dripOperator:hi></dripOperator:hi>
+    <dripOperator:selfAttestation>Hex of SelfAttestation(Operator)</dripOperator:selfAttestation>
+    <dripOperator:attestation>Hex of Attestation(Registry, Operator)</dripOperator:attestation>
+  </dripOperator::dripOperator>
+</extension>
 ~~~
 
 #### Aircraft Serial Number {#epp-create-sn}
@@ -753,40 +738,37 @@ Example:
 
 ~~~xml
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
-  <command>
-    <create>
-      <dripSerial:create xmlns:dripSerial="urn:ietf:params:xml:ns:dripSerial-1.0">
-        <dripSerial:serial>0000F000000000000000</dripSerial:serial>
-        <dripSerial:det></dripSerial:det>
-        <dripSerial:hi></dripSerial:hi>
-        <dripSerial:manufacturer>Drones R Us</dripSerial:manufacturer>
-        <dripSerial:make>Fast Drone</dripSerial:make>
-        <dripSerial:model>9000</dripSerial:model>
-        <dripSerial:color>White</dripSerial:color>
-        <dripSerial:material>Plastic</dripSerial:material>
-        <dripSerial:weight>12.0</dripSerial:weight>
-        <dripSerial:length>5.0</dripSerial:length>
-        <dripSerial:width>4.0</dripSerial:width>
-        <dripSerial:height>3.0</dripSerial:height>
-        <dripSerial:numRotors>4</dripSerial:numRotors>
-        <dripSerial:propLength>2.0</dripSerial:propLength>
-        <dripSerial:batteryCapacity>5000</dripSerial:batterCapacity>
-        <dripSerial:batteryVoltage>12</dripSerial:batteryVoltage>
-        <dripSerial:batteryWeight>5.2</dripSerial:batteryWeight>
-        <dripSerial:batteryChemistry>Lithium-Ion</dripSerial:batteryChemistry>
-        <dripSerial:takeOffWeight>15</dripSerial:takeOffWeight>
-        <dripSerial:maxTakeOffWeight>25</dripSerial:maxTakeOffWeight>
-        <dripSerial:maxPayloadWeight>10</dripSerial:maxPayloadWeight>
-        <dripSerial:maxFlightTime>15</dripSerial:maxFlightTime>
-        <dripSerial:minOperatingTemp>35</dripSerial:minOperatingTemp>
-        <dripSerial:maxOperatingTemp>90</dripSerial:maxOperatingTemp>
-        <dripSerial:ipRating>55</dripSerial:ipRating>
-      </dripSerial:create>
-    </create>
-    <clTRID>ADD-AIRCRFT</clTRID>
-  </command>
-</epp>
+<extension>
+  <dripSerial:dripSerial xmlns:dripSerial="urn:ietf:params:xml:ns:dripSerial-1.0">
+    <dripSerial:serial>0000F000000000000000</dripSerial:serial>
+    <dripSerial:det></dripSerial:det>
+    <dripSerial:hi></dripSerial:hi>
+    <dripSerial:selfAttestation>Hex of SelfAttestation(Aircraft)</dripSerial:selfAttestation>
+    <dripSerial:broadcastAttestation>Hex of BroadcastAttestation(Registry, Aircraft)</dripSerial:broadcastAttestation>
+    <dripSerial:manufacturer>Drones R Us</dripSerial:manufacturer>
+    <dripSerial:make>Fast Drone</dripSerial:make>
+    <dripSerial:model>9000</dripSerial:model>
+    <dripSerial:color>White</dripSerial:color>
+    <dripSerial:material>Plastic</dripSerial:material>
+    <dripSerial:weight>12.0</dripSerial:weight>
+    <dripSerial:length>5.0</dripSerial:length>
+    <dripSerial:width>4.0</dripSerial:width>
+    <dripSerial:height>3.0</dripSerial:height>
+    <dripSerial:numRotors>4</dripSerial:numRotors>
+    <dripSerial:propLength>2.0</dripSerial:propLength>
+    <dripSerial:batteryCapacity>5000</dripSerial:batterCapacity>
+    <dripSerial:batteryVoltage>12</dripSerial:batteryVoltage>
+    <dripSerial:batteryWeight>5.2</dripSerial:batteryWeight>
+    <dripSerial:batteryChemistry>Lithium-Ion</dripSerial:batteryChemistry>
+    <dripSerial:takeOffWeight>15</dripSerial:takeOffWeight>
+    <dripSerial:maxTakeOffWeight>25</dripSerial:maxTakeOffWeight>
+    <dripSerial:maxPayloadWeight>10</dripSerial:maxPayloadWeight>
+    <dripSerial:maxFlightTime>15</dripSerial:maxFlightTime>
+    <dripSerial:minOperatingTemp>35</dripSerial:minOperatingTemp>
+    <dripSerial:maxOperatingTemp>90</dripSerial:maxOperatingTemp>
+    <dripSerial:ipRating>55</dripSerial:ipRating>
+  </dripSerial:dripSerial>
+</extension>
 ~~~
 
 #### Aircraft Session ID {#epp-create-session}
@@ -795,23 +777,24 @@ Example:
 
 ~~~xml
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
-  <command>
-    <create>
-      <dripSession:create xmlns:dripSession="urn:ietf:params:xml:ns:dripSession-1.0">
-        <dripSession:serial>0000F000000000000000</dripSession:serial>
-        <dripSession:uasId></dripSession:uasId>
-        <dripSession:sessionHi></dripSession:sessionHi>
-        <dripSession:operationalIntent></dripSession:operationalIntent>
-        <dripSession:operationalIntentSrc>uss.example.com</dripSession:operationalIntentSrc>
-        <dripSession:operatorId>NOP123456</dripSession:operatorId>
-        <dripSession:operatorDet></dripSession:operatorDet>
-        <dripSession:fa3>N1232456</dripSession:fa3>
-      </dripSession:create>
-    </create>
-    <clTRID>ADD-SID</clTRID>
-  </command>
-</epp>
+<extension>
+  <dripSession:dripSession xmlns:dripSession="urn:ietf:params:xml:ns:dripSession-1.0">
+    <dripSession:serial>0000F000000000000000</dripSession:serial>
+    <dripSession:uasId></dripSession:uasId>
+    <dripSession:sessionHi></dripSession:sessionHi>
+    <dripSession:broadcastAttestation>Hex of BroadcastAttestation(Registry, Aircraft)</dripSession:broadcastAttestation>
+    <dripSession:attestationCertificate>Hex of AttestationCertificate(Registry, Operator, Aircraft)</dripSession:attestationCertificate>
+    <dripSession:operationalIntent></dripSession:operationalIntent>
+    <dripSession:operationalIntentSrc>uss.example.com</dripSession:operationalIntentSrc>
+    <dripSession:operatorId>NOP123456</dripSession:operatorId>
+    <dripSession:operatorDet></dripSession:operatorDet>
+    <dripSession:attestation>Hex of Attestation(Operator, Aircraft)</dripSession:attestation>
+    <dripSession:mutualAttestation>Hex of MutualAttestation(Registry, Operator)</dripSession:mutualAttestation>
+    <dripSession:fa3>N1232456</dripSession:fa3>
+    <dripSession:sessionStart>2022-04-09T15:43:13Z</dripSession:sessionStart>
+    <dripSession:sessionEnd>2022-04-09T20:43:13Z</dripSession:sessionEnd>
+  </dripSession:dripSession>
+</extension>
 ~~~
 
 ### EPP \<delete> Command {#epp-transform-delete}
@@ -935,11 +918,12 @@ If the registry denied the HI/DET pair, because there was a DET collision or any
 
 # Acknowledgements
 
-- Scott Hollenbeck for his guidance with EPP/RDAP
+- Scott Hollenbeck for his initial guidance with EPP/RDAP
 
 # Contributors
 
 - Andrei Gurtov for his insights as a pilot
+- Len Bayles for his help in formatting EPP definitions and creating an extension for FRED
 
 --- back
 
@@ -1546,7 +1530,68 @@ Some examples of file names:
 
 # X.509 Certificates
 
-<!-- Author Note (atw): to be provided by Bob M.-->
+## Certificate Policy and Certificate Stores
+
+X.509 certificates are optional for the DRIP entities covered in this
+document.  DRIP endpoint entities (EE) (i.e., UA, GCS, and Operators)
+may benefit from having X.509 certificates.  Most of these certificates
+will be for their DET and some will be for other UAS identities.  To
+provide for these certificates, some of the other entities covered in
+this document will also have certificates to create and manage the
+necessary PKI structure.
+
+Any Certificate Authority (CA) supporting DRIP entities SHOULD adhere to
+the ICAO's International Aviation Trust Framework (IATF) Certificate
+Policy [ICAO-IATF-CP-draft].  The CA(s) supporting this CP MUST either
+be a part of the IATF Bridge PKI or part of the IATF CA Trust List.
+
+EEs may use their X.509 certificates, rather than their rawPublicKey
+(i.e. HI) in authentication protocols (as not all may support
+rawPublicKey identities).  Some EE HI may not be 'worth' supporting the
+overhead of X.509.  Short lived DETs like those used for a single
+operation or even for a day's operations may not benefit from X.509. 
+Creating then almost immediately revoking these certificates is a
+considerable burden on all parts of the system.  Even using a short
+notAfterDate will completely mitigate the burden of managing these
+certificates.  That said, many EEs will benefit to offset the effort. 
+It may also be a regulator requirement to have these certificates.
+
+Typically an HDA either does or does not issue a certificate for all its
+DETs.  An RAA may specifically have some HDAs for DETs that do not
+want/need certificates and other HDAs for DETs that do need them.  These
+types of HDAs could be managed by a single entity thus providing both
+environments for its customers.
+
+It is recommended that DRIP X.509 certificates be stored as DNS TLSA
+Resource Records.  This not only generally improves certificate lookups,
+but also enables use of DANE [RFC6698] for the various servers in the
+UTM and particularly DRIP registry environment and DANCE [dane-clients] for EEs (e.g. [drip-secure-nrid-c2]). 
+All DRIP certificates MUST be available via RDAP.  LDAP/OCSP access for
+other UTM and ICAO uses SHOULD also be provided.
+
+## Certificate Management
+
+(mostly TBD still)
+
+PKIX standard X.509 issuance practices should be used.  The certificate
+request SHOULD be included in the DET registration request ({{registry-operations}}).  A successful DET registration then MUST
+include certificate creation, store, and return to the DET registrant.
+
+Certificate revocation will parallel DET revocation.  TLSA RR MUST be
+deleted from DNS and RDAP, LDAP, and OCSP return revoked responses. 
+CRLs SHOULD be maintained per the CP.
+
+Details of this are left out, as there are a number of approaches and
+further research and experience will be needed.
+
+## Examples
+
+TBD
+
+## Alternative Certificate Encoding
+
+(CBOR encoded certs here.  TBD)
+
 
 # Blockchain-based Registries
 
