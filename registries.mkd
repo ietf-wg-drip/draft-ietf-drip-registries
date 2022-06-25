@@ -1,8 +1,8 @@
 ---
 coding: utf-8
 
-title: DRIP Entity Tag Registration & Lookup
-abbrev: registries
+title: DRIP Entity Tag (DET) Registration & Lookup
+abbrev: DRIP Registries
 docname: draft-ietf-drip-registries-04
 category: std
 
@@ -82,7 +82,7 @@ informative:
 
 --- abstract
 
-This document creates the DRIP DET registration and discovery ecosystem.  This includes all components in the ecosystem (e.g., RAA, HDA, UA, GCS, USS).  The registration process will use the Extensible Provisioning Protocol (EPP) and other protocols.  The discovery process will leverage DNS and DNSSEC and related technology.  The DETs can be registered with as their "raw public keys" or in X.509 certificates.
+This document details the required mechanims for the registration and discovery of DRIP Entity Tags (DETs). The registration process relies upon the Extensible Provisioning Protocol (EPP). The discovery process leverages DNS, DNSSEC, and related technology. The lookup process relies upon the Rgeistration Data Access Protocol (RDAP). The DETs can be registered with as their "raw public keys" or in X.509 certificates.
 
 --- middle
 
