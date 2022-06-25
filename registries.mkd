@@ -3,7 +3,7 @@ coding: utf-8
 
 title: DRIP Entity Tag (DET) Registration & Lookup
 abbrev: DRIP Registries
-docname: draft-ietf-drip-registries-03
+docname: draft-ietf-drip-registries-04
 category: std
 
 ipr: trust200902
@@ -65,6 +65,8 @@ informative:
     RFC7519:
     RFC8392:
     RFC6698:
+    RFC8005:
+    RFC4398:
     drip-requirements: RFC9153
     drip-arch: I-D.ietf-drip-arch
     drip-rid: I-D.ietf-drip-uas-rid
@@ -80,13 +82,13 @@ informative:
 
 --- abstract
 
-This document details the required mechanims for the registration and discovery of DRIP DRIP Entity Tags (DETs). The registration process relies upon the Extensible Provisioning Protocol (EPP). The discovery process leverages DNS, DNSSEC, and related technology. The DETs can be registered with as their "raw public keys" or in X.509 certificates.
+This document details the required mechanims for the registration and discovery of DRIP Entity Tags (DETs). The registration process relies upon the Extensible Provisioning Protocol (EPP). The discovery process leverages DNS, DNSSEC, and related technology. The lookup process relies upon the Rgeistration Data Access Protocol (RDAP). The DETs can be registered with as their "raw public keys" or in X.509 certificates.
 
 --- middle
 
 # Introduction
 
-Registries are fundamental to RID. Only very limited information can be Broadcast, but extended information is sometimes needed. The most essential element of information sent is the UAS ID itself, the unique key for lookup of extended information in registries.
+Registries are fundamental to Remote ID (RID). Only very limited operational information can be Broadcast, but extended information is sometimes needed. The most essential element of information sent is the UAS ID itself, the unique key for lookup of extended information in registries.
 
 While it is expected that registry functions will be integrated with USS, who will provide them is not yet determined in most, and is expected to vary between, jurisdictions. However this evolves, the essential registry functions, starting with management of identifiers, are expected to remain the same, so are specified herein.
 
@@ -94,7 +96,7 @@ While most data to be sent via Broadcast or Network RID is public, much of the e
 
 The intent of the negative and positive access control requirements on registries is to ensure that no member of the public would be hindered from accessing public information, while only duly authorized parties would be enabled to access private information. Mitigation of Denial of Service attacks and refusal to allow database mass scraping would be based on those behaviors, not on identity or role of the party submitting the query per se, but querant identity information might be gathered (by security systems protecting DRIP implementations) on such misbehavior.
 
-Registration under DRIP is vital as the worry of collisions in the hash portion of the DET. Forgery of the DET is still possible, but including it as a part of a public registration mitigates a lot of the risk. This document creates the DRIP DET registration and discovery ecosystem.  This includes all components in the ecosystem (e.g., RAA, HDA, UA, GCS, USS).  The registration process will use the Extensible Provisioning Protocol (EPP) and other protocols.  The discovery process will leverage DNS and DNSSEC and related technology.  The DETs can be registered with as their "raw public keys" or in X.509 certificates.
+Registration under DRIP is vital to manage the inevitable collisions in the hash portion of the DET. Forgery of the DET is still possible, but including it as a part of a public registration mitigates this risk. This document creates the DRIP DET registration and discovery ecosystem.  This includes all components in the ecosystem (e.g., RAA, HDA, UA, GCS, USS).  The registration process will use the Extensible Provisioning Protocol (EPP) and other protocols.  The discovery process will leverage DNS and DNSSEC and related technology.  The DETs can be registered with as their "raw public keys" or in X.509 certificates.
 
 ## Abstract Process & Reasoning
 
@@ -167,13 +169,13 @@ RAA's are the upper hierarchy in DRIP (denoted by a 14-bit field (16,384 RAAs) o
 
 The ICAO registration process will be available from ICAO. Once ICAO accepts an RAA, it will assign a number and create a zone delegation under the `uas.icao.int.` DNS zone for the RAA.
 
-As HHITs may be used in many different domains, RAA should be allocated in blocks with consideration on the likely size of a particular usage. Alternatively, different prefixes can be used to separate different domains of use of HHITs.
+As DETs may be used in many different domains, RAA should be allocated in blocks with consideration on the likely size of a particular usage. Alternatively, different prefixes can be used to separate different domains of use of HHITs.
 
 An RAA must provide a set of services to allocate HDAs to organizations. It must have a public policy on what is necessary to obtain an HDA. It must maintain a DNS zone minimally for discovering HID RVS servers. All RAA's use an HDA value of 0 and have their RAA value delegated to them by the Root.
 
 #### ICAO Registry of Manufacturer's (IRM) {#irm}
 
-A special RAA that hands out HDA values to participating Manufacturer's that hold an ICAO Manufacturer Code used in ANSI CTA2063-A Serial Numbers.
+An RAA-level registry that hands out HDA values to participating Manufacturer's that hold an ICAO Manufacturer Code used in ANSI CTA2063-A Serial Numbers.
 
 It is holds the RAA value of 1 and HDA value of 0.
 
@@ -181,15 +183,15 @@ It is holds the RAA value of 1 and HDA value of 0.
 
 ### Hierarchial HIT Domain Authorities {#hda}
 
-An HDA may be an ISP or any third party that takes on the business to provide RVS and other needed services such as those required for HIP-enabled devices.
+An HDA may be an USS, ISP, or any third party that takes on the business to register the actual UAS entities that need DETs.  This includes, but is not limited to UA, GCS, and Operators. It should also provide needed UAS services including those required for HIP-enabled devices (e.g. RVS).
 
-The HDA is an 14-bit field (16,384 HDAs per RAA) of a DET assigned by an RAA. An HDA should maintain a set of RVS servers for UAS clients that may use HIP. How this is done and scales to the potentially millions of customers are outside the scope of this document. This service should be discoverable through the DNS zone maintained by the HDA's RAA.
+The HDA is a 14-bit field (16,384 HDAs per RAA) of a DET assigned by an RAA.  An HDA should maintain a set of RVS servers for UAS clients that may use HIP.  How this is done and scales to the potentially millions of customers are outside the scope of this document. This service should be discoverable through the DNS zone maintained by the HDA's RAA.
 
 An RAA may assign a block of values to an individual organization. This is completely up to the individual RAA's published policy for delegation. Such policy is out of scope.
 
 #### Manufacturer's Registry of Aircraft (MRA) {#mra}
 
-A registry (HDA) run by a manufacturer of UAS systems that participate in Remote ID. Stores UAS Serial Numbers under a specific ICAO Manufacturer Code (assigned to the manufacturer by ICAO).
+An HDA-level registry run by a manufacturer of UAS systems that participate in Remote ID. Stores UAS Serial Numbers under a specific ICAO Manufacturer Code (assigned to the manufacturer by ICAO).
 
 A DET can be encoded into a Serial Number (see {{drip-rid}}) and this registry would hold a mapping from the Serial Number to the DET and its artifacts.
 
@@ -197,7 +199,7 @@ Hold RAA value of 1 and HDA values of 1+.
 
 #### Remote ID Registries (RIDR) {#ridr}
 
-Registry that holds the binding between a UAS Session ID (for DRIP the DET) and the UA Serial Number. The Serial Number MUST have its access protected to allow only authorized parties to obtain. The Serial Number SHOULD be encrypted in a way only the authorized party can decrypt.
+An HDA-level registry that holds the binding between a UAS Session ID (for DRIP the DET) and the UA Serial Number. The Serial Number MUST have its access protected to allow only authorized parties to obtain. The Serial Number SHOULD be encrypted in a way only the authorized party can decrypt.
 
 As part of the UTM system they also hold a binding between a UAS ID (Serial Number or Session ID) and an Operational Intent.
 
@@ -219,21 +221,27 @@ This attribute of the DET to have different identities could also allow for a si
 
 Under DRIP there are a number of FQDN forms used to allow lookups to take place.
 
-The individual DETs may be potentially too numerous (e.g., 60 - 600M) and dynamic (e.g., new DETs every minute for some HDAs) to store in a signed, DNS zone. The HDA SHOULD provide DNS service for its zone and provide the HHIT detail response. A secure connection (e.g., DNS over TLS) to the authoritative zone may be a viable alternative to DNSSEC.
+The individual DETs may be potentially too numerous (e.g., 60 - 600M) and dynamic (e.g., new DETs every minute for some HDAs) to store in a signed, DNS zone. The HDA SHOULD provide DNS service for its zone and provide the DET detail response.
+
+DNSSEC is strongly recommended (especially for RAA-level zones). Frequency of updates, size of the zone, and registry policy may impact its use. 
 
 ## Serial Number {#sn-fqdn}
+
+See Section 4.2 of {{drip-rid}} for how to encode DETs as Serial Numbers.
 
 ~~~~
 Serial Number: 8653FZ2T7B8RA85D19LX
 ICAO Mfr Code: 8653
 Length Code: F
 ID: FZ2T7B8RA85D19LX
-FQDN: Z2T7B8RA85D19LX.F.8653.mfr.uas.icao.int
+FQDN: Z2T7B8RA85D19LX.8653.mfr.uas.icao.int
 ~~~~
 
 ## DET {#det-fqdn}
 
-The DET reverse lookup can be a standard IPv6 reverse look up, or it can leverage off the HHIT structure. If we assume a prefix of 2001:30::/28:
+DETs SHOULD be discoverable in DNS via a hash.oga.hda.raa.prefix. structure under a ICAO managed DNS aviation tree. This document proposes a .det.uas.icao.int. branch in the current ICAO DNS domain. This is subject of discussions with ICAO. Thus if we assume a DET prefix of 2001:30::/28, the following example shows the resultant DNS entry:
+
+<!-- TODO(atw): fix orchid construction in example code and place new FQDN -->
 
 ~~~~
 DET: 2001:0030:00a0:0145:a3ad:1952:0ad0:a69e
@@ -247,8 +255,8 @@ FQDN: a3ad19520ad0a69e.5.20.10.20010030.det.uas.icao.int
 
 When building a DET FQDN the following two things must be done:
 
-1. The RAA and HDA values MUST be converted from hexadecimal to decimal form
-2. The FQDN must be built using the expanded form of the IPv6 address
+1. The RAA and HDA values MUST be converted from hexadecimal to decimal form.
+2. The FQDN must be built using the expanded form of the IPv6 address.
 
 The prefix is included in the FQDN form to support other potential prefixes being used.
 
@@ -256,6 +264,8 @@ The prefix is included in the FQDN form to support other potential prefixes bein
 <!-- Author Note (atw): need a section on different TLDs supported - uas.icao.int, remoteid.aero, rid.aero? -->
 
 ## Reverse DET
+
+The DET reverse lookup should be a standard IPv6 reverse address in ip6.arpa.
 
 ~~~~
 $ORIGIN  5.4.1.0.0.a.0.0.0.3.0.0.1.0.0.2.ip6.arpa.
@@ -268,7 +278,7 @@ DRIP requires a number of resource records, some specific to certain registries 
 
 ## HIP RR
 
-All registries will have their own DET associated with them and their respective DNS server will hold a HIP RR that is pointed to by their DET FQDN.
+All registries will have their own DET associated with them and their respective DNS server will hold a HIP RR {{RFC8005}} that is pointed to by their DET FQDN.
 
 MRA and RIDR servers will also have HIP RRs for their registered parties (aircraft and operators).
 
@@ -276,7 +286,11 @@ MRA and RIDR servers will also have HIP RRs for their registered parties (aircra
 
 Most attestations can be placed into DNS. An exception to this is the Attestation Certificate made during Session ID registration. This is as this particular certificate acts similar to a car registration and should be held safe by the operator.
 
+These should be held in CERT RRs {{RFC4398}}.
+
 ## NS RR
+
+<!-- TODO(atw) get rfc reference -->
 
 Along with their associated "glue" record (A/AAAA) supports the traversal in DNS across the tree.
 
@@ -287,9 +301,13 @@ Along with their associated "glue" record (A/AAAA) supports the traversal in DNS
 
 ## AAAA RR
 
+<!-- TODO(atw) get rfc reference -->
+
 DRIP requires the use of IPv6.
 
 ## SVR RR
+
+<!-- TODO(atw) get rfc reference -->
 
 The SVR RR for DRIP always is populated at the "local" registry level. That is an HDA's DNS would hold the SVR RR that points to that HDAs private registry for all data it manages. This data includes data being stored on its children.
 
@@ -297,11 +315,14 @@ The best example of this is RIDR would have a SVR RR that points to a database t
 
 In all cases the server being pointed to MUST be protected using AAA, specifically using RDAP.
 
+## 
+
 ## TLSA RR
 
-This RR is mainly used to support DTLS deployments where the DET is used in Network RID and the wider UTM system.
+<!-- TODO(atw): clean up this text and add substance -->
+<!-- Holds raw HI or x.509 cert -->
 
-<!-- Author Note (atw): RFC6698 applies here, but how? Bob M. was the one originally mentioning this to me but context has been lost to time -->
+This RR {{RFC6698}} is mainly used to support DTLS deployments where the DET is used (e.g. Network RID and the wider UTM system). The HI is encoded using the SubjectPublicKeyInfo selector. DANE {{RFC6698}} is for servers, DANCE {{dane-clients}} is for clients.
 
 # Registry Operations
 
