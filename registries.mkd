@@ -82,7 +82,7 @@ informative:
 
 --- abstract
 
-This document details the required mechanims for the registration and discovery of DRIP Entity Tags (DETs). The registration process relies upon the Extensible Provisioning Protocol (EPP). The discovery process leverages DNS, DNSSEC, and related technology. The lookup process relies upon the Rgeistration Data Access Protocol (RDAP). The DETs can be registered with as their "raw public keys" or in X.509 certificates.
+This document details the required mechanisms for the registration and discovery of DRIP Entity Tags (DETs). The registration process relies upon the Extensible Provisioning Protocol (EPP). The discovery process leverages DNS, DNSSEC, and related technology. The lookup process relies upon the Registration Data Access Protocol (RDAP). The DETs can be registered with as their "raw public keys" or in X.509 certificates.
 
 --- middle
 
