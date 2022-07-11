@@ -3,7 +3,7 @@ coding: utf-8
 
 title: DRIP Entity Tag (DET) Registration & Lookup
 abbrev: DRIP Registries
-docname: draft-ietf-drip-registries-04
+docname: draft-ietf-drip-registries-05
 category: std
 
 ipr: trust200902
@@ -225,6 +225,30 @@ The individual DETs may be potentially too numerous (e.g., 60 - 600M) and dynami
 
 DNSSEC is strongly recommended (especially for RAA-level zones). Frequency of updates, size of the zone, and registry policy may impact its use. 
 
+## ICAO DNS Structure
+
+Under the TSVG ICAO panel, the GRAIN task group has discussed a DNS structure, with DRIP proposing to fit into it as follows:
+
+~~~~
+                                .icao
+                                  |
+                                  |
+    .---------------------------.iatf--------------------------.
+    |                             |                            |
+    |                             |                            |
+.aircraft            .----------.uas----------.             .fixed
+    |                |            |           |                |
+    |                |            |           |                |
+.[airline]         .[uss]       .mfr        .det          .[iatf-member]
+    |                |            |           |                |
+    |                |            |           |                |
+.[tail-number]    .[uasrid]      ...         ...            .[node-name]
+~~~~
+
+Example DET FQDN: `a3ad19520ad0a69e.5.20.10.20010030.det.uas.iatf.icao`
+
+Example MFR FQDN: `Z2T7B8RA85D19LX.8653.mfr.uas.iatf.icao`
+
 ## Serial Number {#sn-fqdn}
 
 See Section 4.2 of {{drip-rid}} for how to encode DETs as Serial Numbers.
@@ -278,15 +302,27 @@ DRIP requires a number of resource records, some specific to certain registries 
 
 ## HIP RR
 
-All registries will have their own DET associated with them and their respective DNS server will hold a HIP RR {{RFC8005}} that is pointed to by their DET FQDN.
+All registries will use HIP RR {{RFC8005}} as the primary public source of DET HIs. The DETs are encoded (Section 4.2) in an FQDN and are the lookup key for the RR. Registries have their own DET associated with them and their respective DNS server will hold a HIP RR that is pointed to by their DET FQDN.
 
 MRA and RIDR servers will also have HIP RRs for their registered parties (aircraft and operators).
 
+## TLSA RR
+
+This RR, {{RFC6698}}, is mainly used to support DTLS deployments where the DET is used (e.g. Network RID and the wider UTM system). The HI is encoded using the SubjectPublicKeyInfo selector. DANE {{RFC6698}} is for servers, DANCE {{dane-clients}} is for clients.
+
+The TLSA RR MAY be used in place of the HIP RR, where to primary need of the DET HI is for DTLS authentication. This DNS server side optimization is for where the overhead of both RR is onerous. Thus all clients that work with the HIP RR SHOULD be able to able to extract the HI from the TLSA RR.
+
 ## CERT RR
 
-Most attestations can be placed into DNS. An exception to this is the Attestation Certificate made during Session ID registration. This is as this particular certificate acts similar to a car registration and should be held safe by the operator.
+Attestations can be placed into DNS in the CERT RRs {{RFC4398}}. An exception to this is the Attestation Certificate made during Session ID registration.  This is as this particular certificate acts similar to a car registration and should be held safe by the operator.
 
-These should be held in CERT RRs {{RFC4398}}.
+Attestations will be stored in Certificate Type OID Private (value 254) with an OID of 1.3.6.1.4.1.6715.2.n, where n is the Attestation Type.
+
+Editor Note: This OID is an initial allocation under the IANA Enterprise Number OID. It is expect that a general OID will be allocated at some point.
+
+Certificate Type X.509 as per PKIX (value 1) MAY be used to store X.509 certificates as discussed in (Appendix B).
+
+Editor Note: Have not gotten to the part in this draft where Attestation Type, above is defined and enumerated. Obviously this is needed.
 
 ## NS RR
 
@@ -298,6 +334,8 @@ Along with their associated "glue" record (A/AAAA) supports the traversal in DNS
 2. `<icao_mfr_code>.mfr.remoteid.aero` on IRM points to specific DET FQDN of MRA
 3. `<raa_value>.det.remoteid.aero` on Root pointing to DET FQDN of matching RAA
 4. `<hda_value>.<raa_value>.det.remoteid.aero` on RAA pointing to DET FQDN of matching HDA
+
+Editor Note: `.areo` works as a placeholder for now, but we are working with ICAO for this to at least be under `uas.icao.int.` and their TLD that they are working to get in the next ICANN TLD round. GRAIN already lists and uses `uas.icao.int.`. Perhaps we use `det.uas.icao.int.` for all DRIP DNS structures.
 
 ## AAAA RR
 
@@ -314,15 +352,6 @@ The SVR RR for DRIP always is populated at the "local" registry level. That is a
 The best example of this is RIDR would have a SVR RR that points to a database that contains any extra information of a Session ID it has registered. Another example is the MRA has a SVR RR pointing to where the metadata of a UA registered in the MRA can be located.
 
 In all cases the server being pointed to MUST be protected using AAA, specifically using RDAP.
-
-## 
-
-## TLSA RR
-
-<!-- TODO(atw): clean up this text and add substance -->
-<!-- Holds raw HI or x.509 cert -->
-
-This RR {{RFC6698}} is mainly used to support DTLS deployments where the DET is used (e.g. Network RID and the wider UTM system). The HI is encoded using the SubjectPublicKeyInfo selector. DANE {{RFC6698}} is for servers, DANCE {{dane-clients}} is for clients.
 
 # Registry Operations
 
