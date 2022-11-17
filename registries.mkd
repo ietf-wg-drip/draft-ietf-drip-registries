@@ -1,9 +1,9 @@
 ---
 coding: utf-8
 
-title: DRIP Entity Tag (DET) Registration & Lookup
-abbrev: DRIP Registries
-docname: draft-ietf-drip-registries-05
+title: DRIP Entity Tag (DET) Identity Management Architecture
+abbrev: DETIM Architecture
+docname: draft-ietf-drip-registries-06
 category: std
 
 ipr: trust200902
@@ -17,7 +17,7 @@ pi: [toc, sortrefs, symrefs, comments]
 
 author:
 
--   ins: A. Wiethuechter (Editor)
+-   ins: A. Wiethuechter
     name: Adam Wiethuechter
     org: AX Enterprize, LLC
     street: 4947 Commercial Drive
@@ -26,24 +26,6 @@ author:
     code: 13495
     country: USA
     email: adam.wiethuechter@axenterprize.com
--   ins: S. Card
-    name: Stuart Card
-    org: AX Enterprize, LLC
-    street: 4947 Commercial Drive
-    city: Yorkville
-    region: NY
-    code: 13495
-    country: USA
-    email: stu.card@axenterprize.com
--   ins: R. Moskowitz
-    name: Robert Moskowitz
-    org: HTT Consulting
-    street: ""
-    city: Oak Park
-    region: MI
-    code: 48237
-    country: USA
-    email: rgm@labs.htt-consult.com
 -   ins: J. Reid
     name: Jim Reid
     org: RTFM llp
@@ -53,27 +35,29 @@ author:
     country: UK
     email: jim@rfc1035.com
 
-
 normative:
-    F3411-19:
-        title: "Standard Specification for Remote ID and Tracking"
-        author:
-        org: ASTM International
-        date: 2020-02
-
-informative:
-    RFC7519:
-    RFC8392:
-    RFC6698:
-    RFC8005:
-    RFC4398:
-    drip-requirements: RFC9153
+    RFC9153: # drip-requirements
     drip-arch: I-D.ietf-drip-arch
     drip-rid: I-D.ietf-drip-uas-rid
-    hhit-registries: I-D.moskowitz-hip-hhit-registries
+
+informative:
+    RFC4398:
+    RFC5730: # epp
+    RFC6698:
+    RFC7480: # rdap-http-use
+    RFC8005: # hip rr
+    RFC8126: # iana-guidelines
+    RFC9082: # rdap-query-format
+    RFC9083: # rdap-json-responses
+    CTA2063A:
+        title: ANSI/CTA 2063-A Small Unmanned Aerial Systems Numbers
+        author:
+        org: "Consumer Technology Association (CTA)"
+        target: https://shop.cta.tech/products/small-unmanned-aerial-systems-serial-numbers
+        date: 2019-09
+    drip-auth: I-D.ietf-drip-auth
     drip-secure-nrid-c2: I-D.moskowitz-drip-secure-nrid-c2
     dane-clients: I-D.ietf-dance-client-auth
-    drip-auth: I-D.ietf-drip-auth
     NPRM:
         title: "Notice of Proposed Rule Making on Remote Identification of Unmanned Aircraft Systems"
         author:
@@ -82,7 +66,7 @@ informative:
 
 --- abstract
 
-This document details the required mechanisms for the registration and discovery of DRIP Entity Tags (DETs). The registration process relies upon the Extensible Provisioning Protocol (EPP). The discovery process leverages DNS, DNSSEC, and related technology. The lookup process relies upon the Registration Data Access Protocol (RDAP). The DETs can be registered with as their "raw public keys" or in X.509 certificates.
+This document describes the high level architecture for the registration and discovery of DRIP Entity Tags (DETs) using DNS technologies and practices. Discovery of DETs and their artifacts are through the existing DNS structure and methods by using FQDNs. A general overview of the interfaces required between components is described in this document with supporting documents giving technical specifications.
 
 --- middle
 
@@ -96,17 +80,17 @@ While most data to be sent via Broadcast or Network RID is public, much of the e
 
 The intent of the negative and positive access control requirements on registries is to ensure that no member of the public would be hindered from accessing public information, while only duly authorized parties would be enabled to access private information. Mitigation of Denial of Service attacks and refusal to allow database mass scraping would be based on those behaviors, not on identity or role of the party submitting the query per se, but querant identity information might be gathered (by security systems protecting DRIP implementations) on such misbehavior.
 
-Registration under DRIP is vital to manage the inevitable collisions in the hash portion of the DET. Forgery of the DET is still possible, but including it as a part of a public registration mitigates this risk. This document creates the DRIP DET registration and discovery ecosystem.  This includes all components in the ecosystem (e.g., RAA, HDA, UA, GCS, USS).  The registration process will use the Extensible Provisioning Protocol (EPP) and other protocols.  The discovery process will leverage DNS and DNSSEC and related technology.  The DETs can be registered with as their "raw public keys" or in X.509 certificates.
+Registration under DRIP is vital to manage the inevitable collisions in the hash portion of the DET. Forgery of the DET is still possible, but including it as a part of a public registration mitigates this risk. This document creates the DRIP DET registration and discovery ecosystem.  This includes all components in the ecosystem (e.g., RAA, HDA, UA, GCS, USS).  
 
 ## Abstract Process & Reasoning
 
-In DRIP each entity (registry, operator and aircraft) is expected to generate a full DRIP Entity ID {{drip-rid}} on the local device their key is expected to be used. These are registered with a Public Information Registry within the hierarchy along with whatever data is required by the cognizant CAA and the registry. Any PII is stored in a Private Information Registry protected through industry practice AAA or better. In response, the entity will obtain an attestation or certificate from the registry proving such registration.
+In DRIP each entity (registry, operator and aircraft) is expected to generate a full DRIP Entity ID {{drip-rid}} on the local device their key is expected to be used. These are registered with a Public Information Registry within the hierarchy along with whatever data is required by the cognizant CAA and the registry. Any PII is stored in a Private Information Registry protected through industry practice AAA or better. In response, the entity will obtain an endorsement from the registry proving such registration.
 
 Manufacturers that wish to participate in DRIP should not only support DRIP as a Session ID type for their aircraft but also generate a DET then encode it as a Serial Number. This would allow aircraft under CAA mandates to fly only ID Type 1 (Serial Number) could still use DRIP and most of its benefits. Even if DRIP is not supported for Serial Numbers by a Manufacturer it is hoped that they would still run a registry to store their Serial Numbers and allow look ups for generic model information. This look up could be especially helpful in UTM for Situational Awareness when an aircraft flying with a Serial Number is detected and allow for an aircraft profile to be displayed.
 
 Operators are registered with a number of registries or their regional RAA. This acts as a verification check when a user performs other registration operations; such as provisioning an aircraft with a new Session ID. It is an open question if an Operator registers to their CAA (the RAA) or multiple USS's (HDA's). PII of the Operator would vary based on the CAA they are under and the registry.
 
-Finally aircraft that support using a DET would provision per flight to a USS, proposing a DET to the registry to generate a binding between the aircraft (Session ID, Serial Number and Operational Intent), operator and registry. Aircraft then follow {{drip-auth}} to meet various {{drip-requirements}} during flight.
+Finally aircraft that support using a DET would provision per flight to a USS, proposing a DET to the registry to generate a binding between the aircraft (Session ID, Serial Number and Operational Intent), operator and registry. Aircraft then follow {{drip-auth}} to meet various requirements from {{RFC9153}} during flight.
 
 # Terminology {#terminology}
 
@@ -114,31 +98,34 @@ Finally aircraft that support using a DET would provision per flight to a USS, p
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 {{!RFC2119}} {{!RFC8174}} when, and only when, they appear in all capitals, as shown here.
 
-## Definitions
+## Additional Definitions
 
-See {{?drip-requirements}} for common DRIP terms.
+See {{RFC9153}} for common DRIP terms and {{drip-arch}} Section 2.2 for additional terms used in this document.
 
 HDA:
 
-: Hierarchial HIT Domain Authority. The 16 bit field identifying the HIT Domain Authority under a RAA.
+> Hierarchial HIT Domain Authority. The 14 bit field identifying the HIT Domain Authority under a RAA.
 
 HID:
 
-: Hierarchy ID. The 32 bit field providing the HIT Hierarchy ID.
+> Hierarchy ID. The 28 bit field providing the HIT Hierarchy ID.
+
+PII:
+
+> Personally Identifiable Information. Any information a cognizant authority (such as a government agency) or a user requires differentiated access to obtain.
 
 RAA:
 
-: Registered Assigning Authority. The 16 bit field identifying the Hierarchical HIT Assigning Authority.
+> Registered Assigning Authority. The 14 bit field identifying the Hierarchical HIT Assigning Authority.
 
-# Registries
+# DIME Roles {#dime-roles}
 
-## Classes
+The DRIP Identity Management Entity (DIME) is an entity encompassed various logical components ({{dime-arch}}) and can be classified to serve a number of different roles (this section). The general hierarchy of these roles are illustrated in {{reg-class-fig}}.
 
-Under DRIP there 3 classes of registries, with specific variants in each.
-
+{:fig: artwork-align="center"}
 ~~~~
                 +----------+
-                |   Root   | 
+                |   Apex   | 
                 +-o------o-+
                   |      |
 ******************|******|*****************************
@@ -155,33 +142,31 @@ HDAs        |  MRA  |  | RIDR  |  |  HDA  |
 ~~~~
 {:fig #reg-class-fig title="Registry Hierarchy"}
 
-<!-- Author Note (atw): above figure should match docs/registry-diagram.png -->
+## Apex
 
-### Root {#root}
+The apex is special DIME role that holds the value of RAA=0 and HDA=0. It serves as the branch point from the larger DNS system in which HHITs are defined. The Apex generally has prefix portions of the HHIT associated with it (such as 2001:0030/28) which are assigned by IANA from the non-routable special IPv6 address space for ORCHIDs (where HHITs are derived from).
 
-This is a special registry holding the RAA value of 0 and HDA value of 0. It delegates out RAA values only to registries that wish to act as an RAA.
+The Apex manages all delegations and allocations of the HHIT's RAA to various parties with NS records to redirect DNS queries to proper sub-branches.
 
-<!-- Author Note (atw): we contemplate ICAO running this server or a federation of them -->
+## Registered Assigning Authority (RAA) {#raa}
 
-### Registered Assigning Authorities {#raa}
+RAA's are the upper hierarchy in DRIP (denoted by a 14-bit field (16,384 RAAs) of an HHIT). An RAA is a business or organization that manages a registry of HDAs ({{hda}}). Most are contemplated to be Civil Aviation Authorities (CAA), such as the Federal Aviation Authority (FAA), that then delegate HDAs to manage their National Air Space (NAS). This is does not preclude other entities to operate an RAA if the Apex allows it.
 
-RAA's are the upper hierarchy in DRIP (denoted by a 14-bit field (16,384 RAAs) of a DET). An RAA is a business or organization that manages a registry of HDAs ({{hda}}). Most are contemplated to be Civil Aviation Authorities (CAA), such as the Federal Aviation Authority (FAA), that then delegate HDAs to manage their NAS. This is does not preclude other entities to operate an RAA if the Root server allows it.
-
-The ICAO registration process will be available from ICAO. Once ICAO accepts an RAA, it will assign a number and create a zone delegation under the `uas.icao.int.` DNS zone for the RAA.
+For DRIP and the UAS use case ICAO will handle the registration of RAAs. Once ICAO accepts an RAA, it will assign a number and create a zone delegation under the `<prefix>.hhit.arpa.` DNS zone for the RAA.
 
 As DETs may be used in many different domains, RAA should be allocated in blocks with consideration on the likely size of a particular usage. Alternatively, different prefixes can be used to separate different domains of use of HHITs.
 
 An RAA must provide a set of services to allocate HDAs to organizations. It must have a public policy on what is necessary to obtain an HDA. It must maintain a DNS zone minimally for discovering HID RVS servers. All RAA's use an HDA value of 0 and have their RAA value delegated to them by the Root.
 
-#### ICAO Registry of Manufacturer's (IRM) {#irm}
+### ICAO Registry of Manufacturers (IRM) {#irm}
 
-An RAA-level registry that hands out HDA values to participating Manufacturer's that hold an ICAO Manufacturer Code used in ANSI CTA2063-A Serial Numbers.
+An RAA-level DIME that hands out HDA values to participating Manufacturer's that hold an ICAO Manufacturer Code used in {{CTA2063A}}.
 
-It is holds the RAA value of 1 and HDA value of 0.
+To manage the large ICAO Manufacturer Code space (34  character set; 4 characters; 1,336,336 possible codes) a range of RAA values are set aside for the DRIP use case. These are the RAA values of 2 (0x0002) up to 96 (0x0060). This allows a single HDA for each Manufacturer Code.
 
-<!-- Author Note (atw): we contemplate ICAO running this server or a federation of them -->
+All IRM's have two reserved HDA values. 0 (0x0000) for itself in its role as an RAA and 1 (0x0001) if it wishes to offer HDA services.
 
-### Hierarchial HIT Domain Authorities {#hda}
+## Hierarchial HIT Domain Authority (HDA) {#hda}
 
 An HDA may be an USS, ISP, or any third party that takes on the business to register the actual UAS entities that need DETs.  This includes, but is not limited to UA, GCS, and Operators. It should also provide needed UAS services including those required for HIP-enabled devices (e.g. RVS).
 
@@ -189,83 +174,300 @@ The HDA is a 14-bit field (16,384 HDAs per RAA) of a DET assigned by an RAA.  An
 
 An RAA may assign a block of values to an individual organization. This is completely up to the individual RAA's published policy for delegation. Such policy is out of scope.
 
-#### Manufacturer's Registry of Aircraft (MRA) {#mra}
+### Manufacturers Registry of Aircraft (MRA) {#mra}
 
-An HDA-level registry run by a manufacturer of UAS systems that participate in Remote ID. Stores UAS Serial Numbers under a specific ICAO Manufacturer Code (assigned to the manufacturer by ICAO).
+An HDA-level DIME run by a manufacturer of UAS systems that participate in Remote ID. Stores UAS Serial Numbers under a specific ICAO Manufacturer Code (assigned to the manufacturer by ICAO).
 
 A DET can be encoded into a Serial Number (see {{drip-rid}}) and this registry would hold a mapping from the Serial Number to the DET and its artifacts.
 
-Hold RAA value of 1 and HDA values of 1+.
-
 #### Remote ID Registries (RIDR) {#ridr}
 
-An HDA-level registry that holds the binding between a UAS Session ID (for DRIP the DET) and the UA Serial Number. The Serial Number MUST have its access protected to allow only authorized parties to obtain. The Serial Number SHOULD be encrypted in a way only the authorized party can decrypt.
+An HDA-level DIME that holds the binding between a UAS Session ID (for DRIP the DET) and the UA Serial Number. The Serial Number MUST have its access protected to allow only authorized parties to obtain. The Serial Number SHOULD be encrypted in a way only the authorized party can decrypt.
 
-As part of the UTM system they also hold a binding between a UAS ID (Serial Number or Session ID) and an Operational Intent.
+As part of the UTM system they also hold a binding between a UAS ID (Serial Number or Session ID) and an Operational Intent. They may either be a direct logical part of a UAS Service Supplier (USS) or be a UTM wide service to USS's.
 
-<!-- Author Note (atw): these are contemplated to be part of a USS as a function or a standalone SDSP in the UTM system -->
+## Role Abbreviation in DETs
 
-Hold RAA values of 2+ and HDA values of 1+.
+On receiver devices a DET can be translated to a more human readable form such as: `{RAA Abbreviation} {HDA Abbreviation} {Last 4 Characters of DET Hash}`. An example of this would be `US FAA FE23`. To support this DIMEs are RECOMMENDED to have an abbreviation that could be used for this form. These abbreviations SHOULD be a maximum of six characters in length. Spaces SHOULD NOT be used and be replaced with either underscores (`_`) or dashes (`-`). For RAAs the abbreviation is RECOMMENDED to be set to the ISO 3166 country code (either Alpha-2 or Alpha-3) for the CAA.
 
-## Key Rollover & Federation
+If a DIME does not have an abbreviation or it can not be looked up then the receiver SHOULD use the hexadecimal encoding of the field it is missing.
 
-During key rollover the entity MUST inform all children and parents of the change - using best standard practices of a key rollover. At time of writing this is signing over the new key with the previous key in a secure fashion and it being validated by others before changing any links (in DRIPs case the NS RRs in the parent registry).
+# DIME Architecture {#dime-arch}
 
-A DET has a natural ability for a single entity to hold different cryptographic identities under the same HID values. This is due to the lower 64-bits of the DET being a hash of the public key and the HID of the DET being generated. As such during key rollover, only the lower 64-bits would change and a check for a collision would be required.
+~~~~
++--------------------+
+| Registering Client |
++------------o-------+
+             |
+*************|*************************************************************************
+*            |               DRIP Identity Management Entity                          *
+*            |                                                                        *
+*     +------o-------+              +-------------+              +--------------+     *
+*     | DRIP         |              |             |              |              |     *
+*     | Provisioning o--------------o             |              |              |     *
+*     | Agent        |              |             |              |              |     *
+*     +-------o------+              |             |              |              |     *
+*             |                     |             |              |              |     *
+*             |                     | DRIP        |              | Registration |     *
+*     +-------o--+                  | Information o--------------o Data         |     *
+*     | Registry o------------------o Agent       |              | Directory    |     *
+*     +-------o--+                  |             |              | Service      |     *
+*             |                     |             |              |              |     *
+*             |                     |             |              |              |     *
+*     +-------o-----+               |             |              |              |     *
+*     | Name Server |               |             |              |              |     *
+*     +------o------+               +-----o-------+              +------o-------+     *
+*            |                            |                             |             * 
+*            |                            |                             |             *
+*************|****************************|*****************************|**************
+             |                            |                             |
+             |                    +-------o-------+                     |
+             '--------------------o Lookup Client o---------------------'
+                                  +---------------+
+~~~~
+{:fig #dime-arch-fig title="Registry Hierarchy"}
 
-This attribute of the DET to have different identities could also allow for a single registry to be "federated" across them if they share the same HID value. This method of deployment has not been thoroughly studied at this time.
+The DIME, in any of its roles ({{dime-roles}}), is comprised of a number of logical components that perform specific functions. Any of these components in {{dime-arch}} could be delegated to other entities as a service both co-located or remote. For example the Name Server component could be handled by a well established DNS registrar/registry with the DRIP Provisioning Agent (DPA) ({{dpa}}) interfacing to them. Another common example may be the DPA, Registry and Name Server are all co-located in one implementation with an interface to a DRIP Information Agent (DIA) offered by another organization.
 
-<!-- Author Note (atw): does someone want to explore this option of federating across multiple DETs with same HID? -->
+## DRIP Provisioning Agent (DPA) {#dpa}
 
-# DRIP Fully Qualified Domain Names
+The DPA performs the important task of vetting information (such as the DRIP Endorsements) coming from clients wishing to register and then delegate (internally or externally) various items to other components in the DIME.
 
-Under DRIP there are a number of FQDN forms used to allow lookups to take place.
+A standard interface over HTTPS MUST be provided for clients to access with JSON or CBOR encoding of objects being sent to the DPA. This interface specification is out of scope for this document.
+
+There MUST be an interface from the DPA to a Registry ({{registry}}) component which handles the DNS specific requirements of the DIME as defined by the Registry. There MAY also be interface from the DPA to a DRIP Information Agent ({{dia}}) as defined by the DIA.
+
+## Registry
+
+The Registry component handles all the required DNS based requirements of the DIME to function for DRIP. This includes the registration and maintenance of various DNS Resource Records which use the DRIP FQDNs ({{drip-fqdn}}).
+
+A standardized interface MUST be implemented for interactions with the DPA ({{dpa}}). This interface MAY be over HTTPS using JSON/CBOR encoding or MAY use the Extensional Provisioning Protocol (EPP) {{RFC5730}}. The specifications of either of these interfaces is out of scope for this document.
+
+There MAY be interface from the Registry to a DRIP Information Agent ({{dia}}) as defined by the DIA.
+
+## Name Server (NS) {#nameserver}
+
+This may be very important here as we should not preclude a USS from running his own Name Server but they are not DNS experts and will need guidance or at least pointers to it to not mess it up. Such as SOA and NS formats to allow delegation if as RAA.
+
+Most of time is probably outsourced.
+
+The interface of the Name Server to any component (nominally the Registry) in a DIME is out of scope as typically they are implementation specific.
+
+## DRIP Information Agent (DIA) {#dia}
+
+The DIA is the main component handling requests for information from entities outside of the DIME. Typically this is when an Observer looks up a Session ID from an UA and gets pointed to the DIA via a SVR RR to obtain information not available via DNS.
+
+The information contained in the DIA is generally more oriented around the Operator of a given UAS and is thus classified as Personally Identifiable Information (PII). To protect the privacy of an Operator of the UAS this information is not publicly accessible and is only available behind policy driven differentiated access mechanisms. As an example the Serial Number, under the FAA, is classified as PII and can only be accessed by federal entities (such as the FAA themselves).
+
+For DRIP the Registration Data Access Protocol (RDAP) ({{RFC7480}}, {{RFC9082}} and {{RFC9083}}) is the selected protocol to provide policy driven differentiated access for queries of information.
+
+A standard interface over HTTPS MUST be provided for clients to access with JSON/CBOR encoding of objects being sent to the DIA. There MUST also be a standardized interface for the DPA or Registry to add, update or delete information into the DIA. Both of these interfaces are out of scope for this document.
+
+An interface defined by the Registration Data Directory Service (RDDS) ({{rdds}}) is also required as specified by the RDDS.
+
+## Registration Data Directory Service (RDDS) {#rdds}
+
+This is the primary information database for the DIA. An interface MUST be provided to the DIA but its specification is out of scope as they are typically implementation specific.
+
+# Registration/Provisioning Process
+
+The general process for a registering party is as follows:
+
+1. Verify input Endorsement(s) from registering party
+2. Check for collision of DET and HI
+3. Populate Registry/Name Server with required/optional resource records using the FQDN
+4. Populate DIA/RDDS with PII and other info
+5. Generate and return required/optional Endorsements/Certificates
+
+In the following subsections an abbreviated form of {{dime-arch}} using component abbreviations is used to describe the flow of information. The data elements being transmitted between entities is marked accordingly in each figure for the specific examples.
+
+## Serial Number
+
+Primarily registered to MRA's ({{mra}}) by the Manufacturers. Could be also registered to CAA's (using their HDA functionality) as part of Operator registration or to USS's in their capacity as HDAs. In the later two cases no DNS RRs are made to protect the privacy of the registering parties.
+
+When the Serial Number is really an encoded DET the DET FQDN is used to point to HIP and CERT RRs rather than the Serial Number FQDN. Instead a CNAME is made between the Serial Number FQDN and the DET FQDN. The same can still happen if the manufacturer chooses to use their own Serial Number formatting (still within the specification of {{CTA2063A}}) and create the CNAME back to a DET loaded into the unmanned aircraft.
+
+~~~~
+    +-------------------+
+    | Unmanned Aircraft |
+    +--o---o------------+
+       |   ^
+   (a) |   | (b)
+       |   |
+*******|***|*****************************
+*      |   |    DIME: MRA               *
+*      |   |                            *
+*      v   |             +----------+   *
+*   +--o---o--+          |          |   *
+*   |   DPA   o--------->o          |   *
+*   +----o----+   (d)    |          |   *
+*        |               |          |   *
+*        | (c)           | DIA/RDDS |   *
+*        v               |          |   *
+*   +----o--------+      |          |   *
+*   | Registry/NS |      |          |   *
+*   +-------------+      |          |   *
+*                        +----------+   *
+*                                       *
+*****************************************
+
+(a) Serial Number, UA Information, UA Self-Endorsement
+(b) Success Code, Broadcast Endorsement: MRA on UA
+(c) HIP RR, CERT RRs
+(d) UA Information
+~~~~
+{:fig #dime-sn-example title="Example DIME:MRA with Serial Number (DET) Registration"}
+
+The unmanned aircraft, intending to use DRIP, generates a keypair, DET and `Self-Endorsement: UA` using the RAA and HDA values specified by the manufacturers DIME (running as an MRA). The DET is converted into a Serial Number (per {{drip-rid}}) or the manufacturer creates their own Serial Number.
+
+The Serial Number, UA information and the `Self-Endorsement: UA` are sent to the manufacturers DIME. The DIME validates the Self-Endorsement and checks for DET and HI collisions in the Name Server/DIA. A `Broadcast Endorsement: DIME on UA` is generated which is provisioned into the aircraft for use when using the Serial Number as its UAS ID. In the Name Server HIP RRs are created using the DET FQDN while a CNAME points the Serial Number FQDN to the DET FQDN.
+
+> Note: {{dime-sn-example}} is specific for a DET encoded Serial Number. The Endorsements in (a) and (b) as well as RRs in (c) would not be present for non-DET based Serial Numbers.
+
+Additional UA Information has a set of valid item keys defined in {{ua-info-registry}}. The items present for a given interaction is defined by future documents, local regulations and implementation specific details/capabilities.
+
+## Operator
+
+Either by USS or CAA run HDAs. Regulation might require interaction between them. An Operator can request that certain information normally generated and provisioned into DNS be omitted due to privacy concerns.
+
+~~~~
+    +----------+
+    | Operator |
+    +--o---o---+
+       |   ^
+   (a) |   | (b)
+       |   |
+*******|***|*****************************
+*      |   |    DIME: HDA               *
+*      |   |                            *
+*      v   |             +----------+   *
+*   +--o---o--+          |          |   *
+*   |   DPA   o--------->o          |   *
+*   +----o----+   (d)    |          |   *
+*        |               |          |   *
+*        | (c)           | DIA/RDDS |   *
+*        v               |          |   *
+*   +----o--------+      |          |   *
+*   | Registry/NS |      |          |   *
+*   +-------------+      |          |   *
+*                        +----------+   *
+*                                       *
+*****************************************
+
+(a) Operator Information, Operator Self-Endorsement
+(b) Success Code, Generic Endorsement: HDA on Operator
+(c) HIP RR, CERT RRs
+(d) Operator Information
+~~~~
+{:fig #dime-operator-example title="Example DIME:HDA with Operator (DET) Registration"}
+
+The Operator generates a keypair and DET as specified in {{drip-rid}} along with a self-signed endorsement (`Self-Endorsement: Operator`). The RAA and HDA values used in the DET generation for the Operator are found by referencing their selected DIME of choice (in {{dime-operator-example}} an HDA).
+
+The self-signed endorsement along with other relevant information (such as Operator PII) is sent to the DIME over a secure channel. The specification of this secure channel is out of scope for this document.
+
+The DIME cross checks any personally identifiable information as required. `Self-Endorsement: Operator` is verified. The DET and HI is searched in the DIME DIA and Name Server to confirm that no collisions occur. A new endorsement is generated (`Generic Endorsement: DIME on Operator`) and sent securely back to the Operator. Resource Records for the HI and Endorsements are added to the DIME Registry/Name Server.
+
+With the receipt of `Generic Endorsement: DIME on Operator` the registration of the Operator is complete.
+
+> Note: (c) in {{dime-operator-example}} MAY be requested by the Operator to be omitted due to PII concerns.
+
+## Session ID
+
+Session IDs are generally handled by HDAs, specifically RIDRs. In {{dime-sid-example}} the UAS comprises of an unmanned aircraft and a Ground Control Station (GCS). Both parties are involved in the registration process.
+
+~~~~
+    +---------+
+    |   UAS   |
+    +--o---o--+
+       |   ^
+   (a) |   | (b)
+       |   |
+*******|***|*****************************
+*      |   |    DIME: RIDR              *
+*      |   |                            *
+*      v   |             +----------+   *
+*   +--o---o--+          |          |   *
+*   |   DPA   o--------->o          |   *
+*   +----o----+   (d)    |          |   *
+*        |               |          |   *
+*        | (c)           | DIA/RDDS |   *
+*        v               |          |   *
+*   +----o--------+      |          |   *
+*   | Registry/NS |      |          |   *
+*   +-------------+      |          |   *
+*                        +----------+   *
+*                                       *
+*****************************************
+
+(a) Mutual Endorsement: RIDR on GCS, Generic Endorsement: GCS on UA, Session ID Information
+(b) Success Code, Broadcast Endorsement: RIDR on UA, Generic Endorsement: RIDR on UAS
+(c) HIP RR, CERT RRs
+(d) Session ID Information
+~~~~
+{:fig #dime-sid-example title="Example DIME:RIDR with Session ID (DET) Registration"}
+
+Through mechanisms not specified in this document the Operator should have methods (via the GCS) to instruct the unmanned aircraft onboard systems to generate a keypair, DET and Self-Endorsement: UA. The `Self-Endorsement: UA` is extracted by the Operator onto the GCS. 
+
+The GCS is already pre-provisioned and registered to the DIME with its own keypair, DET, `Self-Endorsement: GCS` and `Generic Endorsement: RIDR on GCS`. The GCS creates a new `Generic Endorsement: GCS on UA` and also creates `Mutual Endorsement: RIDR on GCS`. These new endorsements along with Session ID Information are sent to the DIME via a secure channel.
+
+The DIME validates all the endorsements and checks for DET and HI collisions in the Name Server/DIA using the proposed UA DET. A `Broadcast Endorsement: DIME on UA` is generated. An `Generic Endorsement: RIDR on UAS` is generated using the `Generic Endorsement: GCS on UA`. HIP and CERT RRs are provisioned into the Registry/Name server. Both endorsements are back to the GCS on a secure channel.
+
+The GCS then injects the `Broadcast Endorsement: RIDR on UA` securely into the unmanned aircraft. `Endorsement: RIDR on GCS` is securely stored by the GCS.
+
+> Note: in {{dime-sid-example}} the Session ID Information is expected to contain the Serial Number along with other PII specific information (such as UTM data) related to the Session ID.
+
+### UA Based
+
+There MAY be some unmanned aircraft that have their own Internet connectivity allowing them to register a Session ID themselves without outside help from other devices such as a GCS. When such a system is in use its imperative that the Operator has some method to create the `Generic Endorsement: Operator on UA` to send to the DIME. The process and methods to perform this are out of scope for this document but MUST be done in a secure fashion.
+
+### UAS Based
+
+Most unmanned aircraft will not have their own Internet connectivity but will have a connection to a GCS. Typically a GCS is an application on a user device (such as smartphone) that allow the user to fly their aircraft. For the Session ID registration the DIME MUST be provided with an `Generic Endorsement: GCS on UA` which implies there is some mechanism extracting and inserting information from the unmanned aircraft to the GCS. These methods MUST be secure but are out of scope for this document.
+
+With this system it is also possible to have the GCS generate the DET based Session ID and insert it securely into the unmanned aircraft after registration is done. This is NOT RECOMMENDED as this invalidates the objective of the asymmetric cryptography in the underlying DET as the private key MAY get in the posession of another entity other than the unmanned aircraft. See {{det-gen-concern}} for more details.
+
+## Child DIME
+
+TODO
+
+# Differentiated Access Process
+
+High level explanation of differentiated access goals and requirements.
+
+# DRIP in the Domain Name System
 
 The individual DETs may be potentially too numerous (e.g., 60 - 600M) and dynamic (e.g., new DETs every minute for some HDAs) to store in a signed, DNS zone. The HDA SHOULD provide DNS service for its zone and provide the DET detail response.
 
 DNSSEC is strongly recommended (especially for RAA-level zones). Frequency of updates, size of the zone, and registry policy may impact its use. 
 
-## ICAO DNS Structure
+Per {{drip-arch}} all public information is stored in the DNS to satisfy REG-1 from {{RFC9153}}. CERT RRs ({{cert}}) contain public Endorsements or X.509 Certificate relevant to a given Session ID. SVR RRs ({{svr}}) point an Observer to a service to obtain further information if they have and can prove duly constituted authority.
 
-Under the TSVG ICAO panel, the GRAIN task group has discussed a DNS structure, with DRIP proposing to fit into it as follows:
+## Prefix to TLD Mapping
 
-~~~~
-                                .icao
-                                  |
-                                  |
-    .---------------------------.iatf--------------------------.
-    |                             |                            |
-    |                             |                            |
-.aircraft            .----------.uas----------.             .fixed
-    |                |            |           |                |
-    |                |            |           |                |
-.[airline]         .[uss]       .mfr        .det          .[iatf-member]
-    |                |            |           |                |
-    |                |            |           |                |
-.[tail-number]    .[uasrid]      ...         ...            .[node-name]
-~~~~
+For DRIP, the prefix `2001:0030/28` is slated for DETs being used in UAS. Other prefixes may be allocated by IANA in future for different use cases that do not fit cleanly into an existing prefix.
 
-Example DET FQDN: `a3ad19520ad0a69e.5.20.10.20010030.det.uas.iatf.icao`
+IANA registry for this?
 
-Example MFR FQDN: `Z2T7B8RA85D19LX.8653.mfr.uas.iatf.icao`
+If so we could remove prefix from FQDN form...Stu would like this to happen
 
-## Serial Number {#sn-fqdn}
+## DRIP Fully Qualified Domain Names {#drip-fqdn}
 
-See Section 4.2 of {{drip-rid}} for how to encode DETs as Serial Numbers.
+### DRIP Entity Tag {#det-fqdn}
 
-~~~~
-Serial Number: 8653FZ2T7B8RA85D19LX
-ICAO Mfr Code: 8653
-Length Code: F
-ID: FZ2T7B8RA85D19LX
-FQDN: Z2T7B8RA85D19LX.8653.mfr.uas.icao.int
-~~~~
+#### Forward Lookup
 
-## DET {#det-fqdn}
+The DET has the following FQDN form:
 
-DETs SHOULD be discoverable in DNS via a hash.oga.hda.raa.prefix. structure under a ICAO managed DNS aviation tree. This document proposes a .det.uas.icao.int. branch in the current ICAO DNS domain. This is subject of discussions with ICAO. Thus if we assume a DET prefix of 2001:30::/28, the following example shows the resultant DNS entry:
+> {hash}.{oga_id}.{hda}.{raa}.{prefix}.hhit.arpa.
 
-<!-- TODO(atw): fix orchid construction in example code and place new FQDN -->
+When building a DET FQDN the following two things must be done:
+
+1. The RAA, HDA and OGA ID values MUST be converted from hexadecimal to decimal form.
+2. The FQDN must be built using the exploded (all padding present) form of the IPv6 address.
+
+<!-- TODO: Stu would much rather this be full HEX or full DEC - not a mix. -->
+
+Below is an example:
 
 ~~~~
 DET: 2001:0030:00a0:0145:a3ad:1952:0ad0:a69e
@@ -273,819 +475,433 @@ ID: a3ad:1952:0ad0:a69e
 OGA: 5
 HDA: 0014 = 20
 RAA: 000a = 10
-Prefix: 20010030
-FQDN: a3ad19520ad0a69e.5.20.10.20010030.det.uas.icao.int
+Prefix: 2001003
+FQDN: a3ad19520ad0a69e.5.20.10.2001003.hhit.arpa.
 ~~~~
 
-When building a DET FQDN the following two things must be done:
+> Note: any of the fields in the FQDN could be CNAME'd to more human readable interpretations. For example the DET FQDN `204.2001003.hhit.arpa.` may have a CNAME to `uas.faa.gov`; if RAA 204 was delegated to the FAA.
 
-1. The RAA and HDA values MUST be converted from hexadecimal to decimal form.
-2. The FQDN must be built using the expanded form of the IPv6 address.
+#### Reverse Lookup
 
-The prefix is included in the FQDN form to support other potential prefixes being used.
-
-<!-- Author Note (atw): we need a section detailing the potential prefixes to be seen and from whom and why we would want to support such a thing -->
-<!-- Author Note (atw): need a section on different TLDs supported - uas.icao.int, remoteid.aero, rid.aero? -->
-
-## Reverse DET
-
-The DET reverse lookup should be a standard IPv6 reverse address in ip6.arpa.
+The DET reverse lookup should be a standard IPv6 reverse address in `ip6.arpa.`.
 
 ~~~~
 $ORIGIN  5.4.1.0.0.a.0.0.0.3.0.0.1.0.0.2.ip6.arpa.
 e.9.6.a.0.d.a.0.2.5.9.1.d.a.3.a    IN   PTR
 ~~~~
 
-# Supported DNS Records
+<!-- TODO: make this a MUST, do not use PTR but instead required RRs for DRIP (HIP, TLSA, CERT, etc.) -->
 
-DRIP requires a number of resource records, some specific to certain registries to function.
+### Serial Number {#sn-fqdn}
 
-## HIP RR
+~~~~
+Serial Number: 8653FZ2T7B8RA85D19LX
+ICAO Mfr Code: 8653
+Length Code: F
+ID: FZ2T7B8RA85D19LX
+FQDN: Z2T7B8RA85D19LX.8653.mfr.hhit.arpa.
+~~~~
 
-All registries will use HIP RR {{RFC8005}} as the primary public source of DET HIs. The DETs are encoded (Section 4.2) in an FQDN and are the lookup key for the RR. Registries have their own DET associated with them and their respective DNS server will hold a HIP RR that is pointed to by their DET FQDN.
+Serial Number pose a unique problem. If we explicitly only allow HHITs be under the `hhit.arpa.` domain structure how do we standardize the lookup of Serial Numbers? Perhaps to look up Serial Numbers one must go to a different tree like `mfr.icao.int.`? We can have CNAMEs in MRAs for this but they probably need the same TLD (`hhit.arpa.`) to be found properly and these are clearly not HHITs.
 
-MRA and RIDR servers will also have HIP RRs for their registered parties (aircraft and operators).
+Serial Numbers MAY be a direct encoding of a DET (as defined in Section 4.2 of {{drip-rid}}). A Serial Number MAY also be a simple linking to a DET using a CNAME. DNAMEs (or PTRs) could be used to redirect a Serial Number that is not part of an public MRA but is instead registered by the operator to their HDA. The operator in this scenario MAY generate a DET for the Serial Number themselves - also stored in the HDA. The mapping of the Serial Number to this 'private' DET MUST NOT be made public.
 
-## TLSA RR
+## Supported DNS Records
+
+### HIP
+
+All DIMEs will use HIP RR {{RFC8005}} as the primary public source of DET HIs. The DETs are encoded in an FQDN ({{det-fqdn}}) and are the lookup key (QNAME) for the RR. DIMEs have their own DET associated with them and their respective name server will hold a HIP RR that is pointed to by their DET FQDN.
+
+MRA ({{mra}}) and RIDR ({{ridr}}) DIMEs will also have HIP RRs for their registered parties (aircraft and operators respectfully).
+
+### TLSA
 
 This RR, {{RFC6698}}, is mainly used to support DTLS deployments where the DET is used (e.g. Network RID and the wider UTM system). The HI is encoded using the SubjectPublicKeyInfo selector. DANE {{RFC6698}} is for servers, DANCE {{dane-clients}} is for clients.
 
 The TLSA RR MAY be used in place of the HIP RR, where to primary need of the DET HI is for DTLS authentication. This DNS server side optimization is for where the overhead of both RR is onerous. Thus all clients that work with the HIP RR SHOULD be able to able to extract the HI from the TLSA RR.
 
-## CERT RR
+### CERT
 
-Attestations can be placed into DNS in the CERT RRs {{RFC4398}}. An exception to this is the Attestation Certificate made during Session ID registration.  This is as this particular certificate acts similar to a car registration and should be held safe by the operator.
+Endorsements can be placed into DNS in the CERT RRs {{RFC4398}}.
 
-Attestations will be stored in Certificate Type OID Private (value 254) with an OID of 1.3.6.1.4.1.6715.2.n, where n is the Attestation Type.
+Endorsements will be stored in Certificate Type OID Private (value 254) with a base OID of `1.3.6.1.4.1.6715.2` and further classified by the Endorsement/Certificate Type and then Entities involved.
 
-Editor Note: This OID is an initial allocation under the IANA Enterprise Number OID. It is expect that a general OID will be allocated at some point.
+| Endorsement Type        | OID Value |
+| ----------------------- | --------- |
+| Self-Endorsement        | 1         |
+| Generic Endorsement     | 2         |
+| Concise Endorsement     | 3         |
+| Mutual Endorsement      | 4         |
+| Link Endorsement        | 5         |
+| Broadcast Endorsement   | 6         |
+
+| Entity Type                  | OID Value |
+| ---------------------------- | --------- |
+| Unmanned Aircraft (UA)       | 1         |
+| Ground Control Station (GCS) | 2         |
+| Operator (OP)                | 3         |
+| HDA                          | 4         |
+| RAA                          | 5         |
+| Root                         | 6         |
+
+As an example the following OID: `1.3.6.1.4.1.6715.2.6.4.1` would decompose into: the base OID (`1.3.6.1.4.1.6715.2`), the Endorsement Type (`6`: Broadcast Endorsement) and then the parties involved (`4`: HDA, `1`: UA)
 
 Certificate Type X.509 as per PKIX (value 1) MAY be used to store X.509 certificates as discussed in (Appendix B).
 
-Editor Note: Have not gotten to the part in this draft where Attestation Type, above is defined and enumerated. Obviously this is needed.
+Editor Note: This OID is an initial allocation under the IANA Enterprise Number OID. It is expect that a general OID will be allocated at some point.
 
-## NS RR
+<!-- TODO: in very informal discussions with Russ ? at IETF115 the concept of a CBOR CERT RR was not considered a terrible idea and would be more flexible than using OIDs. We should talk to Carsten about this. -->
 
-<!-- TODO(atw) get rfc reference -->
+### NS
 
-Along with their associated "glue" record (A/AAAA) supports the traversal in DNS across the tree.
+Used to interconnect entities
 
-1. `<mfr.remoteid.aero>` on Root points to specific DET FQDN of IRM
-2. `<icao_mfr_code>.mfr.remoteid.aero` on IRM points to specific DET FQDN of MRA
-3. `<raa_value>.det.remoteid.aero` on Root pointing to DET FQDN of matching RAA
-4. `<hda_value>.<raa_value>.det.remoteid.aero` on RAA pointing to DET FQDN of matching HDA
-
-Editor Note: `.areo` works as a placeholder for now, but we are working with ICAO for this to at least be under `uas.icao.int.` and their TLD that they are working to get in the next ICANN TLD round. GRAIN already lists and uses `uas.icao.int.`. Perhaps we use `det.uas.icao.int.` for all DRIP DNS structures.
-
-## AAAA RR
-
-<!-- TODO(atw) get rfc reference -->
-
-DRIP requires the use of IPv6.
-
-## SVR RR
-
-<!-- TODO(atw) get rfc reference -->
+### SVR
 
 The SVR RR for DRIP always is populated at the "local" registry level. That is an HDA's DNS would hold the SVR RR that points to that HDAs private registry for all data it manages. This data includes data being stored on its children.
 
-The best example of this is RIDR would have a SVR RR that points to a database that contains any extra information of a Session ID it has registered. Another example is the MRA has a SVR RR pointing to where the metadata of a UA registered in the MRA can be located.
+The best example of this is RIDR ({{ridr}}) would have a SVR RR that points to a database that contains any extra information of a Session ID it has registered. Another example is the MRA ({{mra}}) has a SVR RR pointing to where the metadata of a UA registered in the MRA can be located.
 
-In all cases the server being pointed to MUST be protected using AAA, specifically using RDAP.
+In all cases the server being pointed to MUST be protected using AAA, such as using RDAP.
 
-# Registry Operations
+### CNAME
 
-As a general rule the following processing performed for any registration operation:
+Used for SN -> DET mapping and other cross TLD jumps?
 
-1. Verify input Attestations from registering party
-2. Check for collision of DET and HI
-3. Populate DNS with required/optional records
-4. Populate Database with PII and other info
-5. Generate and return required/optional Attestations/Certificates
+# Endorsements
 
-## Registering a Registry
+Under DRIP Endorsements are defined in a CDDL structure that can be encode to CBOR, JSON or have their keys removed and be sent as a binary blob. When the latter is used very specific forms are defined with naming conventions to know the data fields and their lengths for parsing.
 
-DRIP defines two levels of hierarchy maintained by the Registration Assigning Authority (RAA) and HHIT Domain Authority (HDA). The authors anticipate that an RAA is owned and operated by a regional CAA (or a delegated party by an CAA in a specific airspace region) with HDAs being contracted out. As such a chain of trust for registries is required to ensure trustworthiness is not compromised. More information on the registries can be found in {{?hhit-registries}}.
+The first subsection defines the structure of an Endorsement while the remain subsections define specific forms that are commonly used. The binary forms of the subsections can be found in {{bin-examples}}.
 
-<!-- Author Note (atw): is the hhit-registries draft and reference needed anymore? -->
+<!-- TODO: do we have a iana registry with accepted keys for the various sections or endorsements in general? -->
 
-Both the parent and child generate their own keypairs and self-signed attestations if not generated previously. The child sends to the parent its self-signed attestation to be added into the parent DNS.
-
-The parent confirms the attestation received is valid and that no DET collisions occur before adding a NS RR (and CERT RRs) to its DNS for the new child. An attestation, parent on child, is sent as a confirmation that provisioning was successful.
-
-The child is now a valid member of the registry tree and uses its keypair and Self-Attestation with all provisioning requests towards it. The HIP RR for the child is populated into the local DNS along with any CERT RRs.
-
-### Registering an RAA
-
-Specifically handled by the Root ({{root}}).
-
-| Inputs (Optional)         | DNS Entries (Optional)                                             | Outputs (Optional)                   |
-| ------------------------- | ------------------------------------------------------------------ | ------------------------------------ |
-| IP Address of RAA         | Root: `<raa_value>.det.remoteid.aero NS <raa_det_fqdn>`            | Attestation: Root, RAA               |
-| RAA Self-Attestation      | Root: `<raa_det_fqdn> AAAA <raa_ip>`                               | (Concise Attestation: Root, RAA)     |
-|                           | RAA: `<raa_det_fqdn> HIP <hip_rr_data>`                            | (Broadcast Attestation: Root, RAA)   |
-|                           | RAA: `<raa_det_fqdn> CERT <raa_self_attestation>`                  |                                      |
-|                           | (Root: `<raa_det_fqdn> CERT <attestation_root_raa>`)               |                                      |
-|                           | (Root: `<raa_det_fqdn> CERT <concise_attestation_root_raa>`)       |                                      |
-|                           | (Root: `<raa_det_fqdn> CERT <broadcast_attestation_root_raa>`)     |                                      |
-|                           | (RAA: `<raa_det_fqdn> CERT <attestation_root_raa>`)                |                                      |
-|                           | (RAA: `<raa_det_fqdn> CERT <concise_attestation_root_raa>`)        |                                      |
-|                           | (RAA: `<raa_det_fqdn> CERT <broadcast_attestation_root_raa>`)      |                                      |
-
-### Registering an IRM
-
-Specifically handled by the Root ({{root}}).
-
-| Inputs (Optional)         | DNS Entries (Optional)                                             | Outputs (Optional)                   |
-| ------------------------- | ------------------------------------------------------------------ | ------------------------------------ |
-| IP Address of IRM         | Root: `mfr.remoteid.aero NS <irm_det_fqdn>`                        | Attestation: Root, IRM               |
-| IRM Self-Attestation      | Root: `1.det.remoteid.aero NS <irm_det_fqdn>`                      | (Concise Attestation: Root, IRM)     |
-|                           | Root: `<irm_det_fqdn> AAAA <irm_ip>`                               | (Broadcast Attestation: Root, IRM)   |
-|                           | IRM: `<irm_det_fqdn> HIP <hip_rr_data>`                            |                                      |
-|                           | IRM: `<irm_det_fqdn> CERT <irm_self_attestation>`                  |                                      |
-|                           | (Root: `<irm_det_fqdn> CERT <attestation_root_irm>`)               |                                      |
-|                           | (Root: `<irm_det_fqdn> CERT <concise_attestation_root_irm>`)       |                                      |
-|                           | (Root: `<irm_det_fqdn> CERT <broadcast_attestation_root_irm>`)     |                                      |
-|                           | (IRM: `<irm_det_fqdn> CERT <attestation_root_irm>`)                |                                      |
-|                           | (IRM: `<irm_det_fqdn> CERT <concise_attestation_root_irm>`)        |                                      |
-|                           | (IRM: `<irm_det_fqdn> CERT <broadcast_attestation_root_irm>`)      |                                      |
-
-### Registering an HDA
-
-Specifically handled by an RAA ({{raa}}).
-
-| Inputs (Optional)         | DNS Entries (Optional)                                             | Outputs (Optional)                   |
-| ------------------------- | ------------------------------------------------------------------ | ------------------------------------ |
-| IP Address of HDA         | RAA: `<hda_value>.<raa_value>.det.remoteid.aero NS <hda_det_fqdn>` | Attestation: RAA, HDA                |
-| HDA Self-Attestation      | RAA: `<hda_det_fqdn> AAAA <hda_ip>`                                | (Concise Attestation: RAA, HDA)      |
-|                           | RAA: `<hda_det_fqdn> HIP <hip_rr_data>`                            | (Broadcast Attestation: RAA, HDA)    |
-|                           | HDA: `<hda_det_fqdn> CERT <hda_self_attestation>`                  |                                      |
-|                           | (RAA: `<hda_det_fqdn> CERT <attestation_raa_hda>`)                 |                                      |
-|                           | (RAA: `<hda_det_fqdn> CERT <concise_attestation_raa_hda>`)         |                                      |
-|                           | (RAA: `<hda_det_fqdn> CERT <broadcast_attestation_raa_hda>`)       |                                      |
-|                           | (HDA: `<hda_det_fqdn> CERT <attestation_raa_hda>`)                 |                                      |
-|                           | (HDA: `<hda_det_fqdn> CERT <concise_attestation_raa_hda>`)         |                                      |
-|                           | (HDA: `<hda_det_fqdn> CERT <broadcast_attestation_raa_hda>`)       |                                      |
-
-### Registering an MRA
-
-Specifically handled by the IRM ({{irm}}).
-
-| Inputs (Optional)         | DNS Entries (Optional)                                             | Outputs (Optional)                   |
-| ------------------------- | ------------------------------------------------------------------ | ------------------------------------ |
-| IP Address of MRA         | IRM: `<icao_mfr_code>.mfr.remoteid.aero NS <mra_det_fqdn>`         | Attestation: IRM, MRA                |
-| MRA Self-Attestation      | IRM: `<hda_value>.1.det.remoteid.aero NS <mra_det_fqdn>`           | (Concise Attestation: IRM, MRA)      |
-| ICAO Manufacturer Code    | IRM: `<mra_det_fqdn> AAAA <mra_ip>`                                | (Broadcast Attestation: IRM, MRA)    |
-|                           | MRA: `<mra_det_fqdn> HIP <hip_rr_data>`                            |                                      |
-|                           | MRA: `<mra_det_fqdn> CERT <mra_self_attestation>`                  |                                      |
-|                           | (IRM: `<mra_det_fqdn> CERT <attestation_irm_mra>`)                 |                                      |
-|                           | (IRM: `<mra_det_fqdn> CERT <concise_attestation_irm_mra>`)         |                                      |
-|                           | (IRM: `<mra_det_fqdn> CERT <broadcast_attestation_irm_mra>`)       |                                      |
-|                           | (MRA: `<mra_det_fqdn> CERT <attestation_irm_mra>`)                 |                                      |
-|                           | (MRA: `<mra_det_fqdn> CERT <concise_attestation_irm_mra>`)         |                                      |
-|                           | (MRA: `<mra_det_fqdn> CERT <broadcast_attestation_irm_mra>`)       |                                      |
-
-## Registering a Serial Number
-
-Specifically handled by an MRA ({{mra}}).
-
-| Inputs (Optional)         | DNS Entries (Optional)                                             | Outputs (Optional)                   |
-| ------------------------- | ------------------------------------------------------------------ | ------------------------------------ |
-| Serial Number             | (`<sn_det_fqdn> HIP <hip_rr_data>`)                                | (Attestation: MRA, UA)               |
-| (UA Self-Attestation)     | (`<sn_det_fqdn> CERT <sn_self_attestation>`)                       | (Broadcast Attestation: MRA, UA      |
-| UA Metadata               | (`<sn_det_fqdn> CERT <attestation_mra_sn>`)                        | (Concise Attestation: MRA, UA)       |
-|                           | (`<sn_det_fqdn> CERT <concise_attestation_mra_sn>`)                |                                      |
-|                           | (`<sn_det_fqdn> CERT <broadcast_attestation_mra_sn>`)              |                                      |
-
-<!-- Author Note (atw): when registering a SN it could either be a DRIP encoded SN or it could be a non-DRIP SN. In the former case Attestations are both provided and generated during the registration process. The later case there will be no DRIP Attestations produced and most likely an X.509? Also there would be no RRs - so what do we point to to avoid NXDOMAINs; perhaps SVR/AAAA records? -->
+## Endorsement Structure
 
 ~~~~
-    +--------------+    SA-a0a0 +-----------------+
-    | Manufacturer | <--------> | Manufacturer CA |
-    +--------------+ A-ma0      +-----------------+
-        ^    |
-        |    |
-        |    |
-SA-a0a0 |    |   A-ma0
-        |    |
-        |    v
-    +----------+
-    | Aircraft |
-    +----------+
+endorsement = {
+  identity: {
+      (hit: bstr .size 16, ? hi: bstr) // (hhit: bstr .size 16, ? hi: bstr)
+      * tstr: any
+  },
+  evidence: bstr,
+  scope: {
+      vnb: number,
+      vna: number,
+      * tstr: any
+  }
+  signature: {
+      sig: bstr
+      * tstr: any
+  }
+}
 ~~~~
-{:fig title="Manufacturer Provision"}
+{:fig #endorsement-json title="Endorsement CDDL"}
 
-During the initial configuration and production at the factory the Aircraft MUST be configured to have a serial number. ASTM defines this to be an ANSI/CTA-2063A Serial Number for UAS. Under DRIP a DET can be encoded as such to be able to convert back and forth between them. This is covered in {{drip-rid}}.
+### Identity
 
-Under DRIP the Manufacturer SHOULD be using DETs and have their own keypair and Self-Attestation: Manufacturer (SA-m). (Ed. Note: some words on aircraft keypair and certs here?).
+The `identity` section is where the main identity information of the signer of the endorsement is found. The identity can take many forms such as a handle to the identity (an HHIT), and can include more explicit data such as the public key (an HI). Other keys can be provided and MUST be defined in their specific endorsement.
 
-Self-Attestation: Aircraft 0 on Aircraft 0 (SA-a0a0) is extracted by the manufacturer and sent to their Certificate Authority (CA) to be verified and added. A resulting attestation (Attestation: Manufacturer on Aircraft 0 \[A-ma0\]) SHOULD be a DRIP Attestation – however this could be a X.509 certificate binding the serial number to the manufacturer.
+The length of the `hi` can be determined when using `hhit` or `hi` by decoding the provided IPv6 address. The prefix will inform of the ORCHID construction being used, which informs the locations of the OGA ID in the address. The OGA ID will then inform the user of the key algorithm selected which has the key length defined.
 
-## Registering an Operator
+### Evidence
 
-Specifically handled by a RIDR ({{ridr}}).
+The `evidence` section contain a byte string of evidence. Specific content of evidence (such as subfields, length and ordering) is defined in specific Endorsement structures.
 
-<!-- Author Note (atw): this could also be handled by the RAA run by the CAA and act as a registration point for Operators in their NAS in general. Many CAAs, for example the FAA, already have separate systems deployed to handle this information. We could be asking a lot of the user (registering to another place and specifically for DRIP) and CAA to deploy this new database in an attempt to unify the system -->
+### Scope
 
-| Inputs (Optional)         | DNS Entries (Optional)                                             | Outputs (Optional)                    |
-| ------------------------- | ------------------------------------------------------------------ | ------------------------------------- |
-| Operator Self-Attestation | `<op_det_fqdn> HIP <hip_rr_data>`                                  | Attestation: RIDR, Operator           |
-| Operator PII              | (`<op_det_fqdn> CERT <op_self_attestation>`)                       | Broadcast Attestation: RIDR, Operator |
-|                           | (`<op_det_fqdn> CERT <attestation_ridr_op>`)                       | (Concise Attestation: RIDR, Operator) |
-|                           | (`<op_det_fqdn> CERT <concise_attestation_ridr_op>`)               |                                       |
-|                           | (`<op_det_fqdn> CERT <broadcast_attestation_ridr_op>`)             |                                       |
+The `scope` section is more formally "the scope of validity of the endorsement". The scope can come in various forms but MUST always have a "valid not before" (`vnb`) and "valid not after" (`vna`) timestamps.
 
-~~~~
-+----------+            +---------+
-| Registry | ---------> | HDA DNS |
-+----------+  [HIP RR]  +---------+
-    ^   |
-    |   |
-    |   |
-Coo |   | Aro
-    |   |
-    |   v
-+----------+
-| Operator |
-+----------+
-~~~~
-{:fig title="Operator Provision"}
-
-The Operator generates a keypair and DET as specified in DRIP UAS RID. A self-signed attestation (Self-Attestation: Operator on Operator \[SA-oo\]) is generated and sent to the desired registry (HDA). Other relevant information and possibly personally identifiable information needed may also be required to be sent to the registry (all over a secure channel – the method of which is out of scope for this document).
-
-The registry cross checks any personally identifiable information as required. Certificate: Operator on Operator is verified (both using the expiration timestamp and signature). The DET is searched in the Registries database to confirm that no collision occurs. A new attestation is generated (Attestation: Registry on Operator) and sent securely back to the Operator. Optionally the DET/HI pairing can be added to the Registries DNS in to form of a HIP Resource Record (RR). Other RRs, such as CERT and TXT, may also be used to hold public information.
-
-With the receipt of Attestation: Registry on Operator (A-ro) the provisioning of an Operator is complete.
-
-## Registering a Session ID {#sid-registration}
-
-Specifically handled by a RIDR ({{ridr}}).
-
-| Inputs (Optional)                   | DNS Entries (Optional)                                             | Outputs (Optional)                          |
-| ----------------------------------- | ------------------------------------------------------------------ | ------------------------------------------- |
-| Attestation: RIDR, Operator         | `<session_det_fqdn> HIP <hip_rr_data>`                             | Attestation: RIDR, Operator                 |
-| Attestation: Operator, UA           | `<session_det_fqdn> CERT <session_self_attestation>`               | Broadcast Attestation: RIDR, Operator       |
-| Serial Number                       | `<session_det_fqdn> CERT <broadcast_attestation_ridr_session>`     | Attestation Certificate: RIDR, Operator, UA |
-| (Concise Attestation: Operator, UA) | (`<session_det_fqdn> CERT <attestation_ridr_session>`)             | (Concise Attestation: RIDR, Operator)       |
-| (Mutual Attestation: Operator, UA)  | (`<session_det_fqdn> CERT <concise_attestation_ridr_session>`)     | (Mutual Certificate: RIDR, Operator, UA)    |
-| (Link Attestation: Operator, UA)    |                                                                    | (Concise Certificate: RIDR, Operator, UA)   |
-| (Operational Intent)                |                                                                    | (Link Certificate: RIDR, Operator, UA)      |
-|                                     |                                                                    | (Broadcast Attestation: RAA, RIDR)          |
-|                                     |                                                                    | (Broadcast Attestation: Root, RAA)          |
-
-### Standard Provisioning
-
-Under standard provisioning the Aircraft has its own connectivity to the registry, the method which is out of scope for this document.
-
-~~~~
-+----------+
-| Registry |
-+----------+
-    ^
-    |
-    |
-    |  A-ro, A-oaN
-    |
-    |
-+----------+                        +----------+
-| Operator | <--------------------- | Aircraft |
-+----------+        A-a0aN          +----------+
-~~~~
-{:fig title="Standard Provision: Step 1"}
-
-Through mechanisms not specified in this document the Operator should have methods to instruct the Aircraft onboard systems to generate a keypair and certificate. This certificate is chained to the factory provisioned certificate (Self-Attestation: Aircraft 0 on Aircraft 0 \[SA-a0a0\]). This new attestation (Attestation: Aircraft 0 on Aircraft N \[A-a0aN\]) is securely extracted by the Operator.
-
-With A-a0aN the sub-attestation (Self-Attestation: Aircraft N on Aircraft N \[SA-aNaN\]) is used by the Operator to generate Attestation: Operator on Aircraft N (A-oaN). This along with Attestation: Registry on Operator (A-ro) is sent to the registry.
-
-~~~~
-+----------+
-| Registry |
-+----------+
-    |
-    |
-    |
-    |  Token
-    |
-    v
-+----------+                        +----------+
-| Operator | ---------------------> | Aircraft |
-+----------+        Token           +----------+
-~~~~
-{:fig title="Standard Provision: Step 2"}
-
-On the registry, A-ro is verified and used as confirmation that the Operator is already registered. A-oaN also undergoes a validation check and used to generate a token to return to the Operator to continue provisioning.
-
-Upon receipt of this token, the Operator injects it into the Aircraft and its used to form a secure connection to the registry. The Aircraft then sends Attestation: Manufacturer on Aircraft 0 (A-ma0) and Attestation: Aircraft 0 to Aircraft N (A-a0aN).  
-
-~~~~
-+---------+
-| HDA DNS |
-+---------+
-    ^
-    |
-    | HIP RR
-    |
-    |
-    |
-+----------+ <----------------------------+
-| Registry |                              |
-+----------+ ------------------------+    |
-    |                                |    |
-    |                                |    |  Token,
-    |  AC-roaN               BA-raN  |    |  A-ma0, A-a0aN
-    |                                |    |
-    |                                |    |
-    v                                v    |
-+----------+                      +----------+
-| Operator |                      | Aircraft |
-+----------+                      +----------+
-~~~~
-{:fig title="Standard Provision: Step 3"}
-
-The registry uses Attestation: Manufacturer on Aircraft 0 (with an external database if supported) to confirm the validity of the Aircraft. Attestation: Aircraft 0 on Aircraft N is correlated with Attestation: Operator on Aircraft N and Attestation: Manufacturer on Aircraft 0 to see the chain of ownership. The new DET tied to Aircraft N is then checked for collisions in the HDA. With the information the registry generates two items: Attestation Certificate: Registry on Operator on Aircraft N (AC-roaN) and Broadcast Attestation: Registry on Aircraft N (BA-raN). A HIP RR (and other RR types as needed) are generated and inserted into the HDA.
-
-AC-roaN is sent via a secure channel back to the Operator to be stored. BA-raN is sent to the Aircraft to be used in Broadcast RID as specified in {{drip-auth}}.
-
-### Operator Assisted Provisioning
-
-This provisioning scheme is for when the Aircraft is unable to connect to the registry itself or does not have the hardware required to generate keypairs and attestations.
-
-~~~~
-+----------+
-| Registry |
-+----------+
-
-
-
-
-
-
-+----------+                        +----------+
-| Operator | ---------------------> | Aircraft |
-+----------+     aN, SA-aNaN        +----------+
-~~~~
-{:fig title="Operator Assisted Provision: Step 1"}
-
-To start the Operator generates on behalf of the Aircraft a new keypair and Attestation: Aircraft N on Aircraft N (SA-aNaN). This keypair and certificate are injected into the Aircraft for it to generate Attestation: Aircraft 0 on Aircraft N (A-a0aN). After injecting the keypair and certificate, the Operator MUST destroy all copies of the keypair.
-
-~~~~
-+----------+
-| Registry |
-+----------+
-    ^
-    |
-    |
-    |  A-ro, A-ma0, A-a0aN, A-oaN
-    |
-    |
-+----------+                        +----------+
-| Operator | <--------------------- | Aircraft |
-+----------+      A-ma0, A-a0aN     +----------+
-~~~~
-{:fig title="Operator Assisted Provision: Step 2"}
-
-Attestation: Manufacturer on Aircraft 0 (A-ma0) and Attestation: Aircraft 0 on Aircraft N (A-a0aN) is extracted by the Operator and the following data items are sent to the Registry; Attestation: Registry on Operator (A-ro), Attestation: Manufacturer on Aircraft 0 (A-ma0), Attestation: Aircraft 0 on Aircraft N (A-a0aN), Attestation: Operator on Aircraft N (A-oaN).
-
-~~~~
-+----------+            +---------+
-| Registry | ---------> | HDA DNS |
-+----------+   HIP RR   +---------+
-    |
-    |
-    |
-    |  AC-roaN, BA-raN
-    |
-    v
-+----------+                        +----------+
-| Operator | ---------------------> | Aircraft |
-+----------+        BA-raN          +----------+
-~~~~
-{:fig title="Operator Assisted Provision: Step 3"}
-
-On the registry validation checks are done on all attestations as per the previous sections. Once complete then the registry checks for a DET collision, adding to the HDA if clear and generates Attestation Certificate: Registry on Operator on Aircraft N (AC-roaN) and Broadcast Attestation: Registry on Aircraft N (BA-raN). Both are sent back to the Operator.
-
-The Operator securely inject BA-raN and securely stores AC-roaN of Aircraft N.
-
-### Initial Provisioning
-
-A special form of provisioning is used when the Aircraft is first sold to an Operator. Instead of generating a new keypair, the built in keypair and certificate done by the Manufacturer is used to provision and register the aircraft to the owner.
-
-<!-- Author Note (atw): this action of registration is the same as an owner needed to use something like FAA DroneZone to register the SN of the aircraft to their CAA Assigned ID. So it doesn't make a whole lot of sense to do this at the HDA level (then it would need to be done for every HDA the user wants to fly under - potentially many). Is this a concern? -->
-
-For this either Standard or Operator Assisted methods can be used.
-
-# EPP Command Mappings
-
-## Common Attributes
-
-There are a number of common attributes between the various EPP commands under DRIP that has specific encoding rules.
-
-- The `hi` attribute is a Base64 encoding of the Host Identity.
-- The `det` attribute is a string from of the DET.
-
-## EPP Query Commands
-
-### EPP \<check> Command {#epp-query-check}
-
-#### Registry {#epp-check-registry}
-
-#### Operator {#epp-check-operator}
-
-#### Aircraft Serial Number {#epp-check-serial}
-
-#### Aircraft Session ID {#epp-check-session}
-
-### EPP \<info> Command {#epp-query-info}
-
-#### Registry {#epp-info-registry}
-
-#### Operator {#epp-info-operator}
-
-#### Aircraft Serial Number {#epp-info-serial}
-
-#### Aircraft Session ID {#epp-info-session}
-
-### EPP \<transfer> Command {#epp-query-transfer}
-
-Transfer semantics do not apply in DRIP, so there is no mapping defined for the EPP \<transfer> command.
-
-## EPP Transform Commands
-
-<!-- Author Note (atw): TODO: add DET/HI pairs to examples -->
-
-### EPP \<create> Command {#epp-transform-create}
-
-#### Registry {#epp-create-registry}
-
-The `abbreviation` field has a max of 6 characters, and is used by RID receivers to display a short decoded form for display of a received DET in the form of `{RAA Abbreviation} {HDA Abbreviation} {Last 4 of DET Hash}`. An example of this would be `US FAA FE23`. If the abbreviation is unknown then the receiver SHOULD use the hexadecimal encoding of the respective RAA/HDA field of the HID as the value in the form. For example if the HDA is unknown and the HDA value is 20 then the decoded display would be: `DE 14 FE23`. Typically for RAAs the `abbreviation` is RECOMMENDED to be set to the ISO 3166 country code (either Alpha-2 or Alpha-3) for the CAA. Dashes or underscores should be used in place of spaces.
-
-<!-- Author Note (atw): does the above text need to be moved to DET draft instead (and possible expanded)? -->
-
-The `mfrCode` field is only used by an MRA ({{mra}}) when registering with an IRM ({{irm}}) and holds the ICAO assigned Manufacturer Code for ANSI CTA2063-A Serial Numbers. It has a max of 4 characters.
-
-Example:
-
-~~~xml
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<extension>
-  <dripRegistry:dripRegistry xmlns:dripRegistry="urn:ietf:params:xml:ns:dripRegistry-1.0">
-    <dripRegistry:det>2001:0030:00a0:0145:a3ad:1952:0ad0:a69e</dripRegistry:det>
-    <dripRegistry:hi></dripRegistry:hi>
-    <dripRegistry:selfAttestation>Hex of SelfAttestation(Registry)</dripRegistry:selfAttestation>
-    <dripRegistry:raa>10</dripRegistry:raa>
-    <dripRegistry:hda>20</dripRegistry:hda>
-    <dripRegistry:abbreviation>FAA</dripRegistry:abbreviation>
-    <dripRegistry:mfrCode>MFR0</dripRegistry:mfrCode>
-    <dripRegistry:postalInfo type="int">
-      <dripRegistry:name>Federal Aviation Administration</dripRegistry:name>
-      <dripRegistry:phys_addr>
-        <dripRegistry:street1>Orville Wright Federal Building</dripRegistry:street1>
-        <dripRegistry:street2>800 Independence Avenue SW</dripRegistry:street2>
-        <dripRegistry:city>Washington</dripRegistry:city>
-        <dripRegistry:sp>DC</dripRegistry:sp>
-        <dripRegistry:pc>20591</dripRegistry:pc>
-        <dripRegistry:cc>US</dripRegistry:cc>
-      </dripRegistry:phys_addr>
-    </dripRegistry:postalInfo>
-    <dripRegistry:voice x="1234">1 (866) 835-5322</dripRegistry:voice>
-    <dripRegistry:email>stephen.dickson@faa.gov</dripRegistry:email>
-  </dripRegistry:dripRegistry>
-</extension>
-~~~
-
-#### Operator {#epp-create-operator}
-
-Example:
-
-~~~xml
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<extension>
-  <dripOperator:dripOperator xmlns:dripOperator="urn:ietf:params:xml:ns:dripOperator-1.0">
-    <dripOperator:postalInfo type="int">
-      <dripOperator:phys_addr>
-        <dripOperator:street1>123 Example Dr.</dripOperator:street1>
-        <dripOperator:street2>Suite 100</dripOperator:street2>
-        <dripOperator:city>Dulles</dripOperator:city>
-        <dripOperator:sp>VA</dripOperator:sp>
-        <dripOperator:pc>20166-6503</dripOperator:pc>
-        <dripOperator:cc>US</dripOperator:cc>
-      </dripOperator:phys_addr>
-    </dripOperator:postalInfo>
-    <dripOperator:part107_acct_name>some_faa_account</dripOperator:part107_acct_name>
-    <dripOperator:rec_flyer_id>123456</dripOperator:rec_flyer_id>
-    <dripOperator:caaId></dripOperator:caaId>
-    <dripOperator:det></dripOperator:det>
-    <dripOperator:hi></dripOperator:hi>
-    <dripOperator:selfAttestation>Hex of SelfAttestation(Operator)</dripOperator:selfAttestation>
-    <dripOperator:attestation>Hex of Attestation(Registry, Operator)</dripOperator:attestation>
-  </dripOperator::dripOperator>
-</extension>
-~~~
-
-#### Aircraft Serial Number {#epp-create-sn}
-
-Example:
-
-~~~xml
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<extension>
-  <dripSerial:dripSerial xmlns:dripSerial="urn:ietf:params:xml:ns:dripSerial-1.0">
-    <dripSerial:serial>0000F000000000000000</dripSerial:serial>
-    <dripSerial:det></dripSerial:det>
-    <dripSerial:hi></dripSerial:hi>
-    <dripSerial:selfAttestation>Hex of SelfAttestation(Aircraft)</dripSerial:selfAttestation>
-    <dripSerial:broadcastAttestation>Hex of BroadcastAttestation(Registry, Aircraft)</dripSerial:broadcastAttestation>
-    <dripSerial:manufacturer>Drones R Us</dripSerial:manufacturer>
-    <dripSerial:make>Fast Drone</dripSerial:make>
-    <dripSerial:model>9000</dripSerial:model>
-    <dripSerial:color>White</dripSerial:color>
-    <dripSerial:material>Plastic</dripSerial:material>
-    <dripSerial:weight>12.0</dripSerial:weight>
-    <dripSerial:length>5.0</dripSerial:length>
-    <dripSerial:width>4.0</dripSerial:width>
-    <dripSerial:height>3.0</dripSerial:height>
-    <dripSerial:numRotors>4</dripSerial:numRotors>
-    <dripSerial:propLength>2.0</dripSerial:propLength>
-    <dripSerial:batteryCapacity>5000</dripSerial:batterCapacity>
-    <dripSerial:batteryVoltage>12</dripSerial:batteryVoltage>
-    <dripSerial:batteryWeight>5.2</dripSerial:batteryWeight>
-    <dripSerial:batteryChemistry>Lithium-Ion</dripSerial:batteryChemistry>
-    <dripSerial:takeOffWeight>15</dripSerial:takeOffWeight>
-    <dripSerial:maxTakeOffWeight>25</dripSerial:maxTakeOffWeight>
-    <dripSerial:maxPayloadWeight>10</dripSerial:maxPayloadWeight>
-    <dripSerial:maxFlightTime>15</dripSerial:maxFlightTime>
-    <dripSerial:minOperatingTemp>35</dripSerial:minOperatingTemp>
-    <dripSerial:maxOperatingTemp>90</dripSerial:maxOperatingTemp>
-    <dripSerial:ipRating>55</dripSerial:ipRating>
-  </dripSerial:dripSerial>
-</extension>
-~~~
-
-#### Aircraft Session ID {#epp-create-session}
-
-Example:
-
-~~~xml
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<extension>
-  <dripSession:dripSession xmlns:dripSession="urn:ietf:params:xml:ns:dripSession-1.0">
-    <dripSession:serial>0000F000000000000000</dripSession:serial>
-    <dripSession:uasId></dripSession:uasId>
-    <dripSession:sessionHi></dripSession:sessionHi>
-    <dripSession:broadcastAttestation>Hex of BroadcastAttestation(Registry, Aircraft)</dripSession:broadcastAttestation>
-    <dripSession:attestationCertificate>Hex of AttestationCertificate(Registry, Operator, Aircraft)</dripSession:attestationCertificate>
-    <dripSession:operationalIntent></dripSession:operationalIntent>
-    <dripSession:operationalIntentSrc>uss.example.com</dripSession:operationalIntentSrc>
-    <dripSession:operatorId>NOP123456</dripSession:operatorId>
-    <dripSession:operatorDet></dripSession:operatorDet>
-    <dripSession:attestation>Hex of Attestation(Operator, Aircraft)</dripSession:attestation>
-    <dripSession:mutualAttestation>Hex of MutualAttestation(Registry, Operator)</dripSession:mutualAttestation>
-    <dripSession:fa3>N1232456</dripSession:fa3>
-    <dripSession:sessionStart>2022-04-09T15:43:13Z</dripSession:sessionStart>
-    <dripSession:sessionEnd>2022-04-09T20:43:13Z</dripSession:sessionEnd>
-  </dripSession:dripSession>
-</extension>
-~~~
-
-### EPP \<delete> Command {#epp-transform-delete}
-
-#### Registry {#epp-delete-registry}
-
-Example:
-
-~~~xml
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
-  <command>
-    <delete>
-      <dripRegistry:delete xmlns:dripRegistry="urn:ietf:params:xml:ns:dripRegistry-1.0">
-        <dripRegistry:det>2001:0030:00a0:0145:a3ad:1952:0ad0:a69e</dripRegistry:det>
-      </dripRegistry:delete>
-    </delete>
-    <clTRID>DEL-REGIS</clTRID>
-  </command>
-</epp>
-~~~
-
-#### Operator {#epp-delete-operator}
-
-Example:
-
-~~~xml
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
-  <command>
-    <delete>
-      <dripOperator:delete xmlns:dripOperator="urn:ietf:params:xml:ns:dripOperator-1.0">
-        <dripOperator:caaId></dripOperator:caaId>
-        <dripOperator:det></dripOperator:det>
-      </dripOperator:delete>
-    </delete>
-    <clTRID>DEL-OPER</clTRID>
-  </command>
-</epp>
-~~~
-
-#### Aircraft Serial Number {#epp-delete-serial}
-
-Example:
-
-~~~xml
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
-  <command>
-    <delete>
-      <dripSerial:delete xmlns:dripSerial="urn:ietf:params:xml:ns:dripSerial-1.0">
-        <dripSerial:serial>0000F000000000000000</dripSerial:serial>
-      </dripSerial:delete>
-    </delete>
-    <clTRID>DEL-AIRCRFT</clTRID>
-  </command>
-</epp>
-~~~
-
-#### Aircraft Session ID {#epp-delete-session}
-
-Example:
-
-~~~xml
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<epp xmlns="urn:ietf:params:xml:ns:epp-1.0">
-  <command>
-    <delete>
-      <dripSession:delete xmlns:dripSession="urn:ietf:params:xml:ns:dripSession-1.0">
-        <dripSession:uasId></dripSession:uasId>
-      </dripSession:delete>
-    </delete>
-    <clTRID>DEL-SID</clTRID>
-  </command>
-</epp>
-~~~
-
-### EPP \<renew> Command {#epp-transform-renew}
-
-Renewal semantics do not apply in DRIP, so there is no mapping defined for the EPP \<renew> command.
-
-### EPP \<transfer> Command {#epp-transform-transfer}
-
-Transfer semantics do not apply in DRIP, so there is no mapping defined for the EPP \<transfer> command.
-
-### EPP \<update> Command {#epp-transform-update}
-
-#### Registry {#epp-update-registry}
-
-#### Operator {#epp-update-operator}
-
-#### Aircraft Serial Number {#epp-update-serial}
-
-#### Aircraft Session ID {#epp-update-session}
-
-# RDAP Definitions
-
-# IANA Considerations
-
-<!-- Author Note (atw): need help here: EPP/RDAP adds to existing registries, CERT RR update, HIP RR update -->
-
-# Security Considerations
-
-## DET Generation
-
-Under the FAA {{NPRM}}, it is expecting that IDs for UAS are assigned by the UTM and are generally one-time use. The methods for this however are unspecified leaving two options.
-
-1
-: The entity generates its own DET, discovering and using the RAA and HDA for the target registry. The method for discovering a registry's RAA and HDA is out of scope here. This allows for the device to generate an DET to send to the registry to be accepted (thus generating the required Self-Attestation) or denied.
-
-2
-: The entity sends to the registry its HI for it to be hashed and result in the DET. The registry would then either accept (returning the DET to the device) or deny this pairing.
-
-Keypairs are expected to be generated on the device hardware it will be used on. Due to hardware limitations (see {{security-considerations}}) and connectivity it is acceptable under DRIP to generate keypairs for the Aircraft on Operator devices and later securely inject them into the Aircraft (as defined in {{operator-assisted-provisioning}}). The methods to securely inject and store keypair information in a “secure element” of the Aircraft is out of scope of this document.
-
-In either case the registry must decide on if the HI/DET pairing is valid. This in its simplest form is checking the current registry for a collision on the DET and HI.
-
-Upon accepting a HI/DET pair the registry MUST populate the required the DNS serving the HDA with the HIP RR and other relevant RR types (such as TXT and CERT). The registry MUST also generate the appropriate attestations/certificates for the given operation.
-
-If the registry denied the HI/DET pair, because there was a DET collision or any other reason, the registry MUST signal back to the device being provisioned that a new HI needs to be generated.
-
-# Acknowledgements
-
-- Scott Hollenbeck for his initial guidance with EPP/RDAP
-
-# Contributors
-
-- Andrei Gurtov for his insights as a pilot
-- Len Bayles for his help in formatting EPP definitions and creating an extension for FRED
-
---- back
-
-# DRIP Attestations & Certificates
-
-See {{drip-arch}} for definitions of claim, assertion, attestation and certificate as used in this document.
-
-## Attestation Structure
-
-All Attestations ({{attestations}}) and Certificates ({{certificates}}) under DRIP share the following format structure:
-
-{:fig: artwork-align="center"}
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                 Attestor Identity Information                 .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                       Attestation Data                        .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|               Expiration Timestamp by Attestor                |
-+---------------+---------------+---------------+---------------+
-|                 Signing Timestamp by Attestor                 |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                     Signature by Attestor                     |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-Attestor Identity Information: (0, 16-bytes or 120-bytes)
-    Field containing Attestor Identity Information in various forms.
-
-Attestation Data:
-    A field of variable length containing the attestation data.
-
-Expiration Timestamp by Attestor (4 bytes):
-    Timestamp denoting recommended time to trust data to.
-
-Signing Timestamp by Attestor (4 bytes):
-    Current time at signing.
-
-Attestor Signature (64 bytes):
-    Signature over preceding fields using the keypair of 
-    the Attestor.
-~~~~
-{:fig #att-struct title="Attestation Structure"}
-
-### Attestor Identity Information
-
-This can be either of the following:
-
-1. Attestor DET: 16-bytes
-2. Attestor Self-Attestation: 120-bytes
-
-A specific definition of an Attestation ({{attestations}}) or Certificate ({{certificates}}) defines which of these are used.
-
-### Attestation Data
-
-The data being attested to. It can be one of the following forms:
-
-1. Claims
-2. Assertions
-3. Attestations
-
-This field is variable length with no limit and specific definitions of an Attestation ({{attestations}}) or Certificate ({{certificates}}) indicate the fields, size and ordering of any subfields.
-
-### Expiration Timestamp
-
-A UTC timestamp set some time into the future to indicate a point the Attestation Structure should not be trusted.
-
-<!-- Author Note (atw): we need to highlight here how important the delta needs to be, but not over constrain -->
-
-The time delta into the future is of important concern as replay attacks on during flight could compromise the goals of DRIP. Attestations and certificates intended for public use and lower in the tree (importantly any generated for a Session ID ({{sid-registration}})).
-
-For this reason deltas SHOULD be kept as short as possible for the given use-case to avoid issues with replays.
-
-### Signing Timestamp
-
-A UTC timestamp set to the time when the Attestation Structure was signed.
+Other forms of the scope could for example be a 4-dimensional volume definition. This could be in raw latitude, longitude, altitude pairs or may be a URI pointing to scope information.
 
 ### Signature
 
-An EdDSA25519 signature using the signing parties private key over the preceding fields in the Attestation Structure.
+The `signature` section contain the signature data for the endorsement. The signature itself MUST be provided under the `sig` key. Other forms or data elements could also be present in the `signature` section if specified in a specific endorsement.
 
->> Note: the preceding fields of the Attestation Structure actually form an Assertion, with all fields acting as Claims
+## Self-Endorsement (SE-x) {#self-endorsement}
 
-## Attestations
+~~~~
+self_endorsement = {
+  identity: {
+      hhit: bstr .size 16,
+  },
+  evidence": bstr,
+  scope: {
+      vnb: number,
+      vna: number
+  }
+  signature: {
+      sig: bstr
+  }
+}
+~~~~
+{:fig #se-x title="Self-Endorsement CDDL Structure"}
 
-### Self-Attestation (SA-x) {#self-attestation}
+In a Self-Endorsement the `identity` is a HHIT/DET and the `evidence` is the associate HI. The HI could be removed, resulting in an "empty" Endorsement, when obtaining the HI via other means (such as DNS) is guaranteed. This behavior is NOT RECOMMENDED as the data being signed would be very short.
 
-The only attestation to use a claim (the Host Identity) in the `Attestation Data` with the DET acting as the `Attestor Identity Information`.
+<!-- TODO: do we specify HI in 'evidence' or place it in 'identity'? There is no difference when encoded. Perhaps semantically there MUST always be evidence of some form; justifying the separation? -->
+
+## Generic Endorsement (GE-x.y) {#endorsement}
+
+~~~~
+generic_endorsement = {
+  identity: {
+      hhit: bstr .size 16,
+      hi: bstr
+  },
+  evidence": bstr,
+  scope: {
+      vnb: number,
+      vna: number
+  }
+  signature: {
+      sig: bstr
+  }
+}
+~~~~
+{:fig #e-xy title="Endorsement CDDL Structure"}
+
+An endorsement used to sign over evidence that is being endorsed. Typically the `evidence` is filled with a byte string of a Self-Endorsement ({{self-endorsement}}) of another party.
+
+## Concise Endorsement (CE-x.y) {#concise-endorsement}
+
+~~~~
+concise_endorsement = {
+  identity: {
+      hhit: bstr .size 16,
+  },
+  evidence": bstr,
+  scope: {
+      vnb: number,
+      vna: number
+  }
+  signature: {
+      sig: bstr
+  }
+}
+~~~~
+{:fig #ce-xy title="Concise Endorsement CDDL Structure"}
+
+An endorsement signing over only the HHIT/DET of Y (as `evidence`) and the HHIT/DET of X (as `identity`). In constrained environments and when there is the guarantee of being able to lookup the HHITs/DETs to obtain HIs this endorsement can be used.
+
+## Mutual Endorsement (ME-x.y) {#mutual-endorsement}
+
+~~~~
+mutual_endorsement = {
+  identity: {
+      hhit: bstr .size 16,
+  },
+  evidence": bstr,
+  scope: {
+      vnb: number,
+      vna: number
+  }
+  signature: {
+      sig: bstr
+  }
+}
+~~~~
+{:fig #me-xy title="Mutual Endorsement CDDL Structure"}
+
+An endorsement that perform a sign over an existing Generic Endorsement (as a byte string of `evidence`) where the signer is the second party of the embedded endorsement. The HHIT/DET of party Y is used as the `identity`.
+
+## Link Endorsement (LE-x.y) {#link-endorsement}
+
+~~~~
+link_endorsement = {
+  identity: {
+      hhit: bstr .size 16,
+  },
+  evidence": bstr,
+  scope: {
+      vnb: number,
+      vna: number
+  }
+  signature: {
+      sig: bstr
+  }
+}
+~~~~
+{:fig #le-xy title="Link Endorsement CDDL Structure"}
+
+An endorsement that performs a sign over an existing Concise Endorsement (in byte string form for `evidence`) where the signer is the second party of the embedded endorsement. The HHIT/DET of party Y is used as the `identity`.
+
+## Broadcast Endorsement (BE-x.y) {#broadcast-endorsement}
+
+~~~~
+broadcast_endorsement = {
+  identity: {
+      hhit: bstr .size 16,
+  },
+  evidence": bstr,
+  scope: {
+      vnb: number,
+      vna: number
+  }
+  signature: {
+      sig: bstr
+  }
+}
+~~~~
+{:fig #be-xy title="Broadcast Endorsement CDDL Structure"}
+
+This endorsement is required by DRIP Authentication Formats & Protocols for Broadcast RID ({{drip-auth}}) to satisfy {{RFC9153}} GEN-1 and GEN-3 and is sent in its binary form ({{bin-be}}).
+
+The `evidence` is a concatenated byte string of the HHIT/DET of Y and the HI of Y in HHIT/HI order. The `identity` is the HHIT/DET of X.
+
+## Abbreviations & File Naming Conventions
+
+The names of endorsements can become quite long and tedious to write out. As such this section provides a guide to a somewhat standardized way they are written in text.
+
+### In Text Abbreviation
+
+In a long form the name of a particular endorsement can be written as follows:
+
+- `Self-Endorsement: Unmanned Aircraft`
+- `Generic Endorsement: Operator on Aircraft` or `Generic Endorsement: Operator, Aircraft`
+
+When multiple entities are listed they can be separated by either `on` or by `,`. These long forms can be shortened:
+
+- `SE(Unmanned Aircraft)` or `SE-ua`
+- `GE(Operator, Unmanned Aircraft)` or `GE-op.ua`
+
+Typical abbreviations for the entity can be used such as `Unmanned Aircraft` being shorthanded to `ua`.
+
+### File Naming
+
+For file naming of various endorsements a similar format to the short form is used:
+
+- `se-{hash of entity}`
+- `ge-{hash of entity x}_{hash of entity y}`
+
+Some examples of file names:
+
+- `se-79d8a404d48f2ef9.cert`
+- `ge-120b8f25b198c1e1_79d8a404d48f2ef9.cert`
+
+# X.509 Certificates
+
+## Certificate Policy and Certificate Stores
+
+X.509 certificates are optional for the DRIP entities covered in this document.  DRIP endpoint entities (EE) (i.e., UA, GCS, and Operators) may benefit from having X.509 certificates.  Most of these certificates will be for their DET and some will be for other UAS identities.  To provide for these certificates, some of the other entities covered in this document will also have certificates to create and manage the necessary PKI structure.
+
+Any Certificate Authority (CA) supporting DRIP entities SHOULD adhere to the ICAO's International Aviation Trust Framework (IATF) Certificate Policy [ICAO-IATF-CP-draft].  The CA(s) supporting this CP MUST either be a part of the IATF Bridge PKI or part of the IATF CA Trust List.
+
+EEs may use their X.509 certificates, rather than their rawPublicKey (i.e. HI) in authentication protocols (as not all may support rawPublicKey identities).  Some EE HI may not be 'worth' supporting the overhead of X.509.  Short lived DETs like those used for a single operation or even for a day's operations may not benefit from X.509. Creating then almost immediately revoking these certificates is a considerable burden on all parts of the system.  Even using a short not AfterDate will completely mitigate the burden of managing these certificates.  That said, many EEs will benefit to offset the effort. It may also be a regulator requirement to have these certificates.
+
+Typically an HDA either does or does not issue a certificate for all its DETs. An RAA may specifically have some HDAs for DETs that do not want/need certificates and other HDAs for DETs that do need them. These types of HDAs could be managed by a single entity thus providing both environments for its customers.
+
+It is recommended that DRIP X.509 certificates be stored as DNS TLSA Resource Records.  This not only generally improves certificate lookups, but also enables use of DANE {{RFC6698}} for the various servers in the UTM and particularly DRIP registry environment and DANCE {{dane-clients}} for EEs (e.g. {{drip-secure-nrid-c2}}). All DRIP certificates MUST be available via RDAP. LDAP/OCSP access for other UTM and ICAO uses SHOULD also be provided.
+
+## Certificate Management
+
+(mostly TBD still)
+
+PKIX standard X.509 issuance practices should be used. The certificate request SHOULD be included in the DET registration request. A successful DET registration then MUST include certificate creation, store, and return to the DET registrant.
+
+Certificate revocation will parallel DET revocation. TLSA RR MUST be deleted from DNS and RDAP, LDAP, and OCSP return revoked responses. CRLs SHOULD be maintained per the CP.
+
+Details of this are left out, as there are a number of approaches and further research and experience will be needed.
+
+## Examples
+
+TBD
+
+## Alternative Certificate Encoding
+
+(CBOR encoded certs here.  TBD)
+
+# IANA Considerations
+
+TODO: requesting `hhit.arpa`
+
+## IANA DRIP Registry
+
+### DRIP Endorsement Subregistries
+
+This document requests a new subregistries for Endorsement Type and Entity Type under the [DRIP registry](https://datatracker.ietf.org/doc/html/draft-ietf-drip-rid-28#section-8.2).
+
+DRIP Endorsement Type:
+
+: This 8-bit valued subregistry is for Endorsement Types to be used in OID's for CERT Resource Records. Future additions to this subregistry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
+
+| Endorsement Type        | Value     |
+| ----------------------- | --------- |
+| Self-Endorsement        | 1         |
+| Generic Endorsement     | 2         |
+| Concise Endorsement     | 3         |
+| Mutual Endorsement      | 4         |
+| Link Endorsement        | 5         |
+| Broadcast Endorsement   | 6         |
+
+DRIP Entity Type:
+
+: This 8-bit valued subregistry is for Entity Types to be used in OID's for CERT Resource Records. Future additions to this subregistry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
+
+| Entity Type                  | Value     |
+| ---------------------------- | --------- |
+| Unmanned Aircraft (UA)       | 1         |
+| Ground Control Station (GCS) | 2         |
+| Operator (OP)                | 3         |
+| HDA                          | 4         |
+| RAA                          | 5         |
+| Root                         | 6         |
+
+### Aircraft Information Subregistry {#ua-info-registry}
+
+This document requests a new subregistry for aircraft information fields under the [DRIP registry](https://datatracker.ietf.org/doc/html/draft-ietf-drip-rid-28#section-8.2).
+
+Aircraft Information Fields:
+
+: list of acceptable keys to be used in `UA Information` during a UA registration to an MRA or HDA. Future additions to this subregistry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
+
+<!-- TODO: maybe first come first served instead of expert review? -->
+
+| Key Name | Type | Description |
+|--------- | ---- | ----------- |
+| length | float | length, in millimeters |
+| width | float | width, in millimeters |
+| height | float | height, in millimeters |
+| constructionMaterial | tstr | materials, comma separated if multiple |
+| color | tstr | colors, comma separated if multiple |
+
+<!-- TODO: add more keys that are common and well defined -->
+
+# Security Considerations
+
+## Key Rollover & Federation
+
+During key rollover the DIME MUST inform all children and parents of the change - using best standard practices of a key rollover. At time of writing this is signing over the new key with the previous key in a secure fashion and it being validated by others before changing any links (in DRIPs case the NS RRs in the parent registry).
+
+A DET has a natural ability for a single DIME to hold different cryptographic identities under the same HID values. This is due to the lower 64-bits of the DET being a hash of the public key and the HID of the DET being generated. As such during key rollover, only the lower 64-bits would change and a check for a collision would be required.
+
+This attribute of the DET to have different identities could also allow for a single registry to be "federated" across them if they share the same HID value. This method of deployment has not been thoroughly studied at this time.
+
+## DET Generation {#det-gen-concern}
+
+Under the FAA {{NPRM}}, it is expecting that IDs for UAS are assigned by the UTM and are generally one-time use. The methods for this however are unspecified leaving two options.
+
+Option 1:
+
+> The entity generates its own DET, discovering and using the RAA and HDA for the target registry. The method for discovering a registry's RAA and HDA is out of scope here. This allows for the device to generate an DET to send to the registry to be accepted (thus generating the required Self-Endorsement) or denied.
+
+Option 2:
+
+> The entity sends to the registry its HI for it to be hashed and result in the DET. The registry would then either accept (returning the DET to the device) or deny this pairing.
+
+Keypairs are expected to be generated on the device hardware it will be used on. Due to hardware limitations and connectivity it is acceptable, though not recommended, under DRIP to generate keypairs for the Aircraft on Operator devices and later securely inject them into the Aircraft. The methods to securely inject and store keypair information in a “secure element” of the Aircraft is out of scope of this document.
+
+# Acknowledgements
+
+Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LLC) for their early work on the DRIP registries concept. Their early contributions laid the foundations for the content and processes of this architecture and document.
+
+--- back
+
+# Binary Endorsements {#bin-examples}
+
+<!-- TODO: add explicit byte lengths for fields for each example -->
+
+## Self-Endorsement (SE-x) {#bin-se}
 
 ~~~~
  0                   1                   2                   3
@@ -1105,9 +921,9 @@ The only attestation to use a claim (the Host Identity) in the `Attestation Data
 |                                                               |
 |                                                               |
 +---------------+---------------+---------------+---------------+
-|                         Trust Timestamp                       |
+|                        Valid Not Before                       |
 +---------------+---------------+---------------+---------------+
-|                        Signing Timestamp                      |
+|                        Valid Not After                        |
 +---------------+---------------+---------------+---------------+
 |                                                               |
 |                                                               |
@@ -1126,34 +942,38 @@ The only attestation to use a claim (the Host Identity) in the `Attestation Data
 |                                                               |
 |                                                               |
 +---------------+---------------+---------------+---------------+
-
-Length = 120-bytes
 ~~~~
-{:fig #axx-fig title="DRIP Self-Attestation"}
+{:fig #bin-se-x title="Binary Self-Endorsement (Length: 120-bytes)"}
 
-### Attestation (A-x.y) {#attestation}
-
-The standard first level DRIP Attestation form using a Self-Attestations of the signer and of the data being signed.
+## Endorsement (E-x.y) {#bin-e}
 
 ~~~~
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 +---------------+---------------+---------------+---------------+
 |                                                               |
-.                                                               .
-.                             SA-xx                             .
-.                                                               .
+|                             DRIP                              |
+|                        Entity Tag of X                        |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                       Host Identity of X                      |
+|                                                               |
+|                                                               |
+|                                                               |
 |                                                               |
 +---------------+---------------+---------------+---------------+
 |                                                               |
 .                                                               .
-.                             SA-yy                             .
+.                             SE-y                              .
 .                                                               .
 |                                                               |
 +---------------+---------------+---------------+---------------+
-|                      Trust Timestamp by X                     |
+|                     Valid Not Before by X                     |
 +---------------+---------------+---------------+---------------+
-|                     Signing Timestamp by X                    |
+|                     Valid Not After by X                      |
 +---------------+---------------+---------------+---------------+
 |                                                               |
 |                                                               |
@@ -1172,14 +992,10 @@ The standard first level DRIP Attestation form using a Self-Attestations of the 
 |                                                               |
 |                                                               |
 +---------------+---------------+---------------+---------------+
-
-Length = 312-bytes
 ~~~~
-{:fig #axy-fig title="DRIP Attestation"}
+{:fig #bin-e-xy title="Binary Endorsement (Length: 240-bytes)"}
 
-### Concise Attestation (CA-x.y) {#concise-attestation}
-
-In constrained environments and when there is the guarantee of being able to lookup the DETs to obtain HIs this attestation can be used.
+## Concise Endorsement (CE-x.y) {#bin-ce}
 
 ~~~~
  0                   1                   2                   3
@@ -1195,9 +1011,9 @@ In constrained environments and when there is the guarantee of being able to loo
 |                        Entity Tag of Y                        |
 |                                                               |
 +---------------+---------------+---------------+---------------+
-|                      Trust Timestamp by X                     |
+|                     Valid Not Before by X                     |
 +---------------+---------------+---------------+---------------+
-|                     Signing Timestamp by X                    |
+|                     Valid Not After by X                      |
 +---------------+---------------+---------------+---------------+
 |                                                               |
 |                                                               |
@@ -1216,14 +1032,10 @@ In constrained environments and when there is the guarantee of being able to loo
 |                                                               |
 |                                                               |
 +---------------+---------------+---------------+---------------+
-
-Length = 104-bytes
 ~~~~
-{:fig #c-axy-fig title="DRIP Concise Attestation"}
+{:fig #bin-ce-xy title="Binary Concise Endorsement (Length: 104-bytes)"}
 
-### Mutual Attestation (MA-x.y) {#mutual-attestation}
-
-An attestation that perform a sign over an existing Attestation where the signer is the second party of the embedded attestation. The DET of party Y is used as the `Attestor Identity Information` ({{attestor-identity-information}}).
+## Mutual Endorsement (ME-x.y) {#bin-me}
 
 ~~~~
  0                   1                   2                   3
@@ -1236,13 +1048,13 @@ An attestation that perform a sign over an existing Attestation where the signer
 +---------------+---------------+---------------+---------------+
 |                                                               |
 .                                                               .
-.                              A-xy                             .
+.                              E-xy                             .
 .                                                               .
 |                                                               |
 +---------------+---------------+---------------+---------------+
-|                      Trust Timestamp by Y                     |
+|                     Valid Not Before by Y                     |
 +---------------+---------------+---------------+---------------+
-|                     Signing Timestamp by Y                    |
+|                     Valid Not After by Y                      |
 +---------------+---------------+---------------+---------------+
 |                                                               |
 |                                                               |
@@ -1261,14 +1073,10 @@ An attestation that perform a sign over an existing Attestation where the signer
 |                                                               |
 |                                                               |
 +---------------+---------------+---------------+---------------+
-
-Length = 400-bytes
 ~~~~
-{:fig #m-axy-fig title="DRIP Mutual Attestation"}
+{:fig #bin-m-xy title="Binary Mutual Endorsement (Length: 328-bytes"}
 
-### Link Attestation (LA-x.y) {#link-attestation}
-
-An attestations that perform a sign over an existing Concise Attestation where the signer is the second party of the embedded attestation. The DET of party Y is used as the `Attestor Identity Information` ({{attestor-identity-information}}).
+## Link Endorsement (LE-x.y) {#bin-le}
 
 ~~~~
  0                   1                   2                   3
@@ -1285,9 +1093,9 @@ An attestations that perform a sign over an existing Concise Attestation where t
 .                                                               .
 |                                                               |
 +---------------+---------------+---------------+---------------+
-|                      Trust Timestamp by Y                     |
+|                     Valid Not Before by Y                     |
 +---------------+---------------+---------------+---------------+
-|                     Signing Timestamp by Y                    |
+|                     Valid Not After by Y                      |
 +---------------+---------------+---------------+---------------+
 |                                                               |
 |                                                               |
@@ -1306,14 +1114,10 @@ An attestations that perform a sign over an existing Concise Attestation where t
 |                                                               |
 |                                                               |
 +---------------+---------------+---------------+---------------+
-
-Length = 192-bytes
 ~~~~
-{:fig #l-axy-fig title="DRIP Link Attestation"}
+{:fig #bin-le-xy title="DRIP Link Endorsement (Length: 192-bytes)"}
 
-### Broadcast Attestation (BA-x.y) {#broadcast-attestation}
-
-Required by DRIP Authentication Formats for Broadcast RID ({{drip-auth}}) to satisfy {{?drip-requirements}} GEN-1 and GEN-3.
+## Broadcast Endorsement (BE-x.y) {#bin-be}
 
 ~~~~
  0                   1                   2                   3
@@ -1338,9 +1142,9 @@ Required by DRIP Authentication Formats for Broadcast RID ({{drip-auth}}) to sat
 |                                                               |
 |                                                               |
 +---------------+---------------+---------------+---------------+
-|                      Trust Timestamp by X                     |
+|                     Valid Not Before by X                     |
 +---------------+---------------+---------------+---------------+
-|                     Signing Timestamp by X                    |
+|                     Valid Not After by X                      |
 +---------------+---------------+---------------+---------------+
 |                                                               |
 |                                                               |
@@ -1359,371 +1163,5 @@ Required by DRIP Authentication Formats for Broadcast RID ({{drip-auth}}) to sat
 |                                                               |
 |                                                               |
 +---------------+---------------+---------------+---------------+
-
-Length = 136-bytes
 ~~~~
-{:fig #b-axy-fig title="DRIP Broadcast Attestation"}
-
-## Certificates
-
-In DRIP certificates are signed by a third party that has no stake in the claims/assertions/attestations being attested to.
-
-It is analogous to a third party in legal system that signs a document as a "witness" and bears no responsibility in the document.
-
-### Attestation Certificate (AC-z.x.y) {#attestation-certificate}
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                             SA-zz                             .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                              A-xy                             .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                      Trust Timestamp by Z                     |
-+---------------+---------------+---------------+---------------+
-|                     Signing Timestamp by Z                    |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                         Signature by Z                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-Length = 504-bytes
-~~~~
-{:fig #a-cxy-fig title="DRIP Attestation Certificate"}
-
-### Concise Certificate (CC-z.x.y) {#concise-certificate}
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                             DRIP                              |
-|                        Entity Tag of Z                        |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                             CA-xy                             .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                      Trust Timestamp by Z                     |
-+---------------+---------------+---------------+---------------+
-|                     Signing Timestamp by Z                    |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                         Signature by Z                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-Length = 192-bytes
-~~~~
-{:fig #c-cxy-fig title="DRIP Concise Certificate"}
-
-### Link Certificate (LC-z.x.y) {#link-certificate}
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                             DRIP                              |
-|                        Entity Tag of Z                        |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                             LA-xy                             .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                      Trust Timestamp by Z                     |
-+---------------+---------------+---------------+---------------+
-|                     Signing Timestamp by Z                    |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                         Signature by Z                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-Length = 300-bytes
-~~~~
-{:fig #l-cxy-fig title="DRIP Link Certificate"}
-
-### Mutual Certificate (MC-z.x.y) {#mutual-certificate}
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                             SA-zz                             .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                             MA-xy                             .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                      Trust Timestamp by Z                     |
-+---------------+---------------+---------------+---------------+
-|                     Signing Timestamp by Z                    |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                         Signature by Z                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-Length = 576-bytes
-~~~~
-{:fig #m-cxy-fig title="DRIP Mutual Certificate"}
-
-## Abbreviations & File Naming Conventions
-
-The names of attestation and certificates can become quite long and tedious to write out. As such this section provides a guide to a somewhat standardized way they are written in text.
-
-### In Text Abbreviation
-
-In a long form the name of a particular attestation/certification can be written as follows:
-
-- `Self-Attestation: Unmanned Aircraft`
-- `Attestation: Operator on Aircraft` or `Attestation: Operator, Aircraft`
-- `Attestation Certificate: Registry on Operator on Aircraft` or `Attestation Certificate: Registry, Operator, Aircraft`
-
-When multiple entities are listed they can be separated by either `on` or by `,`. These long forms can be shortened:
-
-- `SA(Unmanned Aircraft)` or `SA-ua`
-- `A(Operator, Unmanned Aircraft)` or `A-op.ua`
-- `AC(Registry, Operator, Aircraft)` or `AC-reg.op.ua`
-
-Typical abbreviations for the entity can be used such as `Unmanned Aircraft` being shorthanded to `ua`.
-
-### File Naming
-
-For file naming of various certificates a similar format to the short form is used:
-
-- `sa-{hash of entity}`
-- `a-{hash of entity x}_{hash of entity y}`
-- `ac-{hash of entity z}_{hash of entity x}_{hash of entity y}`
-
-Some examples of file names:
-
-- `sa-79d8a404d48f2ef9.cert`
-- `a-120b8f25b198c1e1_79d8a404d48f2ef9.cert`
-- `ac-aac6b00abba268b7_120b8f25b198c1e1_79d8a404d48f2ef9.cert`
-
-# X.509 Certificates
-
-## Certificate Policy and Certificate Stores
-
-X.509 certificates are optional for the DRIP entities covered in this
-document.  DRIP endpoint entities (EE) (i.e., UA, GCS, and Operators)
-may benefit from having X.509 certificates.  Most of these certificates
-will be for their DET and some will be for other UAS identities.  To
-provide for these certificates, some of the other entities covered in
-this document will also have certificates to create and manage the
-necessary PKI structure.
-
-Any Certificate Authority (CA) supporting DRIP entities SHOULD adhere to
-the ICAO's International Aviation Trust Framework (IATF) Certificate
-Policy [ICAO-IATF-CP-draft].  The CA(s) supporting this CP MUST either
-be a part of the IATF Bridge PKI or part of the IATF CA Trust List.
-
-EEs may use their X.509 certificates, rather than their rawPublicKey
-(i.e. HI) in authentication protocols (as not all may support
-rawPublicKey identities).  Some EE HI may not be 'worth' supporting the
-overhead of X.509.  Short lived DETs like those used for a single
-operation or even for a day's operations may not benefit from X.509. 
-Creating then almost immediately revoking these certificates is a
-considerable burden on all parts of the system.  Even using a short
-notAfterDate will completely mitigate the burden of managing these
-certificates.  That said, many EEs will benefit to offset the effort. 
-It may also be a regulator requirement to have these certificates.
-
-Typically an HDA either does or does not issue a certificate for all its
-DETs.  An RAA may specifically have some HDAs for DETs that do not
-want/need certificates and other HDAs for DETs that do need them.  These
-types of HDAs could be managed by a single entity thus providing both
-environments for its customers.
-
-It is recommended that DRIP X.509 certificates be stored as DNS TLSA
-Resource Records.  This not only generally improves certificate lookups,
-but also enables use of DANE [RFC6698] for the various servers in the
-UTM and particularly DRIP registry environment and DANCE [dane-clients] for EEs (e.g. [drip-secure-nrid-c2]). 
-All DRIP certificates MUST be available via RDAP.  LDAP/OCSP access for
-other UTM and ICAO uses SHOULD also be provided.
-
-## Certificate Management
-
-(mostly TBD still)
-
-PKIX standard X.509 issuance practices should be used.  The certificate
-request SHOULD be included in the DET registration request ({{registry-operations}}).  A successful DET registration then MUST
-include certificate creation, store, and return to the DET registrant.
-
-Certificate revocation will parallel DET revocation.  TLSA RR MUST be
-deleted from DNS and RDAP, LDAP, and OCSP return revoked responses. 
-CRLs SHOULD be maintained per the CP.
-
-Details of this are left out, as there are a number of approaches and
-further research and experience will be needed.
-
-## Examples
-
-TBD
-
-## Alternative Certificate Encoding
-
-(CBOR encoded certs here.  TBD)
-
-
-# Blockchain-based Registries
-
-The implementation of the registries and Network Remote Identification
-(Network RID; identify a UA through the network) in DRIP
-is yet to be determined. Blockchain, being synonymous with ledger,
-is a technology that could naturally fulfil the role of a registry, while
-simultaneously offering its benefits such as auditability, persistency
-and decentralization. We suggest that blockchain is an
-ample candidate to be used as registry within DRIP. We also show
-that it can be used to effectively leverage Network RID in certain
-scenarios. Thus 1) We propose a novel drone ID architecture based on Hyperledger
-Iroha and describe its proof-of-concept implementation with DRIP.
-2) Its performance and scalability is empirically evaluated. 3) We
-perform an informal security analysis of the system against various
-types of attacks [[Secure Drone Identification with Hyperledger Iroha]].
-
-
-Figure 1: Architecture using blockchain as registry for DRIP
-
-
-The proposed architecture is presented in Fig. 1. It consists of the
-usual actors in a UAS network, along with the blockchain registry
-based on Hyperledger Iroha. Key components:
-• Authorized users (administrators) can register new UAs to
-the network, and store with them any relevant data such as
-public keys and certificates.
-
-Drones can either send location updates directly to the blockchain,
-given that they are connected to the Internet, or send location
-updates to their connected Ground Control Station (GCS)
-that forwards it on behalf of the drones.
-• Observers can receive drone messages either through bluetooth
-and WiFi broadcasts from drones, or by polling the
-blockchain. They can also fetch the public key associated
-with a drone in order to validate its messages.
-• The blockchain network and its nodes are an entirely separate
-entity, no other actor participates in the consensus of
-new blocks.
-
-
-Actors within DRIP (except observers) will be registered as accounts
-on the blockchain network. Each of these accounts will have their
-DRIP identities, certificates and public keys stored and available so
-that they can be validated and used for validation by any account
-on the blockchain. Note that DRIP crypto key-pairs are separate
-from the blockchain crypto key-pairs. DRIP key-pairs are used to
-sign, verify and validate DRIP identities and messages, while the
-blockchain key-pairs are used to sign, verify and validate transactions
-on the blockchain.
-
-
-The DRIP requirements for a registry are the following:
-(1) REG-1: Public lookup
-(2) REG-2: Private lookup
-(3) REG-3: Provisioning (of static/dynamic data of UAs)
-(4) REG-4: AAA Policy
-
-
-REG-1 & REG-2. In Hyperledger Iroha, accounts are created
-on domains. The same account name can be used for multiple domains,
-and these are seen as separate accounts on Iroha. PII for
-an account can therefore be stored on a separate account (with
-the same account name) existing on a separate domain, that only
-allows certain accounts to view its account details. Accordingly, a
-registry using Iroha would need at least two domains associated
-with it for any given account, one for public lookup and one for
-private lookup.
-
-
-REG-3 & REG-4. The details for an account are set with a
-key/value pair. Key/value pairs can not be removed once they are
-set, values can only be modified through the corresponding key.
-Furthermore, the account that sets a key/value pair is included in
-the account details as a key/value pair itself, meaning one account
-can not modify details set by another account. See Listing 1 for
-clarification. Notice that both accounts have set the same key but
-contain different values. This sort of implementation supports both
-non-repudiation, but also trust in the sense that a drone (assuming
-the drone is not compromised) can always trust its own data, and
-does not have to interpret data coming from other accounts. Similarly,
-other accounts accessing another account’s data can trust
-that it is set by the corresponding account (e.g. fetching gps data).
-
-[Secure Drone Identification with Hyperledger Iroha]: https://doi.org/10.1145/3479243.3487305
+{:fig #bin-be-xy title="DRIP Broadcast Endorsement (Length: 136-bytes)"}
