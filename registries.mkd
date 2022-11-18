@@ -39,6 +39,7 @@ normative:
     RFC9153: # drip-requirements
     drip-arch: I-D.ietf-drip-arch
     drip-rid: I-D.ietf-drip-uas-rid
+    RFC8610: #CDDL
 
 informative:
     RFC4398:
@@ -81,6 +82,8 @@ While most data to be sent via Broadcast or Network RID is public, much of the e
 The intent of the negative and positive access control requirements on registries is to ensure that no member of the public would be hindered from accessing public information, while only duly authorized parties would be enabled to access private information. Mitigation of Denial of Service attacks and refusal to allow database mass scraping would be based on those behaviors, not on identity or role of the party submitting the query per se, but querant identity information might be gathered (by security systems protecting DRIP implementations) on such misbehavior.
 
 Registration under DRIP is vital to manage the inevitable collisions in the hash portion of the DET. Forgery of the DET is still possible, but including it as a part of a public registration mitigates this risk. This document creates the DRIP DET registration and discovery ecosystem.  This includes all components in the ecosystem (e.g., RAA, HDA, UA, GCS, USS).  
+
+This document uses the Concise Data Definition Language (CDDL) {{RFC8610}} for describing the registration data.
 
 ## Abstract Process & Reasoning
 
