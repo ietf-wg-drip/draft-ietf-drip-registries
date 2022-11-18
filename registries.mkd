@@ -194,6 +194,11 @@ If a DIME does not have an abbreviation or it can not be looked up then the rece
 
 # DIME Architecture {#dime-arch}
 
+The DIME, in any of its roles ({{dime-roles}}), is comprised of a number of logical components that are depicted in {{dime-arch-fig}}. Any of these components could be delegated to other entities as a service both co-located or remote. For example:
+
+- The Name Server component could be handled by a well-established DNS registrar/registry with the DRIP Provisioning Agent (DPA) ({{dpa}}) interfacing to them. 
+- The DPA, Registry, and Name Server may all be co-located in one implementation with an interface to a DRIP Information Agent (DIA) offered by another organization.
+
 ~~~~
 +--------------------+
 | Registering Client |
@@ -227,7 +232,6 @@ If a DIME does not have an abbreviation or it can not be looked up then the rece
 ~~~~
 {:fig #dime-arch-fig title="Registry Hierarchy"}
 
-The DIME, in any of its roles ({{dime-roles}}), is comprised of a number of logical components that perform specific functions. Any of these components in {{dime-arch}} could be delegated to other entities as a service both co-located or remote. For example the Name Server component could be handled by a well established DNS registrar/registry with the DRIP Provisioning Agent (DPA) ({{dpa}}) interfacing to them. Another common example may be the DPA, Registry and Name Server are all co-located in one implementation with an interface to a DRIP Information Agent (DIA) offered by another organization.
 
 ## DRIP Provisioning Agent (DPA) {#dpa}
 
