@@ -123,7 +123,7 @@ RAA:
 
 # DIME Roles {#dime-roles}
 
-The DRIP Identity Management Entity (DIME) is an entity encompassed various logical components ({{dime-arch}}) and can be classified to serve a number of different roles (this section). The general hierarchy of these roles are illustrated in {{reg-class-fig}}.
+{{{drip-arch}} defines the DRIP Identity Management Entity (DIME) is an entity that vets Claims and/or Evidence from a registrant and delivers back Endorsements and/or Certificates in response. The DIME encompasses various logical components and can be classified to serve a number of different roles, which are detailed in teh following subsections. The general hierarchy of these roles are illustrated in {{reg-class-fig}}.
 
 {:fig: artwork-align="center"}
 ~~~~
@@ -143,11 +143,11 @@ RAAs        |  IRM  |  |  RAA  o------.
 HDAs        |  MRA  |  | RIDR  |  |  HDA  |
             +-------+  +-------+  +-------+
 ~~~~
-{:fig #reg-class-fig title="Registry Hierarchy"}
+{:fig #reg-class-fig title="DIME Roles and Hierarchy"}
 
 ## Apex
 
-The apex is special DIME role that holds the value of RAA=0 and HDA=0. It serves as the branch point from the larger DNS system in which HHITs are defined. The Apex generally has prefix portions of the HHIT associated with it (such as 2001:0030/28) which are assigned by IANA from the non-routable special IPv6 address space for ORCHIDs (where HHITs are derived from).
+The apex is a special DIME role that holds the value of RAA=0 and HDA=0. It serves as the branch point from the larger DNS system in which HHITs are defined. The Apex generally has prefix portions of the HHIT associated with it (such as 2001:0030/28) which are assigned by IANA from the non-routable special IPv6 address space for ORCHIDs (where HHITs are derived from).
 
 The Apex manages all delegations and allocations of the HHIT's RAA to various parties with NS records to redirect DNS queries to proper sub-branches.
 
