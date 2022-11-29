@@ -123,7 +123,7 @@ RAA:
 
 # DIME Roles {#dime-roles}
 
-{{{drip-arch}} defines the DRIP Identity Management Entity (DIME) is an entity that vets Claims and/or Evidence from a registrant and delivers back Endorsements and/or Certificates in response. The DIME encompasses various logical components and can be classified to serve a number of different roles, which are detailed in teh following subsections. The general hierarchy of these roles are illustrated in {{reg-class-fig}}.
+{{{drip-arch}} defines the DRIP Identity Management Entity (DIME) as an entity that vets Claims and/or Evidence from a registrant and delivers back Endorsements and/or Certificates in response. The DIME encompasses various logical components and can be classified to serve a number of different roles, which are detailed in the following subsections. The general hierarchy of these roles are illustrated in {{reg-class-fig}}.
 
 {:fig: artwork-align="center"}
 ~~~~
@@ -145,9 +145,11 @@ HDAs        |  MRA  |  | RIDR  |  |  HDA  |
 ~~~~
 {:fig #reg-class-fig title="DIME Roles and Hierarchy"}
 
+<!-- TODO: look in following subsections to determine if DET or HHIT is used; I assume DET is correct at this stage but may need HHIT references when talking about technical components? -->
+
 ## Apex
 
-The apex is a special DIME role that holds the value of RAA=0 and HDA=0. It serves as the branch point from the larger DNS system in which HHITs are defined. The Apex generally has prefix portions of the HHIT associated with it (such as 2001:0030/28) which are assigned by IANA from the non-routable special IPv6 address space for ORCHIDs (where HHITs are derived from).
+The Apex is a special DIME role that holds the value of RAA=0 and HDA=0. It serves as the branch point from the larger DNS system in which HHITs are defined. The Apex generally has as prefix portions of the HHIT associated with it (such as 2001:0030/28) which are assigned by IANA from the non-routable special IPv6 address space for ORCHIDs (where HHITs are derived from).
 
 The Apex manages all delegations and allocations of the HHIT's RAA to various parties with NS records to redirect DNS queries to proper sub-branches.
 
@@ -157,7 +159,7 @@ RAA's are the upper hierarchy in DRIP (denoted by a 14-bit field (16,384 RAAs) o
 
 For DRIP and the UAS use case ICAO will handle the registration of RAAs. Once ICAO accepts an RAA, it will assign a number and create a zone delegation under the `<prefix>.hhit.arpa.` DNS zone for the RAA.
 
-As DETs may be used in many different domains, RAA should be allocated in blocks with consideration on the likely size of a particular usage. Alternatively, different prefixes can be used to separate different domains of use of HHITs.
+As HHITs may be used in many different domains, RAA should be allocated in blocks with consideration on the likely size of a particular usage. Alternatively, different prefixes can be used to separate different domains of use of HHITs.
 
 An RAA must provide a set of services to allocate HDAs to organizations. It must have a public policy on what is necessary to obtain an HDA. It must maintain a DNS zone minimally for discovering HID RVS servers. All RAA's use an HDA value of 0 and have their RAA value delegated to them by the Root.
 
@@ -193,14 +195,17 @@ As part of the UTM system they also hold a binding between a UAS ID (Serial Numb
 
 On receiver devices a DET can be translated to a more human readable form such as: `{RAA Abbreviation} {HDA Abbreviation} {Last 4 Characters of DET Hash}`. An example of this would be `US FAA FE23`. To support this DIMEs are RECOMMENDED to have an abbreviation that could be used for this form. These abbreviations SHOULD be a maximum of six characters in length. Spaces SHOULD NOT be used and be replaced with either underscores (`_`) or dashes (`-`). For RAAs the abbreviation is RECOMMENDED to be set to the ISO 3166 country code (either Alpha-2 or Alpha-3) for the CAA.
 
-If a DIME does not have an abbreviation or it can not be looked up then the receiver SHOULD use the hexadecimal encoding of the field it is missing.
+<!-- TODO: should we specify the fall back is hard set to a 4-character hexadecimal encoding or up to (1-4)? -->
+
+If a DIME does not have an abbreviation or it can not be looked up then the receiver SHOULD use the 4-character hexadecimal encoding of the field it is missing.
 
 # DIME Architecture {#dime-arch}
 
 The DIME, in any of its roles ({{dime-roles}}), is comprised of a number of logical components that are depicted in {{dime-arch-fig}}. Any of these components could be delegated to other entities as a service both co-located or remote. For example:
 
-- The Name Server component could be handled by a well-established DNS registrar/registry with the DRIP Provisioning Agent (DPA) ({{dpa}}) interfacing to them. 
-- The DPA, Registry, and Name Server may all be co-located in one implementation with an interface to a DRIP Information Agent (DIA) offered by another organization.
+- The Name Server component could be handled by a well-established DNS registrar/registry with the DRIP Provisioning Agent (DPA) ({{dpa}}) interfacing to them
+  - Either the DPA or the Registry/Name Server interfaces to the DRIP Information Agent (DIA)
+- The DPA, Registry, and Name Server may all be co-located in one implementation with an interface to a DIA offered by another organization from any one of the co-located components
 
 ~~~~
 +--------------------+
@@ -234,7 +239,6 @@ The DIME, in any of its roles ({{dime-roles}}), is comprised of a number of logi
                                   +---------------+
 ~~~~
 {:fig #dime-arch-fig title="Registry Hierarchy"}
-
 
 ## DRIP Provisioning Agent (DPA) {#dpa}
 
@@ -274,7 +278,7 @@ An interface defined by the Registration Data Directory Service (RDDS) ({{rdds}}
 
 ## Registration Data Directory Service (RDDS) {#rdds}
 
-This is the primary information database for the DIA. An interface MUST be provided to the DIA but its specification is out of scope as they are typically implementation specific.
+This is the primary information database for the DIA. An interface MUST be provided to the DIA but its specification is out of scope for this document.
 
 # Registration/Provisioning Process
 
@@ -284,7 +288,7 @@ The general process for a registering party is as follows:
 2. Check for collision of DET and HI
 3. Populate Registry/Name Server with required/optional resource records using the FQDN
 4. Populate DIA/RDDS with PII and other info
-5. Generate and return required/optional Endorsements/Certificates
+5. Generate and return required/optional DRIP Endorsements
 
 In the following subsections an abbreviated form of {{dime-arch}} using component abbreviations is used to describe the flow of information. The data elements being transmitted between entities is marked accordingly in each figure for the specific examples.
 
@@ -331,11 +335,11 @@ The Serial Number, UA information and the `Self-Endorsement: UA` are sent to the
 
 > Note: {{dime-sn-example}} is specific for a DET encoded Serial Number. The Endorsements in (a) and (b) as well as RRs in (c) would not be present for non-DET based Serial Numbers.
 
-Additional UA Information has a set of valid item keys defined in {{ua-info-registry}}. The items present for a given interaction is defined by future documents, local regulations and implementation specific details/capabilities.
+Additional UA Information has a set of valid item keys defined in {{ua-info-registry}}. The items present for a given interaction is defined by future documents, local regulations and implementation specific capabilities.
 
 ## Operator
 
-Either by USS or CAA run HDAs. Regulation might require interaction between them. An Operator can request that certain information normally generated and provisioned into DNS be omitted due to privacy concerns.
+Provided either by USS or CAA run HDAs. Regulation might require interaction between them. An Operator can request that certain information normally generated and provisioned into DNS be omitted due to privacy concerns.
 
 ~~~~
     +----------+
@@ -413,7 +417,7 @@ Session IDs are generally handled by HDAs, specifically RIDRs. In {{dime-sid-exa
 ~~~~
 {:fig #dime-sid-example title="Example DIME:RIDR with Session ID (DET) Registration"}
 
-Through mechanisms not specified in this document the Operator should have methods (via the GCS) to instruct the unmanned aircraft onboard systems to generate a keypair, DET and Self-Endorsement: UA. The `Self-Endorsement: UA` is extracted by the Operator onto the GCS. 
+Through mechanisms not specified in this document the Operator should have methods (via the GCS) to instruct the unmanned aircraft onboard systems to generate a keypair, DET and Self-Endorsement: UA. The `Self-Endorsement: UA` is extracted by the Operator onto the GCS.
 
 The GCS is already pre-provisioned and registered to the DIME with its own keypair, DET, `Self-Endorsement: GCS` and `Generic Endorsement: RIDR on GCS`. The GCS creates a new `Generic Endorsement: GCS on UA` and also creates `Mutual Endorsement: RIDR on GCS`. These new endorsements along with Session ID Information are sent to the DIME via a secure channel.
 
@@ -435,35 +439,80 @@ With this system it is also possible to have the GCS generate the DET based Sess
 
 ## Child DIME
 
-TODO
+Handled by the Apex and RAA's. This is an endpoint that handles dynamic registration (or key roll-over) of lower-level DIMEs (RAAs to Apex and HDAs to RAAs) in the hierarchy.
+
+~~~~
+    +---------------+
+    |   DIME: HDA   |
+    +--o---o--------+
+       |   ^
+   (a) |   | (b)
+       |   |
+*******|***|*****************************
+*      |   |    DIME: RAA               *
+*      |   |                            *
+*      v   |             +----------+   *
+*   +--o---o--+          |          |   *
+*   |   DPA   o--------->o          |   *
+*   +----o----+   (d)    |          |   *
+*        |               |          |   *
+*        | (c)           | DIA/RDDS |   *
+*        v               |          |   *
+*   +----o--------+      |          |   *
+*   | Registry/NS |      |          |   *
+*   +-------------+      |          |   *
+*                        +----------+   *
+*                                       *
+*****************************************
+
+(a) Self-Endorsement: HDA, HDA Information or Generic Endorsement: old HDA, new HDA
+(b) Success Code, Broadcast Endorsement: RAA on HDA
+(c) HIP RR, CERT RRs
+(d) HDA Information
+~~~~
+{:fig #dime-hda-example title="Example DIME:RAA with DIME:HDA Registration"}
+
+It should be noted that this endpoint DOES NOT hand out dynamically RAA/HDA values to systems that hit the endpoint. This is done out-of-band through processes specified by local regulations and performed by cognizant authorities. The endpoint MUST NOT accept queries it is not previously informed of being expected via mechanisms not defined in this document.
+
+It is OPTIONAL to implement this endpoint. This MAY be used to handle lower-level DIME key roll-over.
+
+<!-- TODO: subsections for first-time registrant vs key-roller cases? -->
 
 # Differentiated Access Process
 
-High level explanation of differentiated access goals and requirements.
+Differentiated access, as a process, is a requirement for DIMEs as defined in {{RFC9153}} by the combination of PRIV-1, PRIV-3, PRIV-4, REG-2 and REG-4. {{drip-arch}} further elaborates on the concept by citing RDAP (from {{RFC7480}}, {{RFC9082}} and {{RFC9083}}) as a potential means of fulfilling this requirement.
+
+Typically the cognizant authority is the primary querant of private information from a DIME if a Session ID is reported (the case of the owner of the private information is ignored for the moment). This capability MAY be delegated to other parties at the authorities discretion (be it to a single user or many), thus requiring a flexible system to delegate, determine and revoke querent access rights for information. XACML MAY be a good technology choice for this flexibility.
+
+It is noted by the authors that as this system scales the problem becomes a, well known and tricky, key management problem. While recommendations for key management are useful they are not necessarily in scope for this document as BCPs around key management should already be mandated and enforced by the cognizant authorities in their existing systems. This document instead focuses on finding a balance for generic wide-spread interoperability between DIMEs and authorities and their existing systems in a Differentiated Access Process (DAP).
+
+A system where cognizant authorities would require individual credentials to each HDA is not scalable, nor practical. Any change in policy would require the authority to interact with every single HDA (active or inactive) to grant or revoke access; this would be tedious and prone to mistakes. A single credential for a given authority is also strongly NOT RECOMMENDED due to the security concerns it would entail if it leaked.
+
+A zero-trust model would be the most appropriate for a DAP; being highly flexible and robust. Most authorities however use "oracle" based systems with specific user credentials and the oracle knowing the access rights for a given user. This would require the DAP the have some standard mechanism to locate and query a given oracle for information on the querent to determine if access is granted.
+
+DRIP has no intention to develop a new "art" of key management, instead hoping to leverage existing systems and be flexible enough to adapt as new ones become popular.
 
 # DRIP in the Domain Name System
 
 The individual DETs may be potentially too numerous (e.g., 60 - 600M) and dynamic (e.g., new DETs every minute for some HDAs) to store in a signed, DNS zone. The HDA SHOULD provide DNS service for its zone and provide the DET detail response.
 
-DNSSEC is strongly recommended (especially for RAA-level zones). Frequency of updates, size of the zone, and registry policy may impact its use. 
+DNSSEC is strongly recommended (especially for RAA-level zones). Frequency of updates, size of the zone, and registry policy may impact its use.
 
 Per {{drip-arch}} all public information is stored in the DNS to satisfy REG-1 from {{RFC9153}}. CERT RRs ({{cert}}) contain public Endorsements or X.509 Certificate relevant to a given Session ID. SVR RRs ({{svr}}) point an Observer to a service to obtain further information if they have and can prove duly constituted authority.
 
+The REQUIRED mechanism is to place any information into `ip6.arpa` sub-zones. This zone typically contains PTR RRs, however there is no mandate that this is the only RR allowed in the zone. For DRIP this means that the HIP, CERT and SVR RRs MUST be added and use the nibble-reversed DET. The TLSA RR is RECOMMENDED for other uses cases where DTLS is used (such as in Network RID).
+
 ## Prefix to TLD Mapping
 
-For DRIP, the prefix `2001:0030/28` is slated for DETs being used in UAS. Other prefixes may be allocated by IANA in future for different use cases that do not fit cleanly into an existing prefix.
+For DRIP, the prefix `2001:0030/28` is slated for DETs being used in UAS as defined in {{drip-rid}}. Other prefixes may be allocated by IANA in future for different use cases that do not fit cleanly into an existing prefix.
 
-IANA registry for this?
-
-If so we could remove prefix from FQDN form...Stu would like this to happen
+<!-- TODO: do we point to the IANA registry or make one here? -->
 
 ## DRIP Fully Qualified Domain Names {#drip-fqdn}
 
 ### DRIP Entity Tag {#det-fqdn}
 
-#### Forward Lookup
-
-The DET has the following FQDN form:
+The DET can be translated to the following FQDN form:
 
 > {hash}.{oga_id}.{hda}.{raa}.{prefix}.hhit.arpa.
 
@@ -488,17 +537,6 @@ FQDN: a3ad19520ad0a69e.5.20.10.2001003.hhit.arpa.
 
 > Note: any of the fields in the FQDN could be CNAME'd to more human readable interpretations. For example the DET FQDN `204.2001003.hhit.arpa.` may have a CNAME to `uas.faa.gov`; if RAA 204 was delegated to the FAA.
 
-#### Reverse Lookup
-
-The DET reverse lookup should be a standard IPv6 reverse address in `ip6.arpa.`.
-
-~~~~
-$ORIGIN  5.4.1.0.0.a.0.0.0.3.0.0.1.0.0.2.ip6.arpa.
-e.9.6.a.0.d.a.0.2.5.9.1.d.a.3.a    IN   PTR
-~~~~
-
-<!-- TODO: make this a MUST, do not use PTR but instead required RRs for DRIP (HIP, TLSA, CERT, etc.) -->
-
 ### Serial Number {#sn-fqdn}
 
 ~~~~
@@ -517,7 +555,7 @@ Serial Numbers MAY be a direct encoding of a DET (as defined in Section 4.2 of {
 
 ### HIP
 
-All DIMEs will use HIP RR {{RFC8005}} as the primary public source of DET HIs. The DETs are encoded in an FQDN ({{det-fqdn}}) and are the lookup key (QNAME) for the RR. DIMEs have their own DET associated with them and their respective name server will hold a HIP RR that is pointed to by their DET FQDN.
+All DIMEs MUST use HIP RR {{RFC8005}} as the primary public source of DET HIs. DIMEs have their own DET associated with them and their respective name server will hold a HIP RR that is pointed to by their DET FQDN.
 
 MRA ({{mra}}) and RIDR ({{ridr}}) DIMEs will also have HIP RRs for their registered parties (aircraft and operators respectfully).
 
@@ -529,7 +567,7 @@ The TLSA RR MAY be used in place of the HIP RR, where to primary need of the DET
 
 ### CERT
 
-Endorsements can be placed into DNS in the CERT RRs {{RFC4398}}.
+Endorsements MAY be placed into DNS in the CERT RRs {{RFC4398}}.
 
 Endorsements will be stored in Certificate Type OID Private (value 254) with a base OID of `1.3.6.1.4.1.6715.2` and further classified by the Endorsement/Certificate Type and then Entities involved.
 
@@ -555,13 +593,9 @@ As an example the following OID: `1.3.6.1.4.1.6715.2.6.4.1` would decompose into
 
 Certificate Type X.509 as per PKIX (value 1) MAY be used to store X.509 certificates as discussed in (Appendix B).
 
-Editor Note: This OID is an initial allocation under the IANA Enterprise Number OID. It is expect that a general OID will be allocated at some point.
+> Editor Note: This OID is an initial allocation under the IANA Enterprise Number OID. It is expect that a general OID will be allocated at some point.
 
-<!-- TODO: in very informal discussions with Russ ? at IETF115 the concept of a CBOR CERT RR was not considered a terrible idea and would be more flexible than using OIDs. We should talk to Carsten about this. -->
-
-### NS
-
-Used to interconnect entities
+<!-- TODO: in a very informal discussions with Russ Housley at IETF115 the concept of a CBOR CERT RR was not considered a terrible idea and would be more flexible than using OIDs. We should talk to Carsten about this. -->
 
 ### SVR
 
@@ -571,17 +605,15 @@ The best example of this is RIDR ({{ridr}}) would have a SVR RR that points to a
 
 In all cases the server being pointed to MUST be protected using AAA, such as using RDAP.
 
-### CNAME
-
-Used for SN -> DET mapping and other cross TLD jumps?
-
 # Endorsements
 
-Under DRIP Endorsements are defined in a CDDL structure that can be encode to CBOR, JSON or have their keys removed and be sent as a binary blob. When the latter is used very specific forms are defined with naming conventions to know the data fields and their lengths for parsing.
+Under DRIP Endorsements are defined in a CDDL {{RFC8610}} structure that can be encoded to CBOR, JSON or have their keys removed and be sent as a binary blob. When the latter is used very specific forms are defined with naming conventions to know the data fields and their lengths for parsing.
 
 The first subsection defines the structure of an Endorsement while the remain subsections define specific forms that are commonly used. The binary forms of the subsections can be found in {{bin-examples}}.
 
-<!-- TODO: do we have a iana registry with accepted keys for the various sections or endorsements in general? -->
+> Note: this section uses the term HHIT instead of DET as the Endorsements are designed to be generic and re-useable for other HHIT use-cases. Specific use-case SHOULD add new keys for each section (if required) and define the valid keys and encoding forms for their use-case.
+
+<!-- TODO: do we have a iana registry with accepted keys for the various sections of endorsements? -->
 
 ## Endorsement Structure
 
@@ -623,7 +655,7 @@ Other forms of the scope could for example be a 4-dimensional volume definition.
 
 ### Signature
 
-The `signature` section contain the signature data for the endorsement. The signature itself MUST be provided under the `sig` key. Other forms or data elements could also be present in the `signature` section if specified in a specific endorsement.
+The `signature` section contain the signature data for the endorsement. The signature itself MUST be provided under the `sig` key. Other forms or data elements could also be present in the `signature` section if specified in a specific endorsement. Signatures MUST be generated using the preceding sections in their binary forms (i.e. no keys).
 
 ## Self-Endorsement (SE-x) {#self-endorsement}
 
@@ -646,7 +678,7 @@ self_endorsement = {
 
 In a Self-Endorsement the `identity` is a HHIT/DET and the `evidence` is the associate HI. The HI could be removed, resulting in an "empty" Endorsement, when obtaining the HI via other means (such as DNS) is guaranteed. This behavior is NOT RECOMMENDED as the data being signed would be very short.
 
-<!-- TODO: do we specify HI in 'evidence' or place it in 'identity'? There is no difference when encoded. Perhaps semantically there MUST always be evidence of some form; justifying the separation? -->
+<!-- TODO: do we specify HI in 'evidence' or place it in 'identity'? There is no difference when encoded and thus signed. Perhaps semantically there MUST always be evidence of some form; justifying the separation? -->
 
 ## Generic Endorsement (GE-x.y) {#endorsement}
 
@@ -802,6 +834,8 @@ It is recommended that DRIP X.509 certificates be stored as DNS TLSA Resource Re
 
 ## Certificate Management
 
+<!-- TODO: this section (and its subsections) is mostly on Bob M. -->
+
 (mostly TBD still)
 
 PKIX standard X.509 issuance practices should be used. The certificate request SHOULD be included in the DET registration request. A successful DET registration then MUST include certificate creation, store, and return to the DET registrant.
@@ -820,7 +854,7 @@ TBD
 
 # IANA Considerations
 
-TODO: requesting `hhit.arpa`
+<!-- TODO: request hhit.arpa domain? -->
 
 ## IANA DRIP Registry
 
@@ -882,7 +916,7 @@ During key rollover the DIME MUST inform all children and parents of the change 
 
 A DET has a natural ability for a single DIME to hold different cryptographic identities under the same HID values. This is due to the lower 64-bits of the DET being a hash of the public key and the HID of the DET being generated. As such during key rollover, only the lower 64-bits would change and a check for a collision would be required.
 
-This attribute of the DET to have different identities could also allow for a single registry to be "federated" across them if they share the same HID value. This method of deployment has not been thoroughly studied at this time.
+This attribute of the DET to have different identities could also allow for a single registry to be "federated" across them if they share the same HID value. This method of deployment has not been thoroughly studied at this time. An endpoint such as in {{child-dime}} is a possible place to have these functions.
 
 ## DET Generation {#det-gen-concern}
 
@@ -898,15 +932,13 @@ Option 2:
 
 Keypairs are expected to be generated on the device hardware it will be used on. Due to hardware limitations and connectivity it is acceptable, though not recommended, under DRIP to generate keypairs for the Aircraft on Operator devices and later securely inject them into the Aircraft. The methods to securely inject and store keypair information in a “secure element” of the Aircraft is out of scope of this document.
 
-# Acknowledgements
+# Contributors
 
-Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LLC) for their early work on the DRIP registries concept. Their early contributions laid the foundations for the content and processes of this architecture and document.
+Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LLC) for their early work on the DRIP registries concept. Their early contributions laid the foundations for the content and processes of this architecture and document. Bob Moskowitz is also instrumental in the PKIX work defined in this document with his parallel work in ICAO.
 
 --- back
 
 # Binary Endorsements {#bin-examples}
-
-<!-- TODO: add explicit byte lengths for fields for each example -->
 
 ## Self-Endorsement (SE-x) {#bin-se}
 
@@ -949,10 +981,16 @@ Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LL
 |                                                               |
 |                                                               |
 +---------------+---------------+---------------+---------------+
+
+DRIP Entity Tag: 16-bytes
+Host Identity: 32-bytes
+Valid Not Before: 4-bytes
+Valid Not After: 4-bytes
+Signature: 64-bytes
 ~~~~
 {:fig #bin-se-x title="Binary Self-Endorsement (Length: 120-bytes)"}
 
-## Endorsement (E-x.y) {#bin-e}
+## Generic Endorsement (GE-x.y) {#bin-e}
 
 ~~~~
  0                   1                   2                   3
@@ -999,8 +1037,15 @@ Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LL
 |                                                               |
 |                                                               |
 +---------------+---------------+---------------+---------------+
+
+DRIP Entity Tag of X: 16-bytes
+Host Identity: 32-bytes
+SE-y: 120-bytes
+Valid Not Before by X: 4-bytes
+Valid Not After by X: 4-bytes
+Signature by X: 64-bytes
 ~~~~
-{:fig #bin-e-xy title="Binary Endorsement (Length: 240-bytes)"}
+{:fig #bin-e-xy title="Binary Generic Endorsement (Length: 240-bytes)"}
 
 ## Concise Endorsement (CE-x.y) {#bin-ce}
 
@@ -1039,6 +1084,12 @@ Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LL
 |                                                               |
 |                                                               |
 +---------------+---------------+---------------+---------------+
+
+DRIP Entity Tag of X: 16-bytes
+DRIP Entity Tag of Y: 16-bytes
+Valid Not Before by X: 4-bytes
+Valid Not After by X: 4-bytes
+Signature by X: 64-bytes
 ~~~~
 {:fig #bin-ce-xy title="Binary Concise Endorsement (Length: 104-bytes)"}
 
@@ -1055,7 +1106,7 @@ Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LL
 +---------------+---------------+---------------+---------------+
 |                                                               |
 .                                                               .
-.                              E-xy                             .
+.                            GE-x.y                             .
 .                                                               .
 |                                                               |
 +---------------+---------------+---------------+---------------+
@@ -1080,6 +1131,12 @@ Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LL
 |                                                               |
 |                                                               |
 +---------------+---------------+---------------+---------------+
+
+DRIP Entity Tag of Y: 16-bytes
+GE-xy: 16-bytes
+Valid Not Before by Y: 4-bytes
+Valid Not After by Y: 4-bytes
+Signature by Y: 64-bytes
 ~~~~
 {:fig #bin-m-xy title="Binary Mutual Endorsement (Length: 328-bytes"}
 
@@ -1096,7 +1153,7 @@ Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LL
 +---------------+---------------+---------------+---------------+
 |                                                               |
 .                                                               .
-.                             CA-xy                             .
+.                            CE-x.y                             .
 .                                                               .
 |                                                               |
 +---------------+---------------+---------------+---------------+
@@ -1121,6 +1178,12 @@ Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LL
 |                                                               |
 |                                                               |
 +---------------+---------------+---------------+---------------+
+
+DRIP Entity Tag of Y: 16-bytes
+CE-xy: 16-bytes
+Valid Not Before by Y: 4-bytes
+Valid Not After by Y: 4-bytes
+Signature by Y: 64-bytes
 ~~~~
 {:fig #bin-le-xy title="DRIP Link Endorsement (Length: 192-bytes)"}
 
@@ -1170,5 +1233,12 @@ Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LL
 |                                                               |
 |                                                               |
 +---------------+---------------+---------------+---------------+
+
+DRIP Entity Tag of X: 16-bytes
+DRIP Entity Tag of Y: 16-bytes
+Host Identity of Y: 32-bytes
+Valid Not Before by X: 4-bytes
+Valid Not After by X: 4-bytes
+Signature by X: 64-bytes
 ~~~~
 {:fig #bin-be-xy title="DRIP Broadcast Endorsement (Length: 136-bytes)"}
