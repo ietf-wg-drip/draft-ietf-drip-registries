@@ -3,14 +3,14 @@ coding: utf-8
 
 title: DRIP Entity Tag (DET) Identity Management Architecture
 abbrev: DETIM Architecture
-docname: draft-ietf-drip-registries-06
+docname: draft-ietf-drip-registries-07
 category: std
 
 ipr: trust200902
 area: Internet
 wg: drip Working Group
 kw: Internet-Draft
-cat: std
+cat: info
 
 stand_alone: yes
 pi: [toc, sortrefs, symrefs, comments]
@@ -73,15 +73,15 @@ This document describes the high level architecture for the registration and dis
 
 # Introduction
 
-Registries are fundamental to Unmanned Aircraft System (UAS) Remote ID (RID). Only very limited operational information can be Broadcast, but extended information is sometimes needed. The most essential element of information sent is the UAS ID itself, the unique key for lookup of extended information in relevant registries (see Figure 4 of {{I-D.ietf-drip-arch}}).
+Registries are fundamental to Unmanned Aircraft System (UAS) Remote ID (RID). Only very limited operational information can be Broadcast, but extended information is sometimes needed. The most essential element of information sent is the UAS ID itself, the unique key for lookup of extended information in relevant registries (see Figure 4 of {{drip-arch}}).
 
-While it is expected that registry functions will be integrated with UAS Service Supplier (USS) (Appendix A.2 of {{I-D.ietf-drip-arch}}), who will provide them is not yet determined in most, and is expected to vary between jurisdictions. However this evolves, the essential registry functions (including the management of identifiers) are expected to remain the same, so are specified herein.
+While it is expected that registry functions will be integrated with UAS Service Supplier (USS) (Appendix A.2 of {{drip-arch}}), who will provide them is not yet determined in most, and is expected to vary between jurisdictions. However this evolves, the essential registry functions (including the management of identifiers) are expected to remain the same, so are specified herein.
 
-While most data to be sent via Broadcast RID (Section 1.2.1 of {{I-D.ietf-drip-arch}}) or Network RID (Section 1.2.2 of {{I-D.ietf-drip-arch}}) is public, much of the extended information in registries will be private. As discussed in Section 7 of {{I-D.ietf-drip-arch}}, Authentication, Attestation, Authorization, Access Control, Accounting, Attribution, and Audit (AAA) for registries is essential, not just to ensure that access is granted only to strongly authenticated, duly authorized parties, but also to support subsequent attribution of any leaks, audit of who accessed information when and for what purpose, etc. As specific AAA requirements will vary by jurisdictional regulation, provider choices, customer demand, etc., they are left to specification in policies, which should be human readable to facilitate analysis and discussion, and machine readable to enable automated enforcement, using a language amenable to both (e.g., eXtensible Access Control Markup Language (XACML)).
+While most data to be sent via Broadcast RID (Section 1.2.1 of {{drip-arch}}) or Network RID (Section 1.2.2 of {{drip-arch}}) is public, much of the extended information in registries will be private. As discussed in Section 7 of {{drip-arch}}, Authentication, Attestation, Authorization, Access Control, Accounting, Attribution, and Audit (AAA) for registries is essential, not just to ensure that access is granted only to strongly authenticated, duly authorized parties, but also to support subsequent attribution of any leaks, audit of who accessed information when and for what purpose, etc. As specific AAA requirements will vary by jurisdictional regulation, provider choices, customer demand, etc., they are left to specification in policies, which should be human readable to facilitate analysis and discussion, and machine readable to enable automated enforcement, using a language amenable to both (e.g., eXtensible Access Control Markup Language (XACML)).
 
 The intent of the access control requirements on registries is to ensure that no member of the public would be hindered from accessing public information, while only duly authorized parties would be enabled to access private information. Mitigation of Denial of Service (DoS) attacks and refusal to allow database mass scraping would be based on those behaviors, not on identity or role of the party submitting the query per se, but querant identity information might be gathered (by security systems protecting DRIP implementations) on such misbehavior.
 
-Registration under DRIP is vital to manage the inevitable collisions in the hash portion of the DRIP Entity Tags (DETs). Forgery of the DETs is still possible, but including it as a part of a public registration mitigates this risk. This document creates the DRIP DET registration and discovery ecosystem.  This includes all components in the ecosystem (e.g., Unmanned Aircraft (UA), Registered Assigning Authority (RAA), Hierarchical HIT Domain Authority (HDA), Ground Control Station (GCS), USS).  
+Registration under DRIP is vital to manage the inevitable collisions in the hash portion of the DRIP Entity Tags (DETs). Forgery of the DETs is still possible, but including it as a part of a public registration mitigates this risk. This document creates the DRIP DET registration and discovery ecosystem.  This includes all components in the ecosystem (e.g., Unmanned Aircraft (UA), Registered Assigning Authority (RAA), Hierarchical HIT Domain Authority (HDA), Ground Control Station (GCS), and USS).  
 
 This document uses the Concise Data Definition Language (CDDL) {{RFC8610}} for describing the registration data.
 
@@ -89,11 +89,11 @@ This document uses the Concise Data Definition Language (CDDL) {{RFC8610}} for d
 
 In DRIP each entity (registry, operator, and aircraft) is expected to generate a full DRIP Entity ID {{drip-rid}} on the local device their key is expected to be used. These are registered with a Public Information Registry within the hierarchy along with whatever data is required by the cognizant CAA and the registry. Any Personally Identifiable Information (PII) is stored in a Private Information Registry protected through industry practice AAA or stronger. In response, the entity will obtain an endorsement from the registry proving such registration.
 
-Manufacturers that wish to participate in DRIP should not only support DRIP as a Session ID type for their aircraft but also generate a DET then encode it as a Serial Number. This would allow aircraft under CAA mandates to fly only ID Type 1 (Serial Number) could still use DRIP and most of its benefits. Even if DRIP is not supported for Serial Numbers by a Manufacturer it is hoped that they would still run a registry to store their Serial Numbers and allow look ups for generic model information. This look up could be especially helpful in UTM for Situational Awareness when an aircraft flying with a Serial Number is detected and allow for an aircraft profile to be displayed.
+Manufacturers that wish to participate in DRIP should not only support DRIP as a Session ID type for their aircraft but could also generate a DET then encode it as a Serial Number. This would allow aircraft under CAA mandates to fly only ID Type 1 (Serial Number) could still use DRIP and most of its benefits. Even if DRIP is not supported for Serial Numbers by a Manufacturer it is hoped that they would still run a registry to store their Serial Numbers and allow look ups for generic model information. This look up could be especially helpful in UTM for Situational Awareness when an aircraft flying with a Serial Number is detected and allow for an aircraft profile to be displayed.
 
 Operators are registered with a number of registries or their regional RAA. This acts as a verification check when a user performs other registration operations; such as provisioning an aircraft with a new Session ID. It is an open question if an Operator registers to their CAA (the RAA) or multiple USS's (HDA's). PII of the Operator would vary based on the CAA they are under and the registry.
 
-Finally, aircrafts that support using a DET would provision per flight to a USS, proposing a DET to the registry to generate a binding between the aircraft (Session ID, Serial Number, and Operational Intent), operator and registry. The aircraft then follows {{drip-auth}} to meet various requirements from {{RFC9153}} during a flight.
+Finally, aircraft that support using a DET would provision per flight to a USS, proposing a DET to the registry to generate a binding between the aircraft (Session ID, Serial Number, and Operational Intent), operator and registry. The aircraft then follows {{drip-auth}} to meet various requirements from {{RFC9153}} during a flight.
 
 # Terminology {#terminology}
 
@@ -123,7 +123,7 @@ RAA:
 
 # DIME Roles {#dime-roles}
 
-{{{drip-arch}} defines the DRIP Identity Management Entity (DIME) as an entity that vets Claims and/or Evidence from a registrant and delivers back Endorsements and/or Certificates in response. The DIME encompasses various logical components and can be classified to serve a number of different roles, which are detailed in the following subsections. The general hierarchy of these roles are illustrated in {{reg-class-fig}}.
+{{drip-arch}} defines the DRIP Identity Management Entity (DIME) as an entity that vets Claims and/or Evidence from a registrant and delivers back Endorsements and/or Certificates in response. The DIME encompasses various logical components and can be classified to serve a number of different roles, which are detailed in the following subsections. The general hierarchy of these roles are illustrated in {{reg-class-fig}}.
 
 {:fig: artwork-align="center"}
 ~~~~
@@ -165,6 +165,8 @@ An RAA must provide a set of services to allocate HDAs to organizations. It must
 
 ### ICAO Registry of Manufacturers (IRM) {#irm}
 
+<!-- TODO: change to ICAO Authority of Manufacturers (IAM) or ICAO Manufacturer Authority (IMA)? -->
+
 An RAA-level DIME that hands out HDA values to participating Manufacturer's that hold an ICAO Manufacturer Code used in {{CTA2063A}}.
 
 To manage the large ICAO Manufacturer Code space (34  character set; 4 characters; 1,336,336 possible codes) a range of RAA values are set aside for the DRIP use case. These are the RAA values of 2 (0x0002) up to 96 (0x0060). This allows a single HDA for each Manufacturer Code.
@@ -181,11 +183,15 @@ An RAA may assign a block of values to an individual organization. This is compl
 
 ### Manufacturers Registry of Aircraft (MRA) {#mra}
 
+<!-- TODO: change to Manufacturers Authority of Aircraft or Manufacturer Aircraft Authority (MAA)? -->
+
 An HDA-level DIME run by a manufacturer of UAS systems that participate in Remote ID. Stores UAS Serial Numbers under a specific ICAO Manufacturer Code (assigned to the manufacturer by ICAO).
 
 A DET can be encoded into a Serial Number (see {{drip-rid}}) and this registry would hold a mapping from the Serial Number to the DET and its artifacts.
 
 #### Remote ID Registries (RIDR) {#ridr}
+
+<!-- TODO: change to Remote ID Authority of Session IDs (RIDAS, RAS, RASID) or Session ID Authority (SIDA) or Remote ID Authority (RIA, RIDA)? -->
 
 An HDA-level DIME that holds the binding between a UAS Session ID (for DRIP the DET) and the UA Serial Number. The Serial Number MUST have its access protected to allow only authorized parties to obtain. The Serial Number SHOULD be encrypted in a way only the authorized party can decrypt.
 
@@ -210,33 +216,33 @@ The DIME, in any of its roles ({{dime-roles}}), is comprised of a number of logi
 ~~~~
 +--------------------+
 | Registering Client |
-+------------o-------+
-             |
-*************|*************************************************************************
-*            |               DRIP Identity Management Entity                          *
-*            |                                                                        *
-*     +------o-------+              +-------------+              +--------------+     *
-*     | DRIP         |              |             |              |              |     *
-*     | Provisioning o--------------o             |              |              |     *
-*     | Agent        |              |             |              |              |     *
-*     +-------o------+              |             |              |              |     *
-*             |                     |             |              |              |     *
-*             |                     | DRIP        |              | Registration |     *
-*     +-------o--+                  | Information o--------------o Data         |     *
-*     | Registry o------------------o Agent       |              | Directory    |     *
-*     +-------o--+                  |             |              | Service      |     *
-*             |                     |             |              |              |     *
-*             |                     |             |              |              |     *
-*     +-------o-----+               |             |              |              |     *
-*     | Name Server |               |             |              |              |     *
-*     +------o------+               +-----o-------+              +------o-------+     *
-*            |                            |                             |             * 
-*            |                            |                             |             *
-*************|****************************|*****************************|**************
-             |                            |                             |
-             |                    +-------o-------+                     |
-             '--------------------o Lookup Client o---------------------'
-                                  +---------------+
++---------o----------+
+          | 
+**********|******************************************************
+*         |        DRIP Identity Management Entity              *
+*         |                                                     *
+*  +------o-------+      +-------------+      +--------------+  *
+*  | DRIP         |      |             |      |              |  *
+*  | Provisioning o------o             |      |              |  *
+*  | Agent        |      |             |      |              |  *
+*  +-------o------+      |             |      |              |  *
+*          |             |             |      |              |  *
+*          |             | DRIP        |      | Registration |  *
+*  +-------o--+          | Information o------o Data         |  *
+*  | Registry o----------o Agent       |      | Directory    |  *
+*  +-------o--+          |             |      | Service      |  *
+*          |             |             |      |              |  *
+*          |             |             |      |              |  *
+*  +-------o-----+       |             |      |              |  *
+*  | Name Server |       |             |      |              |  *
+*  +------o------+       +-----o-------+      +------o-------+  *
+*         |                    |                     |          * 
+*         |                    |                     |          *
+**********|********************|*********************|***********
+          |                    |                     |
+          |            +-------o-------+             |
+          '------------o Lookup Client o-------------'
+                       +---------------+
 ~~~~
 {:fig #dime-arch-fig title="Registry Hierarchy"}
 
@@ -259,8 +265,6 @@ There MAY be interface from the Registry to a DRIP Information Agent ({{dia}}) a
 ## Name Server (NS) {#nameserver}
 
 This may be very important here as we should not preclude a USS from running his own Name Server but they are not DNS experts and will need guidance or at least pointers to it to not mess it up. Such as SOA and NS formats to allow delegation if as RAA.
-
-Most of time is probably outsourced.
 
 The interface of the Name Server to any component (nominally the Registry) in a DIME is out of scope as typically they are implementation specific.
 
@@ -287,14 +291,14 @@ The general process for a registering party is as follows:
 1. Verify input Endorsement(s) from registering party
 2. Check for collision of DET and HI
 3. Populate Registry/Name Server with required/optional resource records using the FQDN
-4. Populate DIA/RDDS with PII and other info
+4. Populate RDDS via DIA with PII and other info
 5. Generate and return required/optional DRIP Endorsements
 
-In the following subsections an abbreviated form of {{dime-arch}} using component abbreviations is used to describe the flow of information. The data elements being transmitted between entities is marked accordingly in each figure for the specific examples.
+In the following subsections an abbreviated form of {{dime-arch}} using co-located components is used to describe the flow of information. The data elements being transmitted between entities is marked accordingly in each figure for the specific examples.
 
 ## Serial Number
 
-Primarily registered to MRA's ({{mra}}) by the Manufacturers. Could be also registered to CAA's (using their HDA functionality) as part of Operator registration or to USS's in their capacity as HDAs. In the later two cases no DNS RRs are made to protect the privacy of the registering parties.
+Serial Numbers are primarily registered to MRA's ({{mra}}) by the Manufacturers. Could be also registered to CAA's (using their HDA functionality) as part of Operator registration or to USS's in their capacity as HDAs. In the later two cases no DNS RRs are made to protect the privacy of the registering parties.
 
 When the Serial Number is really an encoded DET the DET FQDN is used to point to HIP and CERT RRs rather than the Serial Number FQDN. Instead a CNAME is made between the Serial Number FQDN and the DET FQDN. The same can still happen if the manufacturer chooses to use their own Serial Number formatting (still within the specification of {{CTA2063A}}) and create the CNAME back to a DET loaded into the unmanned aircraft.
 
@@ -322,9 +326,13 @@ When the Serial Number is really an encoded DET the DET FQDN is used to point to
 *                                       *
 *****************************************
 
-(a) Serial Number, UA Information, UA Self-Endorsement
-(b) Success Code, Broadcast Endorsement: MRA on UA
-(c) HIP RR, CERT RRs
+(a) Serial Number,
+    UA Information,
+    Self-Endorsement: UA
+(b) Success Code,
+    Broadcast Endorsement: MRA on UA
+(c) HIP RR,
+    CERT RRs
 (d) UA Information
 ~~~~
 {:fig #dime-sn-example title="Example DIME:MRA with Serial Number (DET) Registration"}
@@ -365,9 +373,12 @@ Provided either by USS or CAA run HDAs. Regulation might require interaction bet
 *                                       *
 *****************************************
 
-(a) Operator Information, Operator Self-Endorsement
-(b) Success Code, Generic Endorsement: HDA on Operator
-(c) HIP RR, CERT RRs
+(a) Operator Information,
+    Operator Self-Endorsement
+(b) Success Code,
+    Generic Endorsement: HDA on Operator
+(c) HIP RR,
+    CERT RRs
 (d) Operator Information
 ~~~~
 {:fig #dime-operator-example title="Example DIME:HDA with Operator (DET) Registration"}
@@ -381,6 +392,8 @@ The DIME cross checks any personally identifiable information as required. `Self
 With the receipt of `Generic Endorsement: DIME on Operator` the registration of the Operator is complete.
 
 > Note: (c) in {{dime-operator-example}} MAY be requested by the Operator to be omitted due to PII concerns.
+
+The definition of Operator Information is out of scope of this document and left to local regulations.
 
 ## Session ID
 
@@ -410,14 +423,20 @@ Session IDs are generally handled by HDAs, specifically RIDRs. In {{dime-sid-exa
 *                                       *
 *****************************************
 
-(a) Mutual Endorsement: RIDR on GCS, Generic Endorsement: GCS on UA, Session ID Information
-(b) Success Code, Broadcast Endorsement: RIDR on UA, Generic Endorsement: RIDR on UAS
-(c) HIP RR, CERT RRs
+(a) Mutual Endorsement: RIDR on GCS,
+    Generic Endorsement: GCS on UA,
+    Session ID Information
+(b) Success Code,
+    Broadcast Endorsement: RIDR on UA,
+    Generic Endorsement: RIDR on UAS
+(c) HIP RR,
+    TLSA, RR,
+    CERT RRs
 (d) Session ID Information
 ~~~~
 {:fig #dime-sid-example title="Example DIME:RIDR with Session ID (DET) Registration"}
 
-Through mechanisms not specified in this document the Operator should have methods (via the GCS) to instruct the unmanned aircraft onboard systems to generate a keypair, DET and Self-Endorsement: UA. The `Self-Endorsement: UA` is extracted by the Operator onto the GCS.
+Through mechanisms not specified in this document the Operator should have methods (via the GCS) to instruct the unmanned aircraft onboard systems to generate a keypair, DET and `Self-Endorsement: UA`. The `Self-Endorsement: UA` is extracted by the Operator onto the GCS.
 
 The GCS is already pre-provisioned and registered to the DIME with its own keypair, DET, `Self-Endorsement: GCS` and `Generic Endorsement: RIDR on GCS`. The GCS creates a new `Generic Endorsement: GCS on UA` and also creates `Mutual Endorsement: RIDR on GCS`. These new endorsements along with Session ID Information are sent to the DIME via a secure channel.
 
@@ -427,15 +446,32 @@ The GCS then injects the `Broadcast Endorsement: RIDR on UA` securely into the u
 
 > Note: in {{dime-sid-example}} the Session ID Information is expected to contain the Serial Number along with other PII specific information (such as UTM data) related to the Session ID.
 
+Session ID Information is defined as the current model:
+
+~~~~
+sessionid_info = {
+    serial: tstr .size 20,
+    session_id: tstr,
+    operational_intent: tstr,
+    intent_src: tstr,
+    operator_id: tstr,
+    * tstr: any
+}
+~~~~
+
+Future standards or implementations MAY add other keys to this list (for local features and/or local regulation).
+
+<!-- TODO: add keys to IANA registry? -->
+
 ### UA Based
 
-There MAY be some unmanned aircraft that have their own Internet connectivity allowing them to register a Session ID themselves without outside help from other devices such as a GCS. When such a system is in use its imperative that the Operator has some method to create the `Generic Endorsement: Operator on UA` to send to the DIME. The process and methods to perform this are out of scope for this document but MUST be done in a secure fashion.
+There may be some unmanned aircraft that have their own Internet connectivity allowing them to register a Session ID themselves without outside help from other devices such as a GCS. When such a system is in use its imperative that the Operator has some method to create the `Generic Endorsement: Operator on UA` to send to the DIME. The process and methods to perform this are out of scope for this document but MUST be done in a secure fashion.
 
 ### UAS Based
 
 Most unmanned aircraft will not have their own Internet connectivity but will have a connection to a GCS. Typically a GCS is an application on a user device (such as smartphone) that allow the user to fly their aircraft. For the Session ID registration the DIME MUST be provided with an `Generic Endorsement: GCS on UA` which implies there is some mechanism extracting and inserting information from the unmanned aircraft to the GCS. These methods MUST be secure but are out of scope for this document.
 
-With this system it is also possible to have the GCS generate the DET based Session ID and insert it securely into the unmanned aircraft after registration is done. This is NOT RECOMMENDED as this invalidates the objective of the asymmetric cryptography in the underlying DET as the private key MAY get in the posession of another entity other than the unmanned aircraft. See {{det-gen-concern}} for more details.
+With this system it is also possible to have the GCS generate the DET based Session ID and insert it securely into the unmanned aircraft after registration is done. This is NOT RECOMMENDED as this invalidates the objective of the asymmetric cryptography in the underlying DET as the private key MAY get in the possession of another entity other than the unmanned aircraft. See {{det-gen-concern}} for more details.
 
 ## Child DIME
 
@@ -465,9 +501,13 @@ Handled by the Apex and RAA's. This is an endpoint that handles dynamic registra
 *                                       *
 *****************************************
 
-(a) Self-Endorsement: HDA, HDA Information or Generic Endorsement: old HDA, new HDA
-(b) Success Code, Broadcast Endorsement: RAA on HDA
-(c) HIP RR, CERT RRs
+(a) Self-Endorsement: HDA,
+    HDA Information or
+    Generic Endorsement: old HDA, new HDA
+(b) Success Code,
+    Broadcast Endorsement: RAA on HDA
+(c) HIP RR,
+    CERT RRs
 (d) HDA Information
 ~~~~
 {:fig #dime-hda-example title="Example DIME:RAA with DIME:HDA Registration"}
@@ -496,13 +536,11 @@ DRIP has no intention to develop a new "art" of key management, instead hoping t
 
 The individual DETs may be potentially too numerous (e.g., 60 - 600M) and dynamic (e.g., new DETs every minute for some HDAs) to store in a signed, DNS zone. The HDA SHOULD provide DNS service for its zone and provide the DET detail response.
 
-DNSSEC is strongly recommended (especially for RAA-level zones). Frequency of updates, size of the zone, and registry policy may impact its use.
+DNSSEC is strongly recommended (especially for RAA-level and higher zones). Frequency of updates, size of the zone, and registry policy may impact its use.
 
 Per {{drip-arch}} all public information is stored in the DNS to satisfy REG-1 from {{RFC9153}}. CERT RRs ({{cert}}) contain public Endorsements or X.509 Certificate relevant to a given Session ID. SVR RRs ({{svr}}) point an Observer to a service to obtain further information if they have and can prove duly constituted authority.
 
 The REQUIRED mechanism is to place any information into `ip6.arpa` sub-zones. This zone typically contains PTR RRs, however there is no mandate that this is the only RR allowed in the zone. For DRIP this means that the HIP, CERT and SVR RRs MUST be added and use the nibble-reversed DET. The TLSA RR is RECOMMENDED for other uses cases where DTLS is used (such as in Network RID).
-
-## Prefix to TLD Mapping
 
 For DRIP, the prefix `2001:0030/28` is slated for DETs being used in UAS as defined in {{drip-rid}}. Other prefixes may be allocated by IANA in future for different use cases that do not fit cleanly into an existing prefix.
 
@@ -521,7 +559,7 @@ When building a DET FQDN the following two things must be done:
 1. The RAA, HDA and OGA ID values MUST be converted from hexadecimal to decimal form.
 2. The FQDN must be built using the exploded (all padding present) form of the IPv6 address.
 
-<!-- TODO: Stu would much rather this be full HEX or full DEC - not a mix. -->
+<!-- TODO: Stu would much rather this be full HEX or full DEC - not a mix. If we did this the hash would need an unsigned long long for the value to fit -->
 
 Below is an example:
 
@@ -548,6 +586,8 @@ FQDN: Z2T7B8RA85D19LX.8653.mfr.hhit.arpa.
 ~~~~
 
 Serial Number pose a unique problem. If we explicitly only allow HHITs be under the `hhit.arpa.` domain structure how do we standardize the lookup of Serial Numbers? Perhaps to look up Serial Numbers one must go to a different tree like `mfr.icao.int.`? We can have CNAMEs in MRAs for this but they probably need the same TLD (`hhit.arpa.`) to be found properly and these are clearly not HHITs.
+
+<!-- Perhaps what we need is two level domain under `.arpa` - `hhit.uas.arpa.` (or `det.uas.arpa.`) and `mfr.uas.arpa.` With this system a DNAMEs would exist in `*.mfr.uas.arpa.` to translate to `*.det.uas.arpa.` when SNs are really encoded DETs or have a DET associated with them for DRIP. Otherwise its the same SVR and other RRs needed for lookup. This would also align well - with `det.uas.arpa.` could just be a CNAME of the actual IPv6 prefix.-->
 
 Serial Numbers MAY be a direct encoding of a DET (as defined in Section 4.2 of {{drip-rid}}). A Serial Number MAY also be a simple linking to a DET using a CNAME. DNAMEs (or PTRs) could be used to redirect a Serial Number that is not part of an public MRA but is instead registered by the operator to their HDA. The operator in this scenario MAY generate a DET for the Serial Number themselves - also stored in the HDA. The mapping of the Serial Number to this 'private' DET MUST NOT be made public.
 
@@ -620,18 +660,18 @@ The first subsection defines the structure of an Endorsement while the remain su
 ~~~~
 endorsement = {
   identity: {
-      (hit: bstr .size 16, ? hi: bstr) // (hhit: bstr .size 16, ? hi: bstr)
-      * tstr: any
+    (hit: bstr .size 16, ? hi: bstr) // (hhit: bstr .size 16, ? hi: bstr)
+    * tstr: any
   },
   evidence: bstr,
   scope: {
-      vnb: number,
-      vna: number,
-      * tstr: any
+    vnb: number,
+    vna: number,
+    * tstr: any
   }
   signature: {
-      sig: bstr
-      * tstr: any
+    sig: bstr
+    * tstr: any
   }
 }
 ~~~~
@@ -639,7 +679,7 @@ endorsement = {
 
 ### Identity
 
-The `identity` section is where the main identity information of the signer of the endorsement is found. The identity can take many forms such as a handle to the identity (an HHIT), and can include more explicit data such as the public key (an HI). Other keys can be provided and MUST be defined in their specific endorsement.
+The `identity` section is where the main identity information of the signer of the Endorsement is found. The identity can take many forms such as a handle to the identity (an HHIT), and can include more explicit data such as the public key (an HI). Other keys can be provided and MUST be defined in their specific Endorsement.
 
 The length of the `hi` can be determined when using `hhit` or `hi` by decoding the provided IPv6 address. The prefix will inform of the ORCHID construction being used, which informs the locations of the OGA ID in the address. The OGA ID will then inform the user of the key algorithm selected which has the key length defined.
 
@@ -894,7 +934,7 @@ This document requests a new subregistry for aircraft information fields under t
 
 Aircraft Information Fields:
 
-: list of acceptable keys to be used in `UA Information` during a UA registration to an MRA or HDA. Future additions to this subregistry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
+: list of acceptable keys to be used in `UA Information` during a UA registration to a DIME. Future additions to this subregistry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
 
 <!-- TODO: maybe first come first served instead of expert review? -->
 
@@ -905,8 +945,28 @@ Aircraft Information Fields:
 | height | float | height, in millimeters |
 | constructionMaterial | tstr | materials, comma separated if multiple |
 | color | tstr | colors, comma separated if multiple |
-
-<!-- TODO: add more keys that are common and well defined -->
+| serial | tstr | ANSI CTA 2063-A Serial Number |
+| manufacturer | tstr | manufacturer name |
+| make | tstr | aircraft make |
+| model | tstr | aircraft model |
+| dryWeight | float | weight of aircraft with no payloads |
+| numRotors | int | Number of rotators |
+| propLength | float | Length of props, in centimeters |
+| numBatteries | int | |
+| batteryCapacity | float | in milliampere hours |
+| batteryWeight | float | in kilograms |
+| batteryVoltage | float | in volts |
+| batteryChemistry | tstr | |
+| maxTakeOffWeight | float | in kilograms |
+| maxPayloadWeight | float | in kilograms |
+| maxFlightTime | float | in minutes |
+| minOperatingTemp | float | in Celsius |
+| maxOperatingTemp | float | in Celsius |
+| ipRating | tstr | standard IP rating |
+| engineType | tstr | |
+| fuelType | tstr | |
+| fuelCapacity | float | in liters |
+| previousSerial | tstr | legacy serial number(s) |
 
 # Security Considerations
 
@@ -1133,7 +1193,7 @@ Signature by X: 64-bytes
 +---------------+---------------+---------------+---------------+
 
 DRIP Entity Tag of Y: 16-bytes
-GE-xy: 16-bytes
+GE-x.y: 16-bytes
 Valid Not Before by Y: 4-bytes
 Valid Not After by Y: 4-bytes
 Signature by Y: 64-bytes
@@ -1180,7 +1240,7 @@ Signature by Y: 64-bytes
 +---------------+---------------+---------------+---------------+
 
 DRIP Entity Tag of Y: 16-bytes
-CE-xy: 16-bytes
+CE-x.y: 16-bytes
 Valid Not Before by Y: 4-bytes
 Valid Not After by Y: 4-bytes
 Signature by Y: 64-bytes
