@@ -564,9 +564,10 @@ When building a DET FQDN the following two things must be done:
 Below is an example:
 
 ~~~~
-DET: 2001:0030:00a0:0145:a3ad:1952:0ad0:a69e
-ID: a3ad:1952:0ad0:a69e
-OGA: 5
+DET: 2001:0030:0280:1405:c465:1542:a33f:dc26
+ID: c4651542a33fdc26
+OGA: 05 = 5
+HID: 0028014
 HDA: 0014 = 20
 RAA: 000a = 10
 Prefix: 2001003
@@ -581,8 +582,8 @@ FQDN: a3ad19520ad0a69e.5.20.10.2001003.hhit.arpa.
 Serial Number: 8653FZ2T7B8RA85D19LX
 ICAO Mfr Code: 8653
 Length Code: F
-ID: FZ2T7B8RA85D19LX
-FQDN: Z2T7B8RA85D19LX.8653.mfr.hhit.arpa.
+ID: Z2T7B8RA85D19LX
+FQDN: Z2T7B8RA85D19LX.8653.mfr.arpa.
 ~~~~
 
 Serial Number pose a unique problem. If we explicitly only allow HHITs be under the `hhit.arpa.` domain structure how do we standardize the lookup of Serial Numbers? Perhaps to look up Serial Numbers one must go to a different tree like `mfr.icao.int.`? We can have CNAMEs in MRAs for this but they probably need the same TLD (`hhit.arpa.`) to be found properly and these are clearly not HHITs.
