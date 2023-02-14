@@ -571,7 +571,7 @@ HID: 0028014
 HDA: 0014 = 20
 RAA: 000a = 10
 Prefix: 2001003
-FQDN: a3ad19520ad0a69e.5.20.10.2001003.hhit.arpa.
+FQDN: c4651542a33fdc26.5.20.10.2001003.hhit.arpa.
 ~~~~
 
 > Note: any of the fields in the FQDN could be CNAME'd to more human readable interpretations. For example the DET FQDN `204.2001003.hhit.arpa.` may have a CNAME to `uas.faa.gov`; if RAA 204 was delegated to the FAA.
