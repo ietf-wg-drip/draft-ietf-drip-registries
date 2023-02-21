@@ -201,6 +201,10 @@ On receiver devices a DET can be translated to a more human readable form such a
 
 If a DIME does not have an abbreviation or it can not be looked up then the receiver SHOULD use the uppercase 4-character hexadecimal encoding of the field it is missing.
 
+## Text Conventions
+
+When talking about a DIME in text documents it should be refered to as the role it is serving. For example a CAA level DIME running services both as an RAA (its primary role in the heirarchy) and as an HDA (optionally) would be be refered to "RAA" when performing its RAA duties and "HDA" when performing its HDA duties.
+
 # DIME Architecture {#dime-arch}
 
 The DIME, in any of its roles ({{dime-roles}}), is comprised of a number of logical components that are depicted in {{dime-arch-fig}}. Any of these components could be delegated to other entities as a service both co-located or remote. For example:
