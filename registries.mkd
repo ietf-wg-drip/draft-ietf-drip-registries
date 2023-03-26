@@ -563,23 +563,23 @@ Endorsements are stored in Certificate Type OID Private (value 254) with a base 
 
 | Endorsement Type        | OID Value |
 | ----------------------- | --------- |
-| Self-Endorsement        | 1         |
-| Generic Endorsement     | 2         |
-| Concise Endorsement     | 3         |
-| Mutual Endorsement      | 4         |
-| Link Endorsement        | 5         |
-| Broadcast Endorsement   | 6         |
+| Self-Endorsement        | 0         |
+| Generic Endorsement     | 1         |
+| Concise Endorsement     | 2         |
+| Mutual Endorsement      | 3         |
+| Link Endorsement        | 4         |
+| Broadcast Endorsement   | 5         |
 
 | Entity Type                  | OID Value |
 | ---------------------------- | --------- |
-| Unmanned Aircraft (UA)       | 1         |
-| Ground Control Station (GCS) | 2         |
-| Operator (OP)                | 3         |
-| HDA                          | 4         |
-| RAA                          | 5         |
-| Root                         | 6         |
+| Unmanned Aircraft (UA)       | 0         |
+| Ground Control Station (GCS) | 1         |
+| Operator (OP)                | 2         |
+| HDA                          | 3         |
+| RAA                          | 4         |
+| Root                         | 5         |
 
-As an example the following OID: `1.3.6.1.4.1.6715.2.6.4.1` would decompose into: the base OID (`1.3.6.1.4.1.6715.2`), the Endorsement Type (`6`: Broadcast Endorsement) and then the parties involved (`4`: HDA, `1`: UA)
+As an example the following OID: `1.3.6.1.4.1.6715.2.5.3.0` would decompose into: the base OID (`1.3.6.1.4.1.6715.2`), the Endorsement Type (`5`: Broadcast Endorsement) and then the parties involved (`3`: HDA, `0`: UA)
 
 Certificate Type X.509 as per PKIX (value 1) MAY be used to store X.509 certificates as discussed in {{x509}}.
 
@@ -705,43 +705,43 @@ TBD
 
 ## IANA DRIP Registry
 
-### DRIP Endorsement Subregistries
+### DRIP Endorsement Registries
 
-This document requests a new subregistries for Endorsement Type and Entity Type under the [DRIP registry](https://www.iana.org/assignments/drip/drip.xhtml).
+This document requests two new registries for Endorsement Type and Entity Type under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
 
 DRIP Endorsement Type:
 
-: This 8-bit valued subregistry is for Endorsement Types to be used in OID's for CERT Resource Records. Future additions to this subregistry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
+: This 8-bit valued registry is for Endorsement Types to be used in OID's for CERT Resource Records. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
 
 | Endorsement Type        | Value     |
 | ----------------------- | --------- |
-| Self-Endorsement        | 1         |
-| Generic Endorsement     | 2         |
-| Concise Endorsement     | 3         |
-| Mutual Endorsement      | 4         |
-| Link Endorsement        | 5         |
-| Broadcast Endorsement   | 6         |
+| Self-Endorsement        | 0         |
+| Generic Endorsement     | 1         |
+| Concise Endorsement     | 2         |
+| Mutual Endorsement      | 3         |
+| Link Endorsement        | 4         |
+| Broadcast Endorsement   | 5         |
 
 DRIP Entity Type:
 
-: This 8-bit valued subregistry is for Entity Types to be used in OID's for CERT Resource Records. Future additions to this subregistry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
+: This 8-bit valued registry is for Entity Types to be used in OID's for CERT Resource Records. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
 
 | Entity Type                  | Value     |
 | ---------------------------- | --------- |
-| Unmanned Aircraft (UA)       | 1         |
-| Ground Control Station (GCS) | 2         |
-| Operator (OP)                | 3         |
-| HDA                          | 4         |
-| RAA                          | 5         |
-| Root                         | 6         |
+| Unmanned Aircraft (UA)       | 0         |
+| Ground Control Station (GCS) | 1         |
+| Operator (OP)                | 2         |
+| HDA                          | 3         |
+| RAA                          | 4         |
+| Root                         | 5         |
 
-### Aircraft Information Subregistry {#ua-info-registry}
+### Aircraft Information Registry {#ua-info-registry}
 
-This document requests a new subregistry for aircraft information fields under the [DRIP registry](https://www.iana.org/assignments/drip/drip.xhtml).
+This document requests a new registry for aircraft information fields under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
 
 Aircraft Information Fields:
 
-: list of acceptable keys to be used in `UA Information` during a UA registration to a DIME. Future additions to this subregistry are to be made through First Come First Serve (Section 4.5 of {{RFC8126}}). The following values are defined:
+: list of acceptable keys to be used in `UA Information` during a UA registration to a DIME. Future additions to this registry are to be made through First Come First Served (Section 4.4 of {{RFC8126}}). The following values are defined:
 
 | Key Name | Type | Description |
 |--------- | ---- | ----------- |
