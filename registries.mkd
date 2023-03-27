@@ -3,7 +3,7 @@ coding: utf-8
 
 title: DRIP Entity Tag (DET) Identity Management Architecture
 abbrev: DETIM Architecture
-docname: draft-ietf-drip-registries-07
+docname: draft-ietf-drip-registries-08
 category: info
 
 ipr: trust200902
@@ -42,12 +42,11 @@ normative:
     drip-arch: I-D.ietf-drip-arch
 
 informative:
-    RFC2915: # naptr
-    RFC4398:
+    RFC1886: # ipv6 lookup
     RFC5730: # epp
-    RFC6698:
+    RFC6698: # dane/tlsa
+    RFC6841: # dnssec policy
     RFC7480: # rdap-http-use
-    RFC8005: # hip rr
     RFC8126: # iana-guidelines
     RFC9082: # rdap-query-format
     RFC9083: # rdap-json-responses
@@ -68,7 +67,7 @@ informative:
 
 --- abstract
 
-This document describes the high level architecture for the registration and discovery of DRIP Entity Tags (DETs) using DNS. Discovery of DETs and their artifacts are through the existing DNS structure and methods by using FQDNs. A general overview of the interfaces required between involved components is described in this document with supporting documents giving technical specifications.
+This document describes the high level architecture for the registration and discovery of DRIP Entity Tags (DETs) using DNS. Discovery of DETs and their artifacts are through the existing DNS structure and methods. A general overview of the interfaces required between involved components is described in this document with future supporting documents giving technical specifications.
 
 --- middle
 
@@ -80,7 +79,7 @@ While it is expected that DIME functions will be integrated with UAS Service Sup
 
 While most data to be sent via Broadcast RID (Section 1.2.1 of {{drip-arch}}) or Network RID (Section 1.2.2 of {{drip-arch}}) is public, much of the extended information in registries will be private. As discussed in Section 7 of {{drip-arch}}, Authentication, Attestation, Authorization, Access Control, Accounting, Attribution, and Audit (AAA) for registries is essential, not just to ensure that access is granted only to strongly authenticated, duly authorized parties, but also to support subsequent attribution of any leaks, audit of who accessed information when and for what purpose, etc. As specific AAA requirements will vary by jurisdictional regulation, provider choices, customer demand, etc., they are left to specification in policies, which should be human readable to facilitate analysis and discussion, and machine readable to enable automated enforcement, using a language amenable to both (e.g., eXtensible Access Control Markup Language (XACML)).
 
-The intent of the access control requirements on registries is to ensure that no member of the public would be hindered from accessing public information, while only duly authorized parties would be enabled to access private information. Mitigation of Denial of Service (DoS) attacks and refusal to allow database mass scraping would be based on those behaviors, not on identity or role of the party submitting the query per se, but querant identity information might be gathered (by security systems protecting DRIP implementations) on such misbehavior.
+The intent of the access control requirements on registries is to ensure that no member of the public would be hindered from accessing public information, while only duly authorized parties would be enabled to access private information. Mitigation of Denial of Service (DoS) attacks and refusal to allow database mass scraping would be based on those behavior, not on identity or role of the party submitting the query per se, but querant identity information might be gathered (by security systems protecting DRIP implementations) on such misbehavior.
 
 Registration under DRIP is vital to manage the inevitable collisions in the hash portion of the DRIP Entity Tags (DETs). Forgery of the DETs is still possible, but including it as a part of a public registration mitigates this risk. This document creates the DRIP DET registration and discovery ecosystem.  This includes all components in the ecosystem (e.g., Unmanned Aircraft (UA), Registered Assigning Authority (RAA), Hierarchical HIT Domain Authority (HDA), Ground Control Station (GCS), and USS).
 
@@ -128,13 +127,13 @@ This document makes use of the terms (PII, USS, etc.) defined in {{RFC9153}}. Ot
 ******************|******|*****************************
                   |      |
             +-----o-+  +-o-----+
-RAAs        |  IRM  |  |  RAA  o------.
+RAAs        |  IAM  |  |  RAA  o------.
             +---o---+  +---o---+      '
                 |          |          |
 ****************|**********|**********|****************
                 |          |          |
             +---o---+  +---o---+  +---o---+
-HDAs        |  MRA  |  | RIDR  |  |  HDA  |
+HDAs        |  MAA  |  | SIDA  |  |  HDA  |
             +-------+  +-------+  +-------+
 ~~~~
 {:fig #reg-class-fig title="DIME Roles and Hierarchy"}
@@ -143,13 +142,11 @@ HDAs        |  MRA  |  | RIDR  |  |  HDA  |
 
 The Apex is a special DIME role that holds the value of RAA=0 and HDA=0. It serves as the branch point from the larger DNS system in which DETs are defined. The Apex generally has as the prefix portion of the HHIT associated with it (such as 2001:30/28) which is assigned by IANA from the non-routable special IPv6 address space for ORCHIDs.
 
-The Apex manages all delegations and allocations of the DET's RAA to various parties.
+The Apex manages all delegations and allocations of the DET's RAA to various parties. For DRIP and the UAS use case it is hoped that ICAO will handle the role of registering RAAs as an Apex.
 
 ## Registered Assigning Authority (RAA) {#raa}
 
 RAA's are the upper hierarchy in DRIP (denoted by a 14-bit field (16,384 RAAs) of an DET). An RAA is a business or organization that manages a DIME of HDAs ({{hda}}). Most are contemplated to be Civil Aviation Authorities (CAA), such as the Federal Aviation Authority (FAA), that then delegate HDAs to manage their National Air Space (NAS). This is does not preclude other entities to operate an RAA if the Apex allows it.
-
-For DRIP and the UAS use case it is hoped that ICAO will handle the role of registrating RAAs as an Apex.
 
 An RAA must provide a set of services to allocate HDAs to organizations. It must have a public policy on what is necessary to obtain an HDA. It must maintain a DNS zone minimally for discovering HID RVS servers. All RAA's have two reserved HDA values. 0 (0x0000) for itself in its role as an RAA and 1 (0x0001) if it wishes to offer HDA services. Other HDA values can be allocated or reserved per RAA policy.
 
@@ -175,7 +172,7 @@ An HDA-level DIME run by a manufacturer of UAS systems that participate in Remot
 
 A DET can be encoded into a Serial Number (see {{RFC9374}}, Section 4.2) and this DIME would hold a mapping from the Serial Number to the DET and its artifacts.
 
-#### Session ID Authority (SIDA) {#ridr}
+### Session ID Authority (SIDA) {#ridr}
 
 An HDA-level DIME that holds the binding between a UAS Session ID (for DRIP the DET) and the UA Serial Number. The Serial Number MUST have its access protected to allow only authorized parties to obtain. The Serial Number SHOULD be encrypted in a way only the authorized party can decrypt.
 
@@ -189,7 +186,7 @@ If a DIME does not have an abbreviation or it can not be looked up then the rece
 
 ## Text Conventions
 
-When talking about a DIME in documents it should be refered to as the role it is serving. For example a CAA level DIME running services both as an RAA (its primary role in the heirarchy) and as an HDA (optionally) would be be refered to "RAA" when performing its RAA duties and "HDA" when performing its HDA duties.
+When talking about a DIME in documents it should be referred to as the role it is serving. For example a CAA level DIME running services both as an RAA (its primary role in the hierarchy) and as an HDA (optionally) would be be referred to "RAA" when performing its RAA duties and "HDA" when performing its HDA duties.
 
 # DIME Architecture {#dime-arch}
 
@@ -256,7 +253,7 @@ The interface of the Name Server to any component (nominally the Registry) in a 
 
 ## DRIP Information Agent (DIA) {#dia}
 
-The DIA is the main component handling requests for information from entities outside of the DIME. Typically this is when an Observer looks up a Session ID from an UA and gets pointed to the DIA to obtain information not available publically (i.e. via DNS).
+The DIA is the main component handling requests for information from entities outside of the DIME. Typically this is when an Observer looks up a Session ID from an UA and gets pointed to the DIA to obtain information not available publicly (i.e. via DNS).
 
 The information contained in the DIA is generally more oriented around the Operator of a given UAS and is thus classified as Personally Identifiable Information (PII). To protect the privacy of an Operator of the UAS this information is not publicly accessible and is only available behind policy driven differentiated access mechanisms. As an example the Serial Number, under the FAA, is classified as PII and can only be accessed by federal entities (such as the FAA themselves).
 
@@ -284,8 +281,6 @@ In the following subsections an abbreviated form of {{dime-arch}} using co-locat
 
 ## Serial Number
 
-> Author Note: this section is a work in progress.
-
 There are four ways a Serial Number is supported (by DRIP):
 
 1. As itself as a clear-text string with additional information
@@ -293,13 +288,15 @@ There are four ways a Serial Number is supported (by DRIP):
 3. As itself as a clear-text string mapped to a DET "post" generation by the user (for use in authentication) and additional information
 4. As an encoding of an HI and associated DET by the manufacturer (for use in authentication) with additional information
 
-(1) is where a UA is provisioned with a Serial Number by the manufacturer. The manufacturer is running a DIME (probably an MAA) and uses the mechanisms of this document to provide additional information (like elements defined in {{ua-info-registry}}).
+> Note: additional information here refers to any subset of keys defined in {{ua-info-registry}}.
 
-(2) is where a UAS is provisioned with a Serial Number and DET by the manufacturer enabling their devices to use {{drip-auth}} and provide additional information. A public mapping of the Serial Number to DET and all public artifacts MUST be provided by the manufacturer. This document RECOMMENDS the manufacturer run an MAA for this task.
+(1) is where a UA is provisioned with a Serial Number by the manufacturer. The manufacturer is runs an MAA and uses the mechanisms of this document to provide additional information.
+
+(2) is where a UAS is provisioned with a Serial Number and DET by the manufacturer enabling their devices to use {{drip-auth}} and provide additional information. A public mapping of the Serial Number to DET and all public artifacts MUST be provided by the manufacturer. This document RECOMMENDS the manufacturer use an MAA for this task.
 
 (3) is where a UAS has a Serial Number (from the manufacturer) and the user has a mechanism to generate and map a DET to the Serial Number after production. This can provide dynamic signing keys for DRIP Authentication Messages via {{drip-auth}} for UAS that MUST fly only using Serial Numbers. Registration SHOULD be allowed to any relevant DIME that supports it.
 
-(4) is where a UAS manufacturer chooses to use the Serial Number scheme defined in {{RFC9374}} to create Serial Numbers, their associated DETs for {{drip-auth}} and provide additional information. This document RECOMMENDED that the manufacturer "locks" the device from changing its authentication method so identifiers in both the Basic ID and Authentication Message do not desync. The manufacturer MUST be using an MAA for this task, with the mapping between their Manufacturer Code and the upper portion of the DET publically availible.
+(4) is where a UAS manufacturer chooses to use the Serial Number scheme defined in {{RFC9374}} to create Serial Numbers, their associated DETs for {{drip-auth}} and provide additional information. This document RECOMMENDED that the manufacturer "locks" the device from changing its authentication method so identifiers in both the Basic ID and Authentication Message do not de-sync. The manufacturer MUST use an MAA for this task, with the mapping between their Manufacturer Code and the upper portion of the DET publicly available.
 
 ~~~~
     +-------------------+
@@ -309,7 +306,7 @@ There are four ways a Serial Number is supported (by DRIP):
    (a) |   | (b)
        |   |
 *******|***|*****************************
-*      |   |    DIME: MRA               *
+*      |   |    DIME: MAA               *
 *      |   |                            *
 *      v   |             +----------+   *
 *   +--o---o--+          |          |   *
@@ -329,14 +326,14 @@ There are four ways a Serial Number is supported (by DRIP):
     UA Information,
     Self-Endorsement: UA
 (b) Success Code,
-    Broadcast Endorsement: MRA on UA
+    Broadcast Endorsement: MAA on UA
 (c) HIP RR,
     CERT RRs
 (d) UA Information
 ~~~~
-{:fig #dime-sn-example title="Example DIME:MRA with Serial Number (DET) Registration"}
+{:fig #dime-sn-example title="Example DIME:MAA with Serial Number (DET) Registration"}
 
-The unmanned aircraft, intending to use DRIP, generates a keypair, DET and `Self-Endorsement: UA` using the RAA and HDA values specified by the manufacturers DIME (running as an MRA). The DET is converted into a Serial Number (per {{RFC9374}}) or the manufacturer creates their own Serial Number.
+The unmanned aircraft, intending to use DRIP, generates a keypair, DET and `Self-Endorsement: UA` using the RAA and HDA values specified by the manufacturers DIME (running as an MAA). The DET is converted into a Serial Number (per {{RFC9374}}) or the manufacturer creates their own Serial Number.
 
 The Serial Number, UA information and the `Self-Endorsement: UA` are sent to the manufacturers DIME. The DIME validates the Self-Endorsement and checks for DET and HI collisions in the Name Server/DIA. A `Broadcast Endorsement: DIME on UA` is generated which is provisioned into the aircraft for use when using the Serial Number as its UAS ID. In the Name Server HIP RRs are created using the DET FQDN while a CNAME points the Serial Number FQDN to the DET FQDN.
 
@@ -392,11 +389,11 @@ With the receipt of `Generic Endorsement: DIME on Operator` the registration of 
 
 > Note: (c) in {{dime-operator-example}} MAY be requested by the Operator to be omitted due to PII concerns.
 
-The definition of Operator Information is out of scope of this document and left to local regulations.
+The definition of Operator Information is out of scope of this document and left to local regulations (both in its format and contents).
 
 ## Session ID
 
-Session IDs are generally handled by HDAs, specifically RIDRs. In {{dime-sid-example}} the UAS comprises of an unmanned aircraft and a Ground Control Station (GCS). Both parties are involved in the registration process.
+Session IDs are generally handled by HDAs, specifically SIDAs. In {{dime-sid-example}} the UAS comprises of an unmanned aircraft and a Ground Control Station (GCS). Both parties are involved in the registration process.
 
 ~~~~
     +---------+
@@ -406,7 +403,7 @@ Session IDs are generally handled by HDAs, specifically RIDRs. In {{dime-sid-exa
    (a) |   | (b)
        |   |
 *******|***|*****************************
-*      |   |    DIME: RIDR              *
+*      |   |    DIME: SIDA              *
 *      |   |                            *
 *      v   |             +----------+   *
 *   +--o---o--+          |          |   *
@@ -422,26 +419,26 @@ Session IDs are generally handled by HDAs, specifically RIDRs. In {{dime-sid-exa
 *                                       *
 *****************************************
 
-(a) Mutual Endorsement: RIDR on GCS,
+(a) Mutual Endorsement: SIDA on GCS,
     Generic Endorsement: GCS on UA,
     Session ID Information
 (b) Success Code,
-    Broadcast Endorsement: RIDR on UA,
-    Generic Endorsement: RIDR on UAS
+    Broadcast Endorsement: SIDA on UA,
+    Generic Endorsement: SIDA on UAS
 (c) HIP RR,
     TLSA, RR,
     CERT RRs
 (d) Session ID Information
 ~~~~
-{:fig #dime-sid-example title="Example DIME:RIDR with Session ID (DET) Registration"}
+{:fig #dime-sid-example title="Example DIME:SIDA with Session ID (DET) Registration"}
 
 Through mechanisms not specified in this document the Operator should have methods (via the GCS) to instruct the unmanned aircraft onboard systems to generate a keypair, DET and `Self-Endorsement: UA`. The `Self-Endorsement: UA` is extracted by the Operator onto the GCS.
 
-The GCS is already pre-provisioned and registered to the DIME with its own keypair, DET, `Self-Endorsement: GCS` and `Generic Endorsement: RIDR on GCS`. The GCS creates a new `Generic Endorsement: GCS on UA` and also creates `Mutual Endorsement: RIDR on GCS`. These new endorsements along with Session ID Information are sent to the DIME via a secure channel.
+The GCS is already pre-provisioned and registered to the DIME with its own keypair, DET, `Self-Endorsement: GCS` and `Generic Endorsement: SIDA on GCS`. The GCS creates a new `Generic Endorsement: GCS on UA` and also creates `Mutual Endorsement: SIDA on GCS`. These new endorsements along with Session ID Information are sent to the DIME via a secure channel.
 
-The DIME validates all the endorsements and checks for DET and HI collisions in the Name Server/DIA using the proposed UA DET. A `Broadcast Endorsement: DIME on UA` is generated. An `Generic Endorsement: RIDR on UAS` is generated using the `Generic Endorsement: GCS on UA`. HIP and CERT RRs are provisioned into the Registry/Name server. Both endorsements are back to the GCS on a secure channel.
+The DIME validates all the endorsements and checks for DET and HI collisions in the Name Server/DIA using the proposed UA DET. A `Broadcast Endorsement: DIME on UA` is generated. An `Generic Endorsement: SIDA on UAS` is generated using the `Generic Endorsement: GCS on UA`. HIP and CERT RRs are provisioned into the Registry/Name server. Both endorsements are back to the GCS on a secure channel.
 
-The GCS then injects the `Broadcast Endorsement: RIDR on UA` securely into the unmanned aircraft. `Endorsement: RIDR on GCS` is securely stored by the GCS.
+The GCS then injects the `Broadcast Endorsement: SIDA on UA` securely into the unmanned aircraft. `Endorsement: SIDA on GCS` is securely stored by the GCS.
 
 > Note: in {{dime-sid-example}} the Session ID Information is expected to contain the Serial Number along with other PII specific information (such as UTM data) related to the Session ID.
 
@@ -533,65 +530,39 @@ DRIP has no intention to develop a new "art" of key management, instead hoping t
 
 Per {{drip-arch}} all information classified as public is stored in the DNS to satisfy REG-1 from {{RFC9153}}.
 
-DNSSEC is strongly recommended (especially for RAA-level and higher zones). Frequency of updates, size of the zone, and DIME policy may impact its use.
+The apex for domain names MUST be under the administrative control of ICAO, the international treaty organization providing the critical coordination platform for civil aviation. ICAO SHOULD be responsible for the operation of the DNS-related infrastructure for these domain name apexes. It MAY chose to run that infrastructure directly or outsource it to competent third parties or some combination of the two. ICAO SHOULD specify the technical and administrative criteria for the provision of these services: contractual terms (if any), reporting, uptime, SLAs (if any), DNS query handling capacity, response times incident handling, complaints, law enforcement interaction and so on.
 
-## DET
+ICAO SHOULD delegate domains beneath these apexes to national civil aviation authorities. This ensures DRIP complies with national law and regulation since these are matters of national sovereignty. The HHIT has a designated field, the RAA, for this exact purpose and SHOULD be used instead of a ISO-3166 entries: ie a two- or three-letter or a three digit country code.
 
-The REQUIRED mechanism is to place any information into `ip6.arpa` sub-zones when using a DET. Since the DET is an IPv6 address it can be nibble-reversed and used in the zone, per standard conventions. The records in `ip6.arpa` MUST include: HIP, CERTs, and NAPTR. Other RRs to support additional DRIP functions MAY be included.
+Each national aviation authority SHOULD be responsible for the operation of the DNS-related infrastructure for their delegated subdomains. As with the domain apexes overseen by ICAO, each national aviation authority  MAY chose to run that infrastructure directly or outsource it to competent third parties or some combination of the two. National aviation authorities SHOULD specify the technical and administrative criteria for the provision of these services: contractual terms (if any), reporting, uptime, SLAs (if any), DNS query handling capacity, response times, incident handling, complaints, law enforcement interaction and so on. These are National Matters where national law/regulation prevail. National policy and reguations will define how long DNS data are stored or archived.
 
-For DRIP, the prefix `2001:30/28` is slated for DETs being used in UAS as defined in {{RFC9374}} and is proposed, by this document, to have its authority delegated to ICAO. Other prefixes may be allocated by IANA in future for different use cases that do not fit cleanly into an existing prefix. Subdomain allocations under `arpa` may be a reasonable addition with new prefixes (such as for example `iot.arpa` if an HHIT prefix is allocated for IoT use), but is out of scope of this document.
+DNSSEC is strongly RECOMMENDED (especially for RAA-level and higher zones). When a DIME decides to use DNSSEC they SHOULD define a framework for cryptographic algorithms and key management {{RFC6841}}. This may be influenced by frequency of updates, size of the zone, and policies (both DIME-level and national-level).
 
-The individual DETs may be potentially too numerous (e.g., 60 - 600M) and dynamic (e.g., new DETs every minute for some HDAs) to store in a signed, DNS zone. The HHIT Domain Authority SHOULD provide DNS service for its zone and provide the DET detail response.
+## DRIP Entity Tags
+
+The REQUIRED mechanism is to place any information into `ip6.arpa` when using a DET. Since the DET is an IPv6 address it can be nibble-reversed and used in the zone, per standard conventions.
+
+The prefix `2001:30/28` is registered with IANA {{RFC9374}} and `3.0.0.1.0.0.2.ip6.arpa` -- the corresponding reverse domain -- SHOULD be under the administrative control of ICAO. In addition to the DNS infrastructure for `3.0.0.1.0.0.2.ip6.arpa`, ICAO SHOULD be responsible for the allocation of IPv6 addresses in this prefix. An addressing plan will need to be developed.
+
+Distribution of HHIT (IPv6 address) blocks SHOULD be done on a country by country basis, using the 14-bit RAA space as a framework. ICAO SHOULD allocate blocks to each National Aviation Authority who can then assign them to HDAs in accordance with local law and policy. All HDAs MUST have an IPv6 address in `2001:30/28`. A discrete zone SHOULD be delegated for each HDA. These MUST contain an HHIT resource record for itself.
+
+Reverse lookups of these IPv6 addresses will translate the address into a domain name in the manner defined in {{RFC1886}}. However, these lookups will query for an HHIT RRtype and not a PTR RRtype.
 
 ## Serial Numbers & Other UAS ID Types
 
-This document specifies the creation and delegation to ICAO of a the subdomain `uas` under `arpa`. To enable lookup of Serial Numbers a subdomains of `sn.id` is maintained under `uas.arpa`. Note that other subdomains under `uas.arpa` can be made to support other identifiers in UAS (such as UUIDv4s in their capacity as UTM Assigned IDs). The creation and use of other subdomains are out of scope for this document. DETs do not need a subdomain in `uas.arpa` (such as `det.id.uas.arpa`) as they fit within the predefined `ip6.arpa` as they are IPv6 addresses.
+This document specifies the creation and delegation to ICAO of the subdomain `uas.icao.arpa`. To enable lookup of Serial Numbers a subdomains of `sn.uas.icao.arpa` is maintained. All entries under `sn.uas.icao.arpa` are to follow the convention found in {{sn-fqdn}}. This is to enable a singular lookup point for Serial Numbers for UAS.
 
-## Supported DNS Records
+Note that other subdomains under `uas.icao.arpa` can be made to support other identifiers in UAS. The creation and use of other such other subdomains are out of scope for this document. The further use and creation of items under `icao.arpa` is the authority of ICAO (which has been delegated control).
 
-### HIP
-
-Defined by {{RFC8005}}. Part of the requirment for the `ip6.arpa` zone in DRIP ({{dns}}). This is the primary public source of the HI of a DET.
-
-### CERT
-
-Defined by {{RFC4398}}. Part of the requirment for the `ip6.arpa` zone in DRIP ({{dns}}). Endorsements MUST be placed into DNS in the CERT RRs.
-
-Endorsements are stored in Certificate Type OID Private (value 254) with a base OID of `1.3.6.1.4.1.6715.2` and further classified by the Endorsement/Certificate Type and then Entities involved.
-
-> Editor Note: This OID is an initial allocation under the IANA Enterprise Number OID. It is expect that a general OID will be allocated.
-
-| Endorsement Type        | OID Value |
-| ----------------------- | --------- |
-| Self-Endorsement        | 0         |
-| Generic Endorsement     | 1         |
-| Concise Endorsement     | 2         |
-| Mutual Endorsement      | 3         |
-| Link Endorsement        | 4         |
-| Broadcast Endorsement   | 5         |
-
-| Entity Type                  | OID Value |
-| ---------------------------- | --------- |
-| Unmanned Aircraft (UA)       | 0         |
-| Ground Control Station (GCS) | 1         |
-| Operator (OP)                | 2         |
-| HDA                          | 3         |
-| RAA                          | 4         |
-| Root                         | 5         |
-
-As an example the following OID: `1.3.6.1.4.1.6715.2.5.3.0` would decompose into: the base OID (`1.3.6.1.4.1.6715.2`), the Endorsement Type (`5`: Broadcast Endorsement) and then the parties involved (`3`: HDA, `0`: UA)
-
-Certificate Type X.509 as per PKIX (value 1) MAY be used to store X.509 certificates as discussed in {{x509}}.
-
-### NAPTR
-
-Defined by {{RFC2915}}. Part of the requirment for the `ip6.arpa` zone in DRIP ({{dns}}). Used as a "pointer" to the private information registry for additional data about a DET. Data MUST be protected using mechanisms described in {{dap}} as required by local regulations.
+DETs MUST not have a subdomain in `uas.icao.arpa` (such as `det.uas.icao.arpa`) as they fit within the predefined `ip6.arpa` as they are IPv6 addresses.
 
 # Endorsements
 
-DRIP Endorsements are defined in a CDDL {{RFC8610}} structure that can be encoded to CBOR, JSON or have their keys removed and be sent as a binary blob. When the latter is used very specific forms are defined with naming conventions to know the data fields and their lengths for parsing.
+DRIP Endorsements are defined in a CDDL {{RFC8610}} structure ({{endorsement-cddl}}) that can be encoded to CBOR, JSON or have their CDDL keys removed and be sent as a binary blob. When the latter is used very specific forms are defined with naming conventions to know the data fields and their lengths for parsing and constrained envirornments. CBOR is the preferred encoding format.
 
-{{specific-endorsements}} specifies various Endorsements and {{bin-examples}} their respective binary forms that are used in DRIP.
+The CDDL was derived from the more specific structure developed for {{drip-auth}}. As such the structures found in {{drip-auth}}, such as the UA Signed Evidence and the contents of DRIP Link (known as a Broadcast Endorsement), are a subset of the below definition in a strict binary form.
+
+{{drip-endorsements}} specifies specific Endorsement structures for the UAS RID use-case.
 
 > Note: this section uses the term HHIT instead of DET as the Endorsements are designed to be generic and re-useable for other HHIT use-cases. Specific use-cases SHOULD add new keys for each section (if required) and define the valid keys and encoding forms for their use-case.
 
@@ -599,33 +570,25 @@ DRIP Endorsements are defined in a CDDL {{RFC8610}} structure that can be encode
 
 ~~~~
 endorsement = {
-  identity: {
-    (hit: bstr .size 16, ? hi: bstr) // (hhit: bstr .size 16, ? hi: bstr)
-    * tstr: any
-  },
-  evidence: bstr,
-  scope: {
-    vnb: number,
-    vna: number,
-    * tstr: any
-  }
-  signature: {
-    sig: bstr
-    * tstr: any
-  }
+    ; TODO: add tag for self-describing type or leave up to cbor?
+    scope: {
+        vnb: number,
+        vna: number,
+        * tstr => any
+    },
+    evidence: bstr,
+    endorser: {
+        identity: {
+            hhit: bstr .size 16, ? hi: bstr // * tstr => any
+        },
+        signature: {
+            sig: bstr,
+            * tstr => any
+        }
+    }
 }
 ~~~~
-{:fig #endorsement-json title="Endorsement CDDL"}
-
-### Identity
-
-The `identity` section is where the main identity information of the signer of the Endorsement is found. The identity can take many forms such as a handle to the identity (an HHIT), and can include more explicit data such as the public key (an HI). Other keys can be provided and MUST be defined in their specific Endorsement.
-
-The length of the `hi` can be determined when using `hhit` or `hit` by decoding the provided IPv6 address. The prefix will inform of the ORCHID construction being used, which informs the locations of the OGA ID in the address. The OGA ID will then inform the user of the key algorithm selected which has the key length defined.
-
-### Evidence
-
-The `evidence` section contain a byte string of evidence. Specific content of evidence (such as subfields, length and ordering) is defined in specific Endorsement structures.
+{:fig #endorsement-cddl title="Endorsement CDDL"}
 
 ### Scope
 
@@ -633,41 +596,19 @@ The `scope` section is more formally "the scope of validity of the endorsement".
 
 Other forms of the scope could for example be a 4-dimensional volume definition. This could be in raw latitude, longitude, altitude pairs or may be a URI pointing to scope information. Additional scope fields are out of scope for this document and should be defined for specific Endorsement structures if they are desired.
 
+### Evidence
+
+The `evidence` section contain a byte string of evidence. Specific content of evidence (such as subfields, length and ordering) is defined in specific Endorsement structures.
+
+### Identity
+
+The `identity` section is where the main identity information of the signer of the Endorsement is found. The identity can take many forms such as a handle to the identity (e.g. an HHIT), or can include more explicit data such as the public key (e.g. an HI). Other keys, for different identifiers, can be provided and MUST be defined in their specific Endorsement.
+
+The length of the `hi` can be determined when using `hhit` by decoding the provided IPv6 address. The prefix will inform of the ORCHID construction being used, which informs the locations of the OGA ID in the address. The OGA ID will then inform the user of the key algorithm selected which has the key length defined.
+
 ### Signature
 
 The `signature` section contain the signature data for the endorsement. The signature itself MUST be provided under the `sig` key. Other forms or data elements could also be present in the `signature` section if specified in a specific endorsement. Signatures MUST be generated using the preceding sections in their binary forms (i.e. as a bytestring with no keys).
-
-## Abbreviations & File Naming Conventions
-
-The names of endorsements can become quite long and tedious to write out. As such this section provides a guide to a somewhat standardized way they are written in text.
-
-### In Text Abbreviation
-
-In a long form the name of a particular endorsement can be written as follows:
-
-- `Self-Endorsement: Unmanned Aircraft`
-- `Generic Endorsement: Operator on Aircraft` or `Generic Endorsement: Operator, Aircraft`
-
-When multiple entities are listed they can be separated by either `on` or by `,`. These long forms can be shortened:
-
-- `SE(Unmanned Aircraft)` or `SE-ua`
-- `GE(Operator, Unmanned Aircraft)` or `GE-op.ua`
-
-Typical abbreviations for the entity can be used such as `Unmanned Aircraft` being shorthanded to `ua`.
-
-### File Naming
-
-For file naming of various endorsements a similar format to the short form is used:
-
-- `se-{hash of entity}`
-- `ge-{hash of entity x}_{hash of entity y}`
-
-Some examples of file names:
-
-- `se-79d8a404d48f2ef9.cert`
-- `ge-120b8f25b198c1e1_79d8a404d48f2ef9.cert`
-
-For a non-HHIT payload a pure hash (truncated if necessary) of the contents of a section is acceptable to be used instead. For DRIP the hash portion of the DET SHOULD be used.
 
 # X.509 Certificates {#x509}
 
@@ -704,36 +645,6 @@ TBD
 # IANA Considerations
 
 ## IANA DRIP Registry
-
-### DRIP Endorsement Registries
-
-This document requests two new registries for Endorsement Type and Entity Type under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
-
-DRIP Endorsement Type:
-
-: This 8-bit valued registry is for Endorsement Types to be used in OID's for CERT Resource Records. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
-
-| Endorsement Type        | Value     |
-| ----------------------- | --------- |
-| Self-Endorsement        | 0         |
-| Generic Endorsement     | 1         |
-| Concise Endorsement     | 2         |
-| Mutual Endorsement      | 3         |
-| Link Endorsement        | 4         |
-| Broadcast Endorsement   | 5         |
-
-DRIP Entity Type:
-
-: This 8-bit valued registry is for Entity Types to be used in OID's for CERT Resource Records. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
-
-| Entity Type                  | Value     |
-| ---------------------------- | --------- |
-| Unmanned Aircraft (UA)       | 0         |
-| Ground Control Station (GCS) | 1         |
-| Operator (OP)                | 2         |
-| HDA                          | 3         |
-| RAA                          | 4         |
-| Root                         | 5         |
 
 ### Aircraft Information Registry {#ua-info-registry}
 
@@ -775,10 +686,6 @@ Aircraft Information Fields:
 
 # Security Considerations
 
-## Additional DNS Resource Records
-
-This document defines the standardization use of three primary DNS RRs to support DRIP interoperability and baseline use without compromising the privacy and security considerations of users: HIP {{hip}}, CERT {{cert}} and NAPTR {{naptr}}. Additional RRs MAY be added and SHOULD be audited for their impact on the privacy and security of users.
-
 ## Key Rollover & Federation
 
 During key rollover the DIME MUST inform all children and parents of the change - using best standard practices of a key rollover. At time of writing this is signing over the new key with the previous key in a secure fashion and it being validated by others before changing any links in DNS.
@@ -807,394 +714,16 @@ Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LL
 
 --- back
 
-# DRIP Endorsements for UAS {#specific-endorsements}
-
-~~~~
-drip_endorsement = {
-    identity: {
-        hhit: bstr .size 16,
-    },
-    evidence: bstr,
-    scope: {
-        vnb: number,
-        vna: number
-    }
-    signature: {
-        sig: bstr
-    }
-}
-~~~~
-{:fig #specific-endorsements-fig title="CDDL Structure for DRIP UAS Endorsements"}
-
-Unless otherwise noted all Endorsements in this section use the high level structure of {{#specific-endorsements-fig}} with the `evidence` field filled in as stated in their section.
-
-## Self-Endorsement (SE-x) {#self-endorsement}
-
-In a Self-Endorsement the `identity` is a DET and the `evidence` is the associate HI. The HI could be removed, resulting in an "empty" Endorsement, when obtaining the HI via other means (such as DNS) is guaranteed. This behavior is NOT RECOMMENDED as the data being signed would be very short.
-
-## Generic Endorsement (GE-x.y) {#endorsement}
-
-~~~~
-generic_endorsement = {
-    identity: {
-        hhit: bstr .size 16,
-        hi: bstr
-    },
-    evidence: bstr,
-    scope: {
-        vnb: number,
-        vna: number
-    }
-    signature: {
-        sig: bstr
-    }
-}
-~~~~
-{:fig #e-xy title="Generic Endorsement CDDL Structure"}
-
-An endorsement used to sign over evidence that is being endorsed. The `hi` is added to avoid any external lookups for signature verification. Typically the `evidence` is filled with a byte string of a Self-Endorsement ({{self-endorsement}}) of another party in DRIP.
-
-## Concise Endorsement (CE-x.y) {#concise-endorsement}
-
-An endorsement signing over only the DET of Y (as `evidence`) and the DET of X (as `identity`). In constrained environments and when there is the guarantee of being able to lookup the DETs to obtain HIs this endorsement can be used.
-
-## Mutual Endorsement (ME-x.y) {#mutual-endorsement}
-
-An endorsement that perform a sign over an existing Generic Endorsement (as a byte string of `evidence`) where the signer is the second party of the embedded endorsement. The DET of party Y is used as the `identity`.
-
-## Link Endorsement (LE-x.y) {#link-endorsement}
-
-An endorsement that performs a sign over an existing Concise Endorsement (in byte string form for `evidence`) where the signer is the second party of the embedded endorsement. The DET of party Y is used as the `identity`.
-
-## Broadcast Endorsement (BE-x.y) {#broadcast-endorsement}
-
-This endorsement is required by DRIP Authentication Formats & Protocols for Broadcast RID ({{drip-auth}}) to satisfy {{RFC9153}} GEN-1 and GEN-3 and is sent in its binary form ({{bin-be}}).
-
-The `evidence` is a concatenated byte string of the DET of Y and the HI of Y in DET/HI order. The `identity` is the DET of X.
-
-## Evidence Endorsement (EE-x) {#evidence-endorsement}
-
-The `evidence` in this structure is defined by its use-case. This is an abstract view of `UA Signed Evidence` structure found in {{drip-auth}} when used for various SAM Types.
-
-# Binary Endorsements {#bin-examples}
-
-## Self-Endorsement (SE-x) {#bin-se}
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                              DRIP                             |
-|                           Entity Tag                          |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                          Host Identity                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                        Valid Not Before                       |
-+---------------+---------------+---------------+---------------+
-|                        Valid Not After                        |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                            Signature                          |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-DRIP Entity Tag: 16-bytes
-Host Identity: 32-bytes
-Valid Not Before: 4-bytes
-Valid Not After: 4-bytes
-Signature: 64-bytes
-~~~~
-{:fig #bin-se-x title="Binary Self-Endorsement (Length: 120-bytes)"}
-
-## Generic Endorsement (GE-x.y) {#bin-e}
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                             DRIP                              |
-|                        Entity Tag of X                        |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                       Host Identity of X                      |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                             SE-y                              .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                     Valid Not Before by X                     |
-+---------------+---------------+---------------+---------------+
-|                     Valid Not After by X                      |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                         Signature by X                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-DRIP Entity Tag of X: 16-bytes
-Host Identity: 32-bytes
-SE-y: 120-bytes
-Valid Not Before by X: 4-bytes
-Valid Not After by X: 4-bytes
-Signature by X: 64-bytes
-~~~~
-{:fig #bin-e-xy title="Binary Generic Endorsement (Length: 240-bytes)"}
-
-## Concise Endorsement (CE-x.y) {#bin-ce}
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                             DRIP                              |
-|                        Entity Tag of X                        |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                             DRIP                              |
-|                        Entity Tag of Y                        |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                     Valid Not Before by X                     |
-+---------------+---------------+---------------+---------------+
-|                     Valid Not After by X                      |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                         Signature by X                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-DRIP Entity Tag of X: 16-bytes
-DRIP Entity Tag of Y: 16-bytes
-Valid Not Before by X: 4-bytes
-Valid Not After by X: 4-bytes
-Signature by X: 64-bytes
-~~~~
-{:fig #bin-ce-xy title="Binary Concise Endorsement (Length: 104-bytes)"}
-
-## Mutual Endorsement (ME-x.y) {#bin-me}
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                             DRIP                              |
-|                        Entity Tag of Y                        |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                            GE-x.y                             .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                     Valid Not Before by Y                     |
-+---------------+---------------+---------------+---------------+
-|                     Valid Not After by Y                      |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                         Signature by Y                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-DRIP Entity Tag of Y: 16-bytes
-GE-x.y: 16-bytes
-Valid Not Before by Y: 4-bytes
-Valid Not After by Y: 4-bytes
-Signature by Y: 64-bytes
-~~~~
-{:fig #bin-m-xy title="Binary Mutual Endorsement (Length: 328-bytes"}
-
-## Link Endorsement (LE-x.y) {#bin-le}
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                             DRIP                              |
-|                        Entity Tag of Y                        |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-.                                                               .
-.                            CE-x.y                             .
-.                                                               .
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                     Valid Not Before by Y                     |
-+---------------+---------------+---------------+---------------+
-|                     Valid Not After by Y                      |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                         Signature by Y                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-DRIP Entity Tag of Y: 16-bytes
-CE-x.y: 16-bytes
-Valid Not Before by Y: 4-bytes
-Valid Not After by Y: 4-bytes
-Signature by Y: 64-bytes
-~~~~
-{:fig #bin-le-xy title="DRIP Link Endorsement (Length: 192-bytes)"}
-
-## Broadcast Endorsement (BE-x.y) {#bin-be}
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                             DRIP                              |
-|                        Entity Tag of X                        |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                             DRIP                              |
-|                        Entity Tag of Y                        |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                       Host Identity of Y                      |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                     Valid Not Before by X                     |
-+---------------+---------------+---------------+---------------+
-|                     Valid Not After by X                      |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                         Signature by X                        |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-
-DRIP Entity Tag of X: 16-bytes
-DRIP Entity Tag of Y: 16-bytes
-Host Identity of Y: 32-bytes
-Valid Not Before by X: 4-bytes
-Valid Not After by X: 4-bytes
-Signature by X: 64-bytes
-~~~~
-{:fig #bin-be-xy title="DRIP Broadcast Endorsement (Length: 136-bytes)"}
-
 # DRIP Fully Qualified Domain Names {#drip-fqdn}
 
 ## DRIP Entity Tag {#det-fqdn}
-
-The DET can be translated to the following FQDN form:
 
 > {hash}.{oga_id}.{hda}.{raa}.{prefix}.{apex}.
 
 When building a DET FQDN it MUST must be built using the exploded (all padding present) form of the IPv6 address.
 
-Below is an example:
-
 ~~~~
-Apex: .example.com.
+Apex: .det.uas.icao.arpa.
 DET: 2001:0030:0280:1405:c465:1542:a33f:dc26
 ID: c4651542a33fdc26
 OGA: 05
@@ -1202,7 +731,7 @@ HID: 0028014
 HDA: 0014
 RAA: 000a
 Prefix: 2001003
-FQDN: c4651542a33fdc26.05.0014.000a.2001003.example.com.
+FQDN: c4651542a33fdc26.05.0014.000a.2001003.det.uas.icao.arpa.
 ~~~~
 
 ## UAS Serial Number {#sn-fqdn}
@@ -1210,10 +739,180 @@ FQDN: c4651542a33fdc26.05.0014.000a.2001003.example.com.
 > {id}.{length}.{manufacturer-code}.{apex}.
 
 ~~~~
-Apex: .sn.id.arpa.
-Serial: MFR07TEST001
+Apex: .sn.uas.icao.arpa.
+Serial: MFR0ADR1P1SC00L
 Manufacturer Code: MFR0
-Length: 7
-ID: TEST001
-FQDN: test001.7.mfr0.sn.id.uas.arpa.
+Length: A
+ID: DR1P1SC00L
+FQDN: dr1p1sc00l.a.mfr0.sn.uas.icao.arpa.
 ~~~~
+
+# DRIP Endorsements for UAS {#drip-endorsements}
+
+## Self Endorsement {#se}
+
+~~~~
+self_endorsement = {
+    scope: {
+        vnb: number,
+        vna: number
+    },
+    evidence: bstr,
+    endorser: {
+        identity: {
+            hhit: bstr .size 16
+        },
+        signature: {
+            sig: bstr
+        }
+    }
+}
+~~~~
+{:fig #se-cddl title="Self Endorsement CDDL"}
+
+Used during registration process as an input. `evidence` is filled with the corresponding HI of the `hhit`.
+
+~~~~
+0                   1                   2                   3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|                              VNB                              |
++---------------+---------------+---------------+---------------+
+|                              VNA                              |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                              HI                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                             HHIT                              |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                           Signature                           |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+~~~~
+{:fig #se-binary title="Self Endorsement Binary"}
+
+~~~~
+TODO
+~~~~
+{:fig #se-cbor title="Self Endorsement CBOR"}
+
+## Generic Endorsement {#ge}
+
+~~~~
+generic_endorsement = {
+    scope: {
+        vnb: number,
+        vna: number
+    },
+    evidence: bstr,
+    endorser: {
+        identity: {
+            hhit: bstr .size 16
+        },
+        signature: {
+            sig: bstr
+        }
+    }
+}
+~~~~
+{:fig #ge-cddl title="Generic Endorsement CDDL"}
+
+Defined by {{drip-auth}} in a binary format to support Authentication over F3411 constrained links. Used in DRIP Wrapper, Manifest and Frame formats. `evidence` is a binary string with specified contents (in format and ordering) by specific use-cases.
+
+## Broadcast Endorsement {#be}
+
+~~~~
+broadcast_endorsement = {
+    scope: {
+        vnb: number,
+        vna: number
+    },
+    evidence: bstr,
+    endorser: {
+        identity: {
+            hhit: bstr .size 16
+        },
+        signature: {
+            sig: bstr
+        }
+    }
+}
+~~~~
+{:fig #be-cddl title="Broadcast Endorsement CDDL"}
+
+Defined by {{drip-auth}} in a binary format to support Authentication over F3411 constrained links. Used in DRIP Link format. A required output of registration to a DIME at any level. `evidence` is a binary string of the concatination of a child entities (e.g. a UA) HHIT and its associated HI. `hhit` is of the parent entity (e.g. a DIME).
+
+~~~~
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|                              VNB                              |
++---------------+---------------+---------------+---------------+
+|                              VNA                              |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                             HHIT                              |
+|                            of Child                           |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                           HI of Child                         |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                             HHIT                              |
+|                           of Parent                           |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                           Signature                           |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+~~~~
+{:fig #be-binary title="Broadcast Endorsement Binary"}
+
+~~~~
+TODO
+~~~~
+{:fig #be-cbor title="Self Endorsement CBOR"}
