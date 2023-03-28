@@ -3,7 +3,7 @@ coding: utf-8
 
 title: DRIP Entity Tag (DET) Identity Management Architecture
 abbrev: DETIM Architecture
-docname: draft-ietf-drip-registries-08
+docname: draft-ietf-drip-registries-09
 category: info
 
 ipr: trust200902
@@ -547,6 +547,8 @@ The prefix `2001:30/28` is registered with IANA {{RFC9374}} and `3.0.0.1.0.0.2.i
 Distribution of HHIT (IPv6 address) blocks SHOULD be done on a country by country basis, using the 14-bit RAA space as a framework. ICAO SHOULD allocate blocks to each National Aviation Authority who can then assign them to HDAs in accordance with local law and policy. All HDAs MUST have an IPv6 address in `2001:30/28`. A discrete zone SHOULD be delegated for each HDA. These MUST contain an HHIT resource record for itself.
 
 Reverse lookups of these IPv6 addresses will translate the address into a domain name in the manner defined in {{RFC1886}}. However, these lookups will query for an HHIT RRtype and not a PTR RRtype.
+
+> Info: HHIT RRType is a new DNS RRType that would be proposed by the DRIP WG to fulfill desired attributes of DRIP.
 
 ## Serial Numbers & Other UAS ID Types
 
