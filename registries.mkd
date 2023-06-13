@@ -89,10 +89,9 @@ This document uses the Concise Data Definition Language (CDDL) {{RFC8610}} for d
 
 # Abstract Process and Reasoning
 
-In DRIP each entity (DIME, Operator, UA, etc.) is expected to generate a full DET {{RFC9374}} on the local device their key is expected to be used. These are registered with a Public Information Registry (e.g. DNS) within the hierarchy along with whatever data is required by the cognizant CAA and the DIME. Any Personally Identifiable Information (PII) is stored in a Private Information Registry protected through industry practice AAA or stronger. In response, the entity will obtain an endorsement from the DIME proving such registration.
+In DRIP each entity (DIME, Operator, UA, etc.) is expected to generate a DET {{RFC9374}} on the local device their key is expected to be used. These are registered with a Public Information Registry (e.g. DNS) within the hierarchy along with whatever data is required by the cognizant CAA and the DIME. Any Personally Identifiable Information (PII) is stored in a Private Information Registry protected through industry practice AAA or stronger. In response, the entity will obtain an endorsement from the DIME proving such registration.
 
-Manufacturers that wish to participate in DRIP should not only support DRIP as a Session ID type for their aircraft but could also generate a DET then encode it as a Serial Number (Section 4.2 of {{RFC9374
-    }}). This would allow aircraft under CAA mandates to fly only ID Type 1 (Serial Number) could still use DRIP and most of its benefits. Even if DRIP is not supported for Serial Numbers by a Manufacturer it is hoped that they would still run a DIME to store their Serial Numbers and allow look ups for generic model information. This look up could be especially helpful in UTM for Situational Awareness when an aircraft flying with a Serial Number is detected and allow for an aircraft profile to be displayed.
+Manufacturers that wish to participate in DRIP should not only support DRIP as a Session ID type for their aircraft but could also generate a DET then encode it as a Serial Number (Section 4.2 of {{RFC9374}}). This would allow aircraft under CAA mandates to fly only ID Type 1 (Serial Number) could still use DRIP and most of its benefits. Even if DRIP is not supported for Serial Numbers by a Manufacturer it is hoped that they would still run a DIME to store their Serial Numbers and allow look ups for generic model information. This look up could be especially helpful in UTM for Situational Awareness when an aircraft flying with a Serial Number is detected and allow for an aircraft profile to be displayed.
 
 Operators are registered with a number of registries or their regional RAA. This acts as a verification check when a user performs other registration operations; such as provisioning an aircraft with a new Session ID. It is an open question if an Operator registers to their CAA (the RAA's direct HDA) or multiple USS's (HDA's). PII of the Operator would vary based on the CAA they are under and the DIME.
 
@@ -151,13 +150,12 @@ The Apex manages all delegations and allocations of the DET's RAA to various par
 |------------------ | ------------- | ------ |
 | 0 - 3             | 0x0000 - 0x0003 | Apex |
 | 1 - 3999          | 0x0001 - 0x0F9F | ISO 3166-1 Countries |
-| 4000 - 4095       | 0x0FA0 - 0x0FFF | Reserved |
-| 4096 - 4191       | 0x1000 - 0x105F | IAMs |
-| 4192 - 16384      | 0x1060 - 0x3FFF | Reserved |
+| 4000 - 4095       | 0x0FA0 - 0x0FFF | MCAs |
+| 4096 - 16384      | 0x1000 - 0x3FFF | Reserved |
 
 RAA values of 0 (0x0000) to 3 (0x0003) are reserved to the Apex exclusively.
 
-It is recommended for DETs that the RAA range of 4 (0x0004) to 3999 (0x0F9F) are reserved for CAAs. RAAs in this range are handed out in groups of 4, as contigous allocations, to each CAA with their values being determined by the ISO 3166-1 numeric code. The mapping of the ISO 3166-1 numeric to RAA is found in {{iso-raa-map}}. How a CAA handles their 4 allocations are out of scope of this document.
+It is recommended for DETs that the RAA range of 4 (0x0004) to 3999 (0x0F9F) are reserved for CAAs. RAAs in this range are handed out in groups of 4, as contigous allocations, to each CAA with their values being determined by the ISO 3166-1 numeric code. The mapping of the ISO 3166-1 numeric to RAA is found in {{iso-to-raa}}. How a CAA handles their 4 allocations are out of scope of this document.
 
 ## Registered Assigning Authority (RAA) {#raa}
 
@@ -165,25 +163,25 @@ RAA's are the upper hierarchy in DRIP (denoted by a 14-bit field, i.e. 16,384 RA
 
 An RAA must provide a set of services to allocate HDAs to organizations. It must have a public policy on what is necessary to obtain an HDA. It must maintain a DNS zone minimally for discovering HID RVS servers. All RAA's have a single reserved HDA value: 0 (0x0000) for itself to support various functions or services. Other HDA values can be allocated or reserved per RAA policy.
 
-> Note: A single RAA may control more than one NAS (for example LU and BE being covered by Skeyes.be). In such a scenario the CAA could either request two different RAA values for each larger region with HDAs delegating smaller spaces; or run under a single RAA with HDAs delegated to cover specific regions. This is up to regulators and their policies.
+> Note: A single CAA may control more than one NAS (for example LU and BE being covered by Skeyes.be).
 
-### ICAO Authority of Manufacturers (IAM) {#irm}
+### Manufacturer Code Authority (MCA) {#irm}
 
 An RAA-level DIME that hands out HDA values to participating Manufacturer's that hold an Manufacturer Code used in {{CTA2063A}} that is issued by ICAO.
 
-To manage the large Manufacturer Code space (34  character set; 4 characters; 1,336,336 possible codes) a range of RAA values are set aside for the use case. These are the RAA values of 4096 (0x1000) up to 4191 (0x105F). This allows a single HDA for each Manufacturer Code.
+To manage the large Manufacturer Code space (34  character set; 4 characters; 1,336,336 possible codes) a range of RAA values are set aside for the use case. These are the RAA values of 4000 (0x0FA0) up to 4095 (0x0FFF). This allows a single HDA for each Manufacturer Code.
 
 ## Hierarchial HIT Domain Authority (HDA) {#hda}
 
-An HDA may be an USS, ISP, or any third party that takes on the business to register the actual entities that need DETs.  This includes, but is not limited to UA, GCS, UAS Operators and infrastucture. It should also provide needed UAS services including those required for HIP-enabled devices (e.g. RVS).
+An HDA may be an USS, ISP, or any third party that takes on the business to register the actual entities that need DETs.  This includes, but is not limited to UA, GCS, UAS Operators and infrastucture (such as Supplemental Data Service Providers). It should also provide needed UAS services including those required for HIP-enabled devices (e.g. RVS).
 
 The HDA is a 14-bit field (16,384 HDAs per RAA) of a DET assigned by an RAA.  An HDA should maintain a set of RVS servers for UAS clients that may use HIP.  How this is done and scales to the potentially millions of customers are outside the scope of this document. This service should be discoverable through the DNS zone maintained by the HDA's RAA.
 
 An RAA may assign a block of values to an individual organization. This is completely up to the individual RAA's published policy for delegation. Such policy is out of scope.
 
-### Manufacturers Authority of Aircraft (MAA) {#mra}
+### Manufacturer Aircraft Authority (MAA) {#mra}
 
-An HDA-level DIME run by a manufacturer of UAS systems that participate in Remote ID. Stores UAS Serial Numbers under a specific Manufacturer Code (assigned to the manufacturer by ICAO).
+An HDA-level DIME run by a manufacturer of UAS systems that participate in Remote ID. Stores UAS Serial Numbers under a specific Manufacturer Code (assigned to the manufacturer by ICAO). The HDAs come out the the MCA space with the Manufacturer Code translated (TBD) to HDA.
 
 A DET can be encoded into a Serial Number (see {{RFC9374}}, Section 4.2) and this DIME would hold a mapping from the Serial Number to the DET and its artifacts.
 
@@ -197,7 +195,7 @@ As part of the UTM system they also hold a binding between a UAS ID (Serial Numb
 
 On receiver devices a DET can be translated to a more human readable form such as: `{RAA Abbreviation} {HDA Abbreviation} {Last 4 Characters of DET Hash}`. An example of this would be `US FAA FE23`. To support this DIMEs are RECOMMENDED to have an abbreviation that could be used for this form. These abbreviations SHOULD be a maximum of six characters in length. Spaces MUST NOT be used and be replaced with either underscores (`_`) or dashes (`-`).
 
-For RAAs allocated in the CAA range, the abbreviation MUST be set to the ISO 3166-1 country code (either Alpha-2 or Alpha-3).
+For RAAs allocated in the CAA range, the abbreviation MUST be set to the ISO 3166-1 country code (either Alpha-2 or Alpha-3). See {{iso-to-raa}} for details on this translation.
 
 If a DIME does not have an abbreviation or it can not be looked up then the receiver MUST use the uppercase 4-character hexadecimal encoding of the field it is missing.
 
@@ -248,9 +246,9 @@ The DIME, in any of its roles ({{dime-roles}}), is comprised of a number of logi
 
 ## DRIP Provisioning Agent (DPA) {#dpa}
 
-The DPA performs the important task of vetting information (such as the DRIP Endorsements) coming from clients wishing to register and then delegate (internally or externally) various items to other components in the DIME.
+The DPA performs the important task of vetting information coming from clients wishing to register and then delegate (internally or externally) various items to other components in the DIME.
 
-A standard interface over HTTPS MUST be provided for clients to access with JSON or CBOR encoding of objects being sent to the DPA. This interface specification is out of scope for this document.
+A standard interface MUST be provided for clients to access. An HTTPS based interface is RECOMMENDED. This interface specification is out of scope for this document.
 
 There MUST be an interface from the DPA to a Registry ({{registry}}) component which handles the DNS specific requirements of the DIME as defined by the Registry. There MAY also be interface from the DPA to a DRIP Information Agent ({{dia}}) as defined by the DIA.
 
@@ -272,11 +270,11 @@ The interface of the Name Server to any component (nominally the Registry) in a 
 
 The DIA is the main component handling requests for information from entities outside of the DIME. Typically this is when an Observer looks up a Session ID from an UA and gets pointed to the DIA to obtain information not available publicly (i.e. via DNS).
 
-The information contained in the DIA is generally more oriented around the Operator of a given UAS and is thus classified as Personally Identifiable Information (PII). To protect the privacy of an Operator of the UAS this information is not publicly accessible and is only available behind policy driven differentiated access mechanisms (see {{dap}}). As an example the Serial Number, under the FAA, is classified as PII and can only be accessed by federal entities (such as the FAA themselves).
+The information contained in the DIA is generally more oriented around the Operator of a given UAS and is thus classified as Personally Identifiable Information (PII). To protect the privacy of an Operator of the UAS this information is not publicly accessible and is only available behind policy driven differentiated access mechanisms (see {{dap}}).
 
-For DRIP the Registration Data Access Protocol (RDAP) ({{RFC7480}}, {{RFC9082}} and {{RFC9083}}) is the selected protocol to provide policy driven differentiated access for queries of information.
+For DRIP, the Registration Data Access Protocol (RDAP) ({{RFC7480}}, {{RFC9082}} and {{RFC9083}}) is the selected protocol to provide policy driven differentiated access for queries of information from clients.
 
-A standard interface over HTTPS MUST be provided for clients to access with JSON/CBOR encoding of objects being sent to the DIA. There MUST be a standardized interface for the DPA or Registry to add, update or delete information into the DIA. Specific details for these interfaces are out of scope for this document.
+There MUST be a standardized interface for the DPA or Registry to add, update or delete information into the DIA. Specific details for these interfaces are out of scope for this document.
 
 An interface defined by the Registration Data Directory Service (RDDS) ({{rdds}}) is also required as specified by the RDDS.
 
@@ -290,9 +288,9 @@ The general process for a registering party is as follows:
 
 1. Verify input Endorsement(s) from registering party
 2. Check for collision of DET and HI
-3. Populate Registry/Name Server with resource records
+3. Populate Registry/Name Server with resource record(s)
 4. Populate RDDS via DIA with PII and other info
-5. Generate and return DRIP Endorsement(s)
+5. Generate and return Endorsement(s)
 
 In the following subsections an abbreviated form of {{dime-arch}} using co-located components is used to describe the flow of information. The data elements being transmitted between entities is marked accordingly in each figure for the specific examples.
 
@@ -645,13 +643,15 @@ DRIP has no intention to develop a new "art" of key management, instead hoping t
 
 Per {{drip-arch}} all information classified as public is stored in the DNS to satisfy REG-1 from {{RFC9153}}.
 
+> Author Note: this section needs a little rework due to the ISO-3166 delegation that we do, thus taking ICAO somewhat out of the loop.
+
 The apex for domain names MUST be under the administrative control of ICAO, the international treaty organization providing the critical coordination platform for civil aviation. ICAO SHOULD be responsible for the operation of the DNS-related infrastructure for these domain name apexes. It MAY chose to run that infrastructure directly or outsource it to competent third parties or some combination of the two. ICAO SHOULD specify the technical and administrative criteria for the provision of these services: contractual terms (if any), reporting, uptime, SLAs (if any), DNS query handling capacity, response times incident handling, complaints, law enforcement interaction and so on.
 
 ICAO SHOULD delegate domains beneath these apexes to national civil aviation authorities. This ensures DRIP complies with national law and regulation since these are matters of national sovereignty. The HHIT has a designated field, the RAA, for this exact purpose and SHOULD be used instead of a ISO-3166 entries: ie a two- or three-letter or a three digit country code.
 
 Each national aviation authority SHOULD be responsible for the operation of the DNS-related infrastructure for their delegated subdomains. As with the domain apexes overseen by ICAO, each national aviation authority  MAY chose to run that infrastructure directly or outsource it to competent third parties or some combination of the two. National aviation authorities SHOULD specify the technical and administrative criteria for the provision of these services: contractual terms (if any), reporting, uptime, SLAs (if any), DNS query handling capacity, response times, incident handling, complaints, law enforcement interaction and so on. These are National Matters where national law/regulation prevail. National policy and reguations will define how long DNS data are stored or archived.
 
-DNSSEC is strongly RECOMMENDED (especially for RAA-level and higher zones). When a DIME decides to use DNSSEC they SHOULD define a framework for cryptographic algorithms and key management {{RFC6841}}. This may be influenced by frequency of updates, size of the zone, and policies (both DIME-level and national-level).
+DNSSEC is strongly RECOMMENDED (especially for RAA-level and higher zones). When a DIME decides to use DNSSEC they SHOULD define a framework for cryptographic algorithms and key management {{RFC6841}}. This may be influenced by frequency of updates, size of the zone, and policies.
 
 ## DRIP Entity Tags
 
@@ -668,7 +668,7 @@ Reverse lookups of these IPv6 addresses will translate the address into a domain
 > Author Note: This section is very much a WIP, comments are welcome.
 
 ~~~~
-<domain> DET IN ( OGAID DET HI RVS RAA HDA URI Endorsement )
+<domain> DET IN CBOR( OGAID DET HI RVS RAA HDA URI Endorsement )
 
 OGAID = Integer value of OGA ID -- taken from HIP RR
 DET = Base16 DET -- taken from HIP RR
@@ -677,13 +677,12 @@ RVS = List of Rendevous Server addresses -- taken from HIP RR
 RAA = RAA Abbreviation
 HDA = HDA Abbreviation
 URI = URI to assocaited DIA
-Endorsement = List of Endorsements in CBOR encoding
+Endorsement = Broadcast Endorsements in CBOR encoding
 ~~~~
 
-Store entire DNS RR as a CBOR object?
-Could simplify to single Endorsement: the Broadcast Endorsement. All other Endorsements are in CERT RRs?
-
 ## Serial Numbers & Other UAS ID Types
+
+> Author Note: There MUST be an entry point in DNS for the lookup of UAS Serial Numbers. This section is very much a shot in the dark.
 
 This document specifies the creation and delegation to ICAO of the subdomain `uas.icao.arpa`. To enable lookup of Serial Numbers a subdomains of `sn.uas.icao.arpa` is maintained. All entries under `sn.uas.icao.arpa` are to follow the convention found in {{sn-fqdn}}. This is to enable a singular lookup point for Serial Numbers for UAS.
 
@@ -781,6 +780,18 @@ TBD
 
 ## IANA DRIP Registry
 
+### ISO 3166-1 RAA Codes {#iso-to-raa}
+
+This document requests a new registry for ISO 3166-1 Numeric Nation Codes to RAAs under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
+
+ISO 3166-1 Numeric Nation Codes to RAA Allocations:
+
+: list of ISO codes to their predefined RAA allocations. Control of these values are expected to be delegated to their respective owner via a UN agency. The RAA can be derived from the ISO-3166 code by multiplying the value by 4 (i.e. `raa_code = iso_code * 4`). Four contigous values are used in a single allocation. The inverse (RAA to ISO) works out as: `iso_code = floor(raa_code / 4)`. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
+
+| Nation Name | Nation 2-Chracter Code | Nation Numeric Code | RAA Allocations |
+|------------ | ---------------------- | ------------------- | --------------- |
+| United States | US | 840 | 3360, 3361, 3362, 3363 |
+
 ### Aircraft Information Registry {#ua-info-registry}
 
 This document requests a new registry for aircraft information fields under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
@@ -823,13 +834,15 @@ Aircraft Information Fields:
 
 ## Key Rollover & Federation
 
-During key rollover the DIME MUST inform all children and parents of the change - using best standard practices of a key rollover. At time of writing this is signing over the new key with the previous key in a secure fashion and it being validated by others before changing any links in DNS.
+During key rollover the DIME MUST inform all children and parents of the change - using best standard practices of a key rollover.
 
 A DET has a natural ability for a single DIME to hold different cryptographic identities under the same HID values. This is due to the lower 64-bits of the DET being a hash of the public key and the HID of the DET being generated. As such during key rollover, only the lower 64-bits would change and a check for a collision would be required.
 
-This attribute of the DET to have different identities could also allow for a single DIME to be "federated" across them if they share the same HID value. This method of deployment has not been thoroughly studied at this time. An endpoint such as in {{child-dime}} is a possible place to have these functions.
+This attribute could also allow for a single DIME to be "federated" across multiple DETs sharing the same HID value. This method of deployment has not been thoroughly studied at this time. An endpoint such as in {{child-dime}} is a possible place to have these functions.
 
 ## DET Generation {#det-gen-concern}
+
+> Author Note: is this section valid anymore? Perhaps we hard specify that devices ONLY generate on their own hardware instead of "out-sourcing" as this section implies.
 
 Under the FAA {{NPRM}}, it is expecting that IDs for UAS are assigned by the UTM and are generally one-time use. The methods for this however are unspecified leaving two options.
 
