@@ -361,10 +361,15 @@ This is where a UA is provisioned with a Serial Number by the manufacturer. The 
 (a) Serial Number,
     UA Information
 (b) Success Code
-(c) NAPTR RR
+(c) URI RR
 (d) UA Information
 ~~~~
 {:fig #dime-sn1-example title="Example DIME:MAA with Serial Number Registration"}
+
+~~~~text
+@ORIGIN mfr0.uas-sn.arpa
+example1.8 IN URI ( https://example.com/sn/EXAMPLE1 )
+~~~~
 
 ### Type 2 {#serial-2}
 
@@ -399,13 +404,20 @@ This is where a UAS is provisioned with a Serial Number and DET by the manufactu
     Self-Endorsement: UA
 (b) Success Code,
     Broadcast Endorsement: MAA on UA
-(c) HIP RR,
-    CERT RRs,
-    NAPTR RR,
-    "Link" RR
+(c) DET RR, PTR RR
 (d) UA Information
 ~~~~
 {:fig #dime-sn2-example title="Example DIME:MAA with Serial Number + DET Registration"}
+
+The MAA would be running the following zones:
+
+~~~~text
+@ORIGIN mfr0.uas-sn.arpa
+example2.8 IN DET ( 5 20010033e872f705f3ce91124b677d65 ... "MFR MFR0" MFR08EXAMPLE2 https://example.com/sn/EXAMPLE2 ... active )
+
+@ORIGIN 3.2.f.7.0.f.a.1.3.0.0.1.0.0.2.ip6.arpa
+6.5.d.7.7.6.b.4.2.1.1.9.e.c.3.f.5.0 IN PTR example2.8.mfr0.uas-sn.arpa
+~~~~
 
 ### Type 3 {#serial-3}
 
@@ -440,13 +452,18 @@ This is where a UAS has a Serial Number (from the manufacturer) and the user (vi
     Self-Endorsement: UA
 (b) Success Code,
     Broadcast Endorsement: DIME on UA
-(c) HIP RR,
-    CERT RRs,
-    NAPTR RR,
-    "Link" RR
+(c) DET RR
 (d) UA Information
 ~~~~
 {:fig #dime-sn3-example title="Example DIME with Serial Number + DET Registration"}
+
+~~~~text
+@ORIGIN mfr0.uas-sn.arpa
+example3.8 IN DET ( 5 20010033e872f70584b1fa2b70421112 ... "MFR MFR0" MFR08EXAMPLE3 https://example.com/sn/EXAMPLE3 ... active )
+
+@ORIGIN 3.2.f.7.0.f.a.1.3.0.0.1.0.0.2.ip6.arpa
+2.1.1.1.2.4.0.7.b.2.a.f.1.b.4.8.5.0 IN PTR example3.8.mfr0.uas-sn.arpa
+~~~~
 
 ### Type 4 {#serial-4}
 
@@ -481,13 +498,18 @@ This is where a UAS manufacturer chooses to use the Serial Number scheme defined
     Self-Endorsement: UA
 (b) Success Code,
     Broadcast Endorsement: MAA on UA
-(c) HIP RR,
-    CERT RRs,
-    NAPTR RR,
-    "Link" RR
+(c) DET RR
 (d) UA Information
 ~~~~
 {:fig #dime-sn4-example title="Example DIME:MAA with DRIP Serial Number Registration"}
+
+~~~~text
+@ORIGIN mfr0.uas-sn.arpa
+example4.8 IN DET ( 5 20010033e872f705ba8af5252a35030e ... "MFR MFR0" MFR08EXAMPLE4 https://example.com/sn/EXAMPLE4 ... active )
+
+@ORIGIN 3.2.f.7.0.f.a.1.3.0.0.1.0.0.2.ip6.arpa
+e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0 IN PTR example4.8.mfr0.uas-sn.arpa
+~~~~
 
 ## Operator
 
@@ -521,8 +543,7 @@ Provided either by USS or CAA run HDAs. Regulation might require interaction bet
     Operator Self-Endorsement
 (b) Success Code,
     Generic Endorsement: HDA on Operator
-(c) HIP RR,
-    CERT RRs
+(c) DET RR
 (d) Operator Information
 
 Note: (c) MAY be requested by the Operator to be omitted due to PII concerns.
@@ -530,6 +551,16 @@ Note: (c) MAY be requested by the Operator to be omitted due to PII concerns.
 {:fig #dime-operator-example title="Example DIME:HDA with Operator (DET) Registration"}
 
 The definition of Operator Information is out of scope of this document and left to local regulations (both in its format and contents).
+
+View of DNS:
+
+~~~~text
+@ORIGIN 0000.3ffe.2001003.hhit.arpa
+ba8af5252a35030e.05.0000.3ffe.2001003.hhit.arpa IN DET ( 5 2001003fff800005ba8af5252a35030e ... "TEST DRIP" null https://example.com/operator/* ... active )
+
+@ORIGIN 0.0.0.8.f.f.f.3.0.0.1.0.0.2.ip6.arpa
+e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0 IN PTR ba8af5252a35030e.05.0000.3ffe.2001003.hhit.arpa
+~~~~
 
 ## Session ID
 
@@ -565,12 +596,20 @@ Session IDs are generally handled by HDAs, specifically SIDAs. In {{dime-sid-exa
 (b) Success Code,
     Broadcast Endorsement: SIDA on UA,
     Generic Endorsement: SIDA on UAS
-(c) HIP RR,
-    TLSA, RR,
-    CERT RRs
+(c) DET RR, PTR RR
 (d) Session ID Information
 ~~~~
 {:fig #dime-sid-example title="Example DIME:SIDA with Session ID (DET) Registration"}
+
+DNS View
+
+~~~~text
+@ORIGIN 0000.3ffe.2001003.hhit.arpa
+b6ce935b616306d4.05.0000.3ffe.2001003.hhit.arpa IN DET ( 5 2001003fff800005b6ce935b616306d4 ... "TEST DRIP" null https://example.com/session/* ... active )
+
+@ORIGIN 0.0.0.8.f.f.f.3.0.0.1.0.0.2.ip6.arpa
+4.d.6.0.3.6.1.6.b.5.3.9.e.c.6.b.5.0 IN PTR b6ce935b616306d4.05.0000.3ffe.2001003.hhit.arpa
+~~~~
 
 Through mechanisms not specified in this document the Operator should have methods (via the GCS) to instruct the unmanned aircraft onboard systems to generate a keypair, DET and `Self-Endorsement: UA`. The `Self-Endorsement: UA` is extracted by the Operator onto the GCS.
 
@@ -647,6 +686,19 @@ Handled by the Apex and RAA's. This is an endpoint that handles dynamic registra
 It should be noted that this endpoint DOES NOT hand out dynamically RAA/HDA values to systems that hit the endpoint. This is done out-of-band through processes specified by local regulations and performed by cognizant authorities. The endpoint MUST NOT accept queries it is not previously informed of being expected via mechanisms not defined in this document.
 
 It is OPTIONAL to implement this endpoint. This MAY be used to handle lower-level DIME key roll-over.
+
+~~~~text
+RAA:
+@ORIGIN 8.f.f.f.3.0.0.1.0.0.2.ip6.arpa
+0.0.0 IN NS 0.0.0.8.f.f.f.3.0.0.1.0.0.2.ip6.arpa
+
+HDA:
+@ORIGIN 0.0.0.8.f.f.f.3.0.0.1.0.0.2.ip6.arpa
+9.6.6.b.b.0.6.a.4.9.3.6.8.4.e.4.5.0 IN PTR 4e486394a60bb669.05.0000.3ffe.2001003.hhit.arpa
+
+@ORIGIN 0000.3ffe.2001003.hhit.arpa
+4e486394a60bb669.05.0000.3ffe.2001003.hhit.arpa IN DET ( 5 2001003fff8000054e486394a60bb669 ... "TEST DRIP" null https://example.com/session/* ... active )
+~~~~
 
 # Differentiated Access Process {#dap}
 
@@ -1054,15 +1106,3 @@ Defined by {{drip-auth}} in a binary format to support Authentication over F3411
 |                                                               |
 +---------------+---------------+---------------+---------------+
 |                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                           Signature                           |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                             
