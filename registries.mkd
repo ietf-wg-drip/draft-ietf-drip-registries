@@ -3,7 +3,7 @@ coding: utf-8
 
 title: DRIP Entity Tag (DET) Identity Management Architecture
 abbrev: DETIM Architecture
-docname: draft-ietf-drip-registries-10
+docname: draft-ietf-drip-registries-11
 category: info
 
 ipr: trust200902
@@ -1109,4 +1109,29 @@ Defined by {{drip-auth}} in a binary format to support Authentication over F3411
 |                                                               |
 |                            HHIT of                            |
 |                            Parent                             |
-|                                                    
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                           Signature                           |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+~~~~
+{:fig #be-binary title="Broadcast Endorsement Binary"}
+
+~~~~
+TODO
+~~~~
+{:fig #be-cbor title="Broadcast Endorsement CBOR"}
