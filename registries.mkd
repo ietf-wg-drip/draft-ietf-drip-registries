@@ -163,12 +163,12 @@ The Apex manages all delegations and allocations of the DET's RAA to various par
 | 0 - 3             | 0x0000 - 0x0003 | Apex |
 | 1 - 3999          | 0x0001 - 0x0F9F | ISO 3166-1 Countries ({{iso3166}}) |
 | 4000 - 4095       | 0x0FA0 - 0x0FFF | Manufacturer Code Authorities ({{irm}}) |
-| 4096 - 16384      | 0x1000 - 0x3FFF | Reserved |
-| 16376 - 16384     | 0x3FF8 - 0x3FFF | DRIP WG Experimental Use |
+| 4096 - 16375      | 0x1000 - 0x3FFF | Reserved |
+| 16376 - 16383     | 0x3FF8 - 0x3FFF | DRIP WG Experimental Use |
 
 RAA values of 0 (0x0000) to 3 (0x0003) are reserved to the Apex exclusively.
 
-The Experimental range of 16376 (0x3FF8) to 16384 (0x3FFF) is allocated to the DRIP working group itself. 16381 to 16383 are setup by DRIP experts to act as RAAs for potentional HDA users to test against. 16384 is setup to be an RAA to act as a MCA {{irm}} for UAS manufacturers to test their HDAs against and have their Manufacturer Code properly managed. The rest of the range (16376 to 16380) are reserved to be allocate by the DRIP experts to buisnesses that wish to test being an RAA.
+The Experimental range of 16376 (0x3FF8) to 16383 (0x3FFF) is allocated to the DRIP working group itself. 16380 to 16383 are setup by DRIP experts to act as RAAs for potentional HDA users to test against. 16383 is setup to be an RAA to act as a MCA {{irm}} for UAS manufacturers to test their HDAs against and have their Manufacturer Code properly managed. The rest of the range (16376 to 16379) are reserved to be allocate by the DRIP experts to buisnesses that wish to test being an RAA.
 
 ## Registered Assigning Authority (RAA) {#raa}
 
