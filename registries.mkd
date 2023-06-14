@@ -216,7 +216,7 @@ hid = (4000 << 14) + mfr_int
 mfr_code = base34_encode(hid)
 ~~~~
 
-The Manufacturer Code radix character set is defined in {{CTA2063A}} with the values being set as integers from 0 to 33. Standard base conversion is used to convert from the base 34 character set to base 10.
+The Manufacturer Code radix character set is defined in {{CTA2063A}} with the values being set as integers from 0 to 33.
 
 A DET can be encoded into a Serial Number (see {{RFC9374}}, Section 4.2) and this DIME would hold a mapping from the Serial Number to the DET and its artifacts.
 
@@ -1108,4 +1108,4 @@ Defined by {{drip-auth}} in a binary format to support Authentication over F3411
 +---------------+---------------+---------------+---------------+
 |                                                               |
 |                            HHIT of                            |
-|                            Parent          
+|                            Par
