@@ -211,10 +211,9 @@ An RAA may assign a block of values to an individual organization. This is compl
 An HDA-level DIME run by a manufacturer of UAS systems that participate in Remote ID. Stores UAS Serial Numbers under a specific Manufacturer Code (assigned to the manufacturer by ICAO). The specific RAA (out of MCA space) and HDA use the following derivation:
 
 ~~~~
-mfr_int = radix34(mfr_code)
+mfr_int = base34_decode(mfr_code)
 hid = (4000 << 14) + mfr_int
-raa = hid >> 14
-hda = hid & 0x3FF
+mfr_code = base34_encode(hid)
 ~~~~
 
 The Manufacturer Code radix character set is defined in {{CTA2063A}} with the values being set as integers from 0 to 33. Standard base conversion is used to convert from the base 34 character set to base 10.
@@ -1078,5 +1077,4 @@ Defined by {{drip-auth}} in a binary format to support Authentication over F3411
 |                                                               |
 |                                                               |
 |                                                               |
-|                                                               |
-| 
+|                                                             
