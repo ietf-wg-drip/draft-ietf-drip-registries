@@ -373,7 +373,9 @@ example1.8 IN URI ( https://example.com/sn/EXAMPLE1 )
 
 ### Type 2 {#serial-2}
 
-This is where a UAS is provisioned with a Serial Number and DET by the manufacturer enabling their devices to use {{drip-auth}} and provide additional information. A public mapping of the Serial Number to DET and all public artifacts MUST be provided by the manufacturer. This document RECOMMENDS the manufacturer use an MAA for this task.
+This is where a UAS is provisioned with a Serial Number and DET by the manufacturer enabling their devices to use {{drip-auth}} and provide additional information. A public mapping of the Serial Number to DET and all public artifacts MUST be provided by the manufacturer. The manufacturer MUST use an MAA for this task.
+
+The device MAY allow the DET to be regenerated dynamically with the MAA.
 
 ~~~~
     +-------------------+
@@ -1106,5 +1108,4 @@ Defined by {{drip-auth}} in a binary format to support Authentication over F3411
 +---------------+---------------+---------------+---------------+
 |                                                               |
 |                            HHIT of                            |
-|                            Parent                             |
-|                                
+|                            Parent          
