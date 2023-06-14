@@ -116,6 +116,18 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 This document makes use of the terms (PII, USS, etc.) defined in {{RFC9153}}. Other terms (DIME, Endorsement, etc.) are from {{drip-arch}}, while others (RAA, HDA, etc.) are from {{RFC9374}}.
 
+## Role Abbreviation in DETs
+
+On receiver devices a DET can be translated to a more human readable form such as: `{RAA Abbreviation} {HDA Abbreviation} {Last 4 Characters of DET Hash}`. An example of this would be `US FAA FE23`. To support this DIMEs are RECOMMENDED to have an abbreviation that could be used for this form. These abbreviations SHOULD be a maximum of six characters in length. Spaces MUST NOT be used and be replaced with either underscores (`_`) or dashes (`-`).
+
+For RAAs allocated in the ISO range {{iso3166}}, the abbreviation MUST be set to the ISO 3166-1 country code (either Alpha-2 or Alpha-3).
+
+If a DIME does not have an abbreviation or it can not be looked up then the receiver MUST use the uppercase 4-character hexadecimal encoding of the field it is missing.
+
+## Text Conventions
+
+When talking about a DIME in documents it should be referred to as the role it is serving. For example a CAA level DIME running services both as an RAA (its primary role in the hierarchy) and as an HDA (optionally) would be be referred to "RAA" when performing its RAA duties and "HDA" when performing its HDA duties. The rest of the document will follow this convention unless verbosity or clarity is needed.
+
 # DIME Roles {#dime-roles}
 
 {{drip-arch}} defines the DRIP Identity Management Entity (DIME) as an entity that vets Claims and/or Evidence from a registrant and delivers, to successful registrations, Endorsements and/or Certificates in response. The DIME encompasses various logical components and can be classified to serve a number of different roles, which are detailed in the following subsections. The general hierarchy of these roles are illustrated in {{reg-class-fig}}.
@@ -1067,14 +1079,4 @@ Defined by {{drip-auth}} in a binary format to support Authentication over F3411
 |                                                               |
 |                                                               |
 |                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-~~~~
-{:fig #be-binary title="Broadcast Endorsement Binary"}
-
-~~~~
-TODO
-~~~~
-{:fig #be-cbor title="Broadcast Endorsement CBOR"}
+| 
