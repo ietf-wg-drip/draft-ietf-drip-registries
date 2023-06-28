@@ -204,6 +204,8 @@ See {{mra}} for the HDA allocation of Manufacturer Codes under these RAAs.
 
 An HDA may be an USS, ISP, or any third party that takes on the business to register the actual entities that need DETs. This includes, but is not limited to UA, GCS, UAS Operators and infrastucture (such as Supplemental Data Service Providers). It should also provide needed UAS services including those required for HIP-enabled devices (e.g. RVS).
 
+A primary function of HDAs for DRIP, in the context of UAS RID is the binding between a UAS Session ID (for DRIP the DET) and the UA Serial Number. The Serial Number MUST have its access protected to allow only authorized parties to obtain. The Serial Number SHOULD be encrypted in a way only the authorized party can decrypt. As part of the UTM system HDAs can also hold a binding between a UAS ID (Serial Number or Session ID) and an Operational Intent. They may either be a direct logical part of a UAS Service Supplier (USS) or be a UTM wide service to USS's.
+
 The HDA is a 14-bit field (16,384 HDAs per RAA) of a DET assigned by an RAA.  An HDA should maintain a set of RVS servers for UAS clients that may use HIP.  How this is done and scales to the potentially millions of customers are outside the scope of this document. This service should be discoverable through the DNS zone maintained by the HDA's RAA.
 
 An RAA may assign a block of values to an individual organization. This is completely up to the individual RAA's published policy for delegation. Such policy is out of scope.
@@ -220,15 +222,7 @@ mfr_code = base34_encode(hid)
 
 The Manufacturer Code radix character set is defined in {{CTA2063A}} with the values being set as integers from 0 to 33.
 
-A DET can be encoded into a Serial Number (see {{RFC9374}}, Section 4.2) and this DIME would hold a mapping from the Serial Number to the DET and its artifacts.
-
-### Session ID Authority (SIDA) {#ridr}
-
-> Author Note: this subsection could be rolled into the main HDA section removing the somewhat unnecessary abstraction.
-
-An HDA-level DIME that holds the binding between a UAS Session ID (for DRIP the DET) and the UA Serial Number. The Serial Number MUST have its access protected to allow only authorized parties to obtain. The Serial Number SHOULD be encrypted in a way only the authorized party can decrypt.
-
-As part of the UTM system they also hold a binding between a UAS ID (Serial Number or Session ID) and an Operational Intent. They may either be a direct logical part of a UAS Service Supplier (USS) or be a UTM wide service to USS's.
+A DET can be encoded into a Serial Number (see {{RFC9374}}, Section 4.2) and this DIME MUST hold a mapping from the Serial Number to the DET and its artifacts.
 
 # DIME Architecture {#dime-arch}
 
