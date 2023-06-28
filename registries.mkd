@@ -178,8 +178,6 @@ RAA's are the upper hierarchy in DRIP (denoted by a 14-bit field, i.e. 16,384 RA
 
 An RAA must provide a set of services to allocate HDAs to organizations. It must have a public policy on what is necessary to obtain an HDA. It must maintain a DNS zone minimally for discovering HID RVS servers. All RAA's have a single reserved HDA value: 0 (0x0000) for itself to support various functions or services. Other HDA values can be allocated or reserved per RAA policy.
 
-> Note: A single entity may control more than one NAS (for example LU and BE being covered by Skeyes.be) and would manage two allocation spaces.
-
 ### ISO 3166-1 Numeric Nations (INN) {#iso3166}
 
 The RAA range of 4 (0x0004) to 3999 (0x0F9F) are reserved for CAAs using the ISO 3166-1 Numeric Nation Code. The RAA can be derived from the ISO 3166-1 numeric code by multiplying the value by 4 (i.e. `raa_code = iso_code * 4`). Four contigous values are used in a single allocation. The inverse (RAA to ISO) works out as: `iso_code = floor(raa_code / 4)`.
@@ -188,7 +186,9 @@ As an example the United States has an ISO 3166-1 Numeric Code of 840. This deri
 
 It should be noted that the range of codes from 900 to 999 are defined as "user assigned code elements" without specific claimaint predefined in the RAA space. Withdrawn and other special codes also do not have predetermined claimants.
 
-How a CAA handles their 4 allocations are out of scope of this document. Control of these values are expected to be claimed by their respective owner. Protection against fraudulent claims of one of these values is out of scope for this document.
+How a CAA handles their 4 allocations are out of scope of this document. Control of these values are expected to be claimed by their respective owner. How a claim is vetted and validated is out of scope of this document. Protection against fraudulent claims of one of these values is out of scope for this document.
+
+> Note: A single entity may control more than one NAS (for example LU and BE being covered by Skeyes.be) and would manage two allocation spaces. How this is claimed and handled is out of scope for this document.
 
 ### Manufacturer Code Authority (MCA) {#irm}
 
