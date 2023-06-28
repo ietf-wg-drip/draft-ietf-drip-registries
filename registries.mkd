@@ -161,10 +161,12 @@ The Apex manages all delegations and allocations of the DET's RAA to various par
 | RAA Decimal Range | RAA Hex Range | Status |
 |------------------ | ------------- | ------ |
 | 0 - 3             | 0x0000 - 0x0003 | Apex |
-| 1 - 3999          | 0x0001 - 0x0F9F | ISO 3166-1 Countries ({{iso3166}}) |
+| 4 - 3999          | 0x0004 - 0x0F9F | ISO 3166-1 Countries ({{iso3166}}) |
 | 4000 - 4095       | 0x0FA0 - 0x0FFF | Manufacturer Code Authorities ({{irm}}) |
 | 4096 - 16375      | 0x1000 - 0x3FFF | Reserved |
 | 16376 - 16383     | 0x3FF8 - 0x3FFF | DRIP WG Experimental Use |
+
+> Note: that the first column of this table is *decimal* values **not** *hexadecimal*.
 
 RAA values of 0 (0x0000) to 3 (0x0003) are reserved to the Apex exclusively.
 
@@ -1108,30 +1110,4 @@ Defined by {{drip-auth}} in a binary format to support Authentication over F3411
 +---------------+---------------+---------------+---------------+
 |                                                               |
 |                            HHIT of                            |
-|                            Parent                             |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                           Signature                           |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-~~~~
-{:fig #be-binary title="Broadcast Endorsement Binary"}
-
-~~~~
-TODO
-~~~~
-{:fig #be-cbor title="Broadcast Endorsement CBOR"}
+|                            Pa
