@@ -427,6 +427,8 @@ The general process for a registering party is as follows:
 
 In the following subsections an abbreviated form of {{dime-arch}} using co-located components is used to describe the flow of information. The data elements being transmitted between entities is marked accordingly in each figure for the specific examples.
 
+Each section has an associated appendix ({{dns-examples}}) containing DNS examples.
+
 ## Serial Number
 
 There are four ways a Serial Number is supported by DRIP:
@@ -438,7 +440,7 @@ There are four ways a Serial Number is supported by DRIP:
 
 > Note: additional information here refers to any subset of keys defined in {{ua-info-registry}}.
 
-### Type 1 {#serial-1}
+### Serial Method 1 {#serial-1}
 
 This is where a UA is provisioned with a Serial Number by the manufacturer. The Serial Number is just text string, defined by {{CTA2063A}}. The manufacturer runs an Name Server delegated under the Serial Number apex and points to information using a URI RR.
 
@@ -474,12 +476,7 @@ This is where a UA is provisioned with a Serial Number by the manufacturer. The 
 ~~~~
 {:fig #dime-sn1-example title="Example DIME:MAA with Serial Number Registration"}
 
-~~~~text
-@ORIGIN mfr0.uas-sn.arpa
-example1.8 IN URI ( https://example.com/sn/EXAMPLE1 )
-~~~~
-
-### Type 2 {#serial-2}
+### Serial Method 2 {#serial-2}
 
 This is where a UAS is provisioned with a Serial Number and DET by the manufacturer enabling their devices to use {{drip-auth}} and provide additional information. A public mapping of the Serial Number to DET and all public artifacts MUST be provided by the manufacturer. The manufacturer MUST use an MAA for this task.
 
@@ -519,17 +516,7 @@ The device MAY allow the DET to be regenerated dynamically with the MAA.
 ~~~~
 {:fig #dime-sn2-example title="Example DIME:MAA with Serial Number + DET Registration"}
 
-The MAA would be running the following zones:
-
-~~~~text
-@ORIGIN mfr0.uas-sn.arpa
-example2.8 IN DET ( 5 20010033e872f705f3ce91124b677d65 ... "MFR MFR0" MFR08EXAMPLE2 https://example.com/sn/EXAMPLE2 ... active )
-
-@ORIGIN 3.2.f.7.0.f.a.1.3.0.0.1.0.0.2.ip6.arpa
-6.5.d.7.7.6.b.4.2.1.1.9.e.c.3.f.5.0 IN PTR example2.8.mfr0.uas-sn.arpa
-~~~~
-
-### Type 3 {#serial-3}
+### Serial Method 3 {#serial-3}
 
 This is where a UAS has a Serial Number (from the manufacturer) and the user (via a DIME) has a mechanism to generate and map a DET to the Serial Number after production. This can provide dynamic signing keys for DRIP Authentication Messages via {{drip-auth}} for UAS that MUST fly only using Serial Numbers. Registration SHOULD be allowed to any relevant DIME that supports it. A public mapping of the DET to the Serial Number SHOULD be provided.
 
@@ -567,15 +554,7 @@ This is where a UAS has a Serial Number (from the manufacturer) and the user (vi
 ~~~~
 {:fig #dime-sn3-example title="Example DIME with Serial Number + DET Registration"}
 
-~~~~text
-@ORIGIN mfr0.uas-sn.arpa
-example3.8 IN DET ( 5 20010033e872f70584b1fa2b70421112 ... "MFR MFR0" MFR08EXAMPLE3 https://example.com/sn/EXAMPLE3 ... active )
-
-@ORIGIN 3.2.f.7.0.f.a.1.3.0.0.1.0.0.2.ip6.arpa
-2.1.1.1.2.4.0.7.b.2.a.f.1.b.4.8.5.0 IN PTR example3.8.mfr0.uas-sn.arpa
-~~~~
-
-### Type 4 {#serial-4}
+### Serial Method 4 {#serial-4}
 
 This is where a UAS manufacturer chooses to use the Serial Number scheme defined in {{RFC9374}} to create Serial Numbers, their associated DETs for {{drip-auth}} and provide additional information. This document RECOMMENDEDS that the manufacturer "locks" the device from changing its authentication method so identifiers in both the Basic ID Message and Authentication Message do not de-sync. The manufacturer MUST use an MAA for this task, with the mapping between their Manufacturer Code and the upper portion of the DET publicly available.
 
@@ -612,14 +591,6 @@ This is where a UAS manufacturer chooses to use the Serial Number scheme defined
 (d) UA Information
 ~~~~
 {:fig #dime-sn4-example title="Example DIME:MAA with DRIP Serial Number Registration"}
-
-~~~~text
-@ORIGIN mfr0.uas-sn.arpa
-example4.8 IN DET ( 5 20010033e872f705ba8af5252a35030e ... "MFR MFR0" MFR08EXAMPLE4 https://example.com/sn/EXAMPLE4 ... active )
-
-@ORIGIN 3.2.f.7.0.f.a.1.3.0.0.1.0.0.2.ip6.arpa
-e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0 IN PTR example4.8.mfr0.uas-sn.arpa
-~~~~
 
 ## Operator
 
@@ -662,16 +633,6 @@ Note: (c) MAY be requested by the Operator to be omitted due to PII concerns.
 
 The definition of Operator Information is out of scope of this document and left to local regulations (both in its format and contents).
 
-View of DNS:
-
-~~~~text
-@ORIGIN 0000.3ffe.2001003.hhit.arpa
-ba8af5252a35030e.05.0000.3ffe.2001003.hhit.arpa IN DET ( 5 2001003fff800005ba8af5252a35030e ... "TEST DRIP" null https://example.com/operator/* ... active )
-
-@ORIGIN 0.0.0.8.f.f.f.3.0.0.1.0.0.2.ip6.arpa
-e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0 IN PTR ba8af5252a35030e.05.0000.3ffe.2001003.hhit.arpa
-~~~~
-
 ## Session ID
 
 Session IDs are generally handled by HDAs, specifically SIDAs. In {{dime-sid-example}} the UAS comprises of an unmanned aircraft and a Ground Control Station (GCS). Both parties are involved in the registration process.
@@ -710,16 +671,6 @@ Session IDs are generally handled by HDAs, specifically SIDAs. In {{dime-sid-exa
 (d) Session ID Information
 ~~~~
 {:fig #dime-sid-example title="Example DIME:SIDA with Session ID (DET) Registration"}
-
-DNS View
-
-~~~~text
-@ORIGIN 0000.3ffe.2001003.hhit.arpa
-b6ce935b616306d4.05.0000.3ffe.2001003.hhit.arpa IN DET ( 5 2001003fff800005b6ce935b616306d4 ... "TEST DRIP" null https://example.com/session/* ... active )
-
-@ORIGIN 0.0.0.8.f.f.f.3.0.0.1.0.0.2.ip6.arpa
-4.d.6.0.3.6.1.6.b.5.3.9.e.c.6.b.5.0 IN PTR b6ce935b616306d4.05.0000.3ffe.2001003.hhit.arpa
-~~~~
 
 Through mechanisms not specified in this document the Operator should have methods (via the GCS) to instruct the unmanned aircraft onboard systems to generate a keypair, DET and `Self-Endorsement: UA`. The `Self-Endorsement: UA` is extracted by the Operator onto the GCS.
 
@@ -796,19 +747,6 @@ Handled by the Apex and RAA's. This is an endpoint that handles dynamic registra
 It should be noted that this endpoint DOES NOT hand out dynamically RAA/HDA values to systems that hit the endpoint. This is done out-of-band through processes specified by local regulations and performed by cognizant authorities. The endpoint MUST NOT accept queries it is not previously informed of being expected via mechanisms not defined in this document.
 
 It is OPTIONAL to implement this endpoint. This MAY be used to handle lower-level DIME key roll-over.
-
-~~~~text
-RAA:
-@ORIGIN 8.f.f.f.3.0.0.1.0.0.2.ip6.arpa
-0.0.0 IN NS 0.0.0.8.f.f.f.3.0.0.1.0.0.2.ip6.arpa
-
-HDA:
-@ORIGIN 0.0.0.8.f.f.f.3.0.0.1.0.0.2.ip6.arpa
-9.6.6.b.b.0.6.a.4.9.3.6.8.4.e.4.5.0 IN PTR 4e486394a60bb669.05.0000.3ffe.2001003.hhit.arpa
-
-@ORIGIN 0000.3ffe.2001003.hhit.arpa
-4e486394a60bb669.05.0000.3ffe.2001003.hhit.arpa IN DET ( 5 2001003fff8000054e486394a60bb669 ... "TEST DRIP" null https://example.com/session/* ... active )
-~~~~
 
 # Differentiated Access Process {#dap}
 
@@ -1190,4 +1128,8 @@ broadcast_endorsement = {
 ~~~~
 {:fig #be-cddl title="Broadcast Endorsement CDDL"}
 
-Defined by {{
+Defined by {{drip-auth}} in a binary format to support Authentication over F3411 constrained links. Used in the DRIP Link format. A required output of registration to a DIME at any level. `evidence` is a binary string of the concatination of a child entities (e.g. a UA) HHIT and its associated HI. `hhit` is of the parent entity (e.g. a DIME).
+
+~~~~
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0
