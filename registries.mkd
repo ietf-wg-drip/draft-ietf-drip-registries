@@ -279,6 +279,28 @@ A standard interface MUST be provided for clients to access. An HTTPS based inte
 
 There MUST be an interface from the DPA to a Registry ({{registry}}) component which handles the DNS specific requirements of the DIME as defined by the Registry. There MAY also be interface from the DPA to a DRIP Information Agent ({{dia}}) as defined by the DIA.
 
+~~~~
++-------------+
+| Registering |
+|   Client    |
++------o------+
+       |
+       | HTTPS
+       |
+       |
+    +--o--+           +-----+
+    | DPA o-----------o DIA |
+    +--o--+    TBD    +-----+
+       |
+       |
+       | HTTPS or EPP
+       |
++------o---+
+| Registry |
++----------+
+~~~~
+{:fig #dpa-figure title="DPA Interface Mapping"}
+
 ## Registry
 
 The Registry component handles all the required DNS based requirements of the DIME to function for DRIP. This includes the registration and maintenance of various DNS Resource Records.
@@ -287,11 +309,53 @@ A standardized interface MUST be implemented for interactions with the DPA ({{dp
 
 There MAY be interface from the Registry to a DRIP Information Agent ({{dia}}) as defined by the DIA.
 
+~~~~
+    +-----+
+    | DPA |
+    +--o--+
+       |
+       | HTTPS or EPP
+       |
+       |
++------o---+           +-----+
+| Registry o-----------o DIA |
++-----o----+    TBD    +-----+
+      |
+      |
+      | TBD
+      |
+  +---o--+
+  |  NS  |
+  +------+
+~~~~
+{:fig #registry-figure title="Registry Interface Mapping"}
+
 ## Name Server (NS) {#nameserver}
 
 The interface of the Name Server to any component (nominally the Registry) in a DIME is out of scope as typically they are implementation specific.
 
 > Author Note: This may be very important here as we should not preclude a USS from running his own Name Server but they are not DNS experts and will need guidance or at least pointers to it to not mess it up. Such as SOA and NS formats to allow delegation if acting as an RAA.
+
+~~~~
++----------+
+| Registry |
++-----o----+
+      |
+      |
+      | TBD
+      |
+  +---o--+
+  |  NS  |
+  +--o---+
+     |
+     |
+     | DNS Query/Response
+     |
++----o----------+
+| Lookup Client |
++---------------+
+~~~~
+{:fig #ns-figure title="Name Server Interface Mapping"}
 
 ## DRIP Information Agent (DIA) {#dia}
 
@@ -305,9 +369,51 @@ There MUST be a standardized interface for the DPA or Registry to add, update or
 
 An interface defined by the Registration Data Directory Service (RDDS) ({{rdds}}) is also required as specified by the RDDS.
 
+~~~~
+                         +-----+
+                         | DPA |
+                         +--o--+
+                            |
+                            |
+                            | TBD
+                            |
+  +----------+    TBD    +--o--+             +------+
+  | Registry o-----------o DIA o-------------o RDDS |
+  +----------+           +--o--+     TBD     +------+
+                            |
+                            |
+                       RDAP |
+                            |
+                    +-------o-------+
+                    | Lookup Client |
+                    +---------------+
+~~~~
+{:fig #dia-figure title="DIA Interface Mapping"}
+
 ## Registration Data Directory Service (RDDS) {#rdds}
 
 This is the primary information database for the DIA. An interface MUST be provided to the DIA but its specification is out of scope for this document.
+
+~~~~
+   +-----+
+   | DIA |
+   +--o--+
+      |
+      |
+      | TBD
+      |
+  +---o--+
+  | RDDS |
+  +--o---+
+     |
+     |
+     | RDAP
+     |
++----o----------+
+| Lookup Client |
++---------------+
+~~~~
+{:fig #rdds-figure title="RDDS Interface Mapping"}
 
 # Registration/Provisioning Process
 
@@ -1084,30 +1190,4 @@ broadcast_endorsement = {
 ~~~~
 {:fig #be-cddl title="Broadcast Endorsement CDDL"}
 
-Defined by {{drip-auth}} in a binary format to support Authentication over F3411 constrained links. Used in the DRIP Link format. A required output of registration to a DIME at any level. `evidence` is a binary string of the concatination of a child entities (e.g. a UA) HHIT and its associated HI. `hhit` is of the parent entity (e.g. a DIME).
-
-~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+---------------+---------------+
-|                              VNB                              |
-+---------------+---------------+---------------+---------------+
-|                              VNA                              |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                            HHIT of                            |
-|                             Child                             |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                                                               |
-|                                                               |
-|                             HI of                             |
-|                             Child                             |
-|                                                               |
-|                                                               |
-|                                                               |
-+---------------+---------------+---------------+---------------+
-|                                                               |
-|                            HHIT of                            |
-|              
+Defined by {{
