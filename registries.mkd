@@ -629,7 +629,7 @@ The definition of Operator Information is out of scope of this document and left
 
 ## Session ID
 
-Session IDs are generally handled by HDAs, specifically SIDAs. In {{dime-sid-example}} the UAS comprises of an unmanned aircraft and a Ground Control Station (GCS). Both parties are involved in the registration process.
+Session IDs are generally handled by HDAs. In {{dime-sid-example}} the UAS comprises of an unmanned aircraft and a Ground Control Station (GCS). Both parties are involved in the registration process.
 
 ~~~~
     +---------+
@@ -639,7 +639,7 @@ Session IDs are generally handled by HDAs, specifically SIDAs. In {{dime-sid-exa
    (a) |   | (b)
        |   |
 *******|***|*****************************
-*      |   |    DIME: SIDA              *
+*      |   |    DIME: HDA               *
 *      |   |                            *
 *      v   |             +----------+   *
 *   +--o---o--+          |          |   *
@@ -655,22 +655,22 @@ Session IDs are generally handled by HDAs, specifically SIDAs. In {{dime-sid-exa
 *                                       *
 *****************************************
 
-(a) Mutual Endorsement: SIDA on GCS,
+(a) Mutual Endorsement: HDA on GCS,
     Generic Endorsement: GCS on UA,
     Session ID Information
 (b) Success Code,
-    Broadcast Endorsement: SIDA on UA,
-    Generic Endorsement: SIDA on UAS
+    Broadcast Endorsement: HDA on UA,
+    Generic Endorsement: HDA on UAS
 (c) DET RR, PTR RR
 (d) Session ID Information
 ~~~~
-{:fig #dime-sid-example title="Example DIME:SIDA with Session ID (DET) Registration"}
+{:fig #dime-sid-example title="Example DIME:HDA with Session ID (DET) Registration"}
 
 Through mechanisms not specified in this document the Operator should have methods (via the GCS) to instruct the unmanned aircraft onboard systems to generate a keypair, DET and `Self-Endorsement: UA`. The `Self-Endorsement: UA` is extracted by the Operator onto the GCS.
 
-The GCS is already pre-provisioned and registered to the DIME with its own keypair, DET, `Self-Endorsement: GCS` and `Generic Endorsement: SIDA on GCS`. The GCS creates a new `Generic Endorsement: GCS on UA` and also creates `Mutual Endorsement: SIDA on GCS`. These new endorsements along with Session ID Information are sent to the DIME via a secure channel.
+The GCS is already pre-provisioned and registered to the DIME with its own keypair, DET, `Self-Endorsement: GCS` and `Generic Endorsement: HDA on GCS`. The GCS creates a new `Generic Endorsement: GCS on UA` and also creates `Mutual Endorsement: HDA on GCS`. These new endorsements along with Session ID Information are sent to the DIME via a secure channel.
 
-The GCS injects the `Broadcast Endorsement: SIDA on UA` securely into the unmanned aircraft. `Endorsement: SIDA on GCS` is securely stored by the GCS.
+The GCS injects the `Broadcast Endorsement: HDA on UA` securely into the unmanned aircraft. `Endorsement: HDA on GCS` is securely stored by the GCS.
 
 > Note: in {{dime-sid-example}} the Session ID Information is expected to contain the Serial Number along with other PII specific information (such as UTM data) related to the Session ID.
 
