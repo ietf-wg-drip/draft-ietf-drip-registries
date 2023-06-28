@@ -154,7 +154,7 @@ HDAs        |  MAA  |  | SIDA  |  |  HDA  |
 
 ## Apex
 
-The Apex is a special DIME role that holds the values of RAA=0-3 and HDA=0. It serves as the branch point from the larger DNS system in which DETs are defined. The Apex the IPv6 prefix portion of the DET associated with it (2001:30/28) which is assigned by IANA from the special IPv6 address space for ORCHIDs.
+The Apex is a special DIME role that holds the values of RAA=0-3 and HDA=0. It serves as the branch point from the larger DNS system in which DETs are defined. The Apex is the owner of the IPv6 prefix portion of the DET associated with it (2001:30/28) which is assigned by IANA from the special IPv6 address space for ORCHIDs.
 
 The Apex manages all delegations and allocations of the DET's RAA to various parties. Allocations of RAAs SHOULD be done in contigous groups of 4.
 
@@ -244,23 +244,23 @@ The DIME, in any of its roles ({{dime-roles}}), is comprised of a number of logi
 +---------o----------+
           | 
 **********|******************************************************
-*         |        DRIP Identity Management Entity              *
+*         |     DRIP Identity Management Entity (DIME)          *
 *         |                                                     *
 *  +------o-------+      +-------------+      +--------------+  *
 *  | DRIP         |      |             |      |              |  *
 *  | Provisioning o------o             |      |              |  *
-*  | Agent        |      |             |      |              |  *
+*  | Agent (DPA)  |      |             |      |              |  *
 *  +-------o------+      |             |      |              |  *
 *          |             |             |      |              |  *
 *          |             | DRIP        |      | Registration |  *
 *  +-------o--+          | Information o------o Data         |  *
-*  | Registry o----------o Agent       |      | Directory    |  *
+*  | Registry o----------o Agent (DIA) |      | Directory    |  *
 *  +-------o--+          |             |      | Service      |  *
+*          |             |             |      | (RDDS)       |  *
 *          |             |             |      |              |  *
-*          |             |             |      |              |  *
-*  +-------o-----+       |             |      |              |  *
-*  | Name Server |       |             |      |              |  *
-*  +------o------+       +-----o-------+      +------o-------+  *
+*  +-------o----------+  |             |      |              |  *
+*  | Name Server (NS) |  |             |      |              |  *
+*  +------o-----------+  +-----o-------+      +------o-------+  *
 *         |                    |                     |          * 
 *         |                    |                     |          *
 **********|********************|*********************|***********
@@ -1110,4 +1110,4 @@ Defined by {{drip-auth}} in a binary format to support Authentication over F3411
 +---------------+---------------+---------------+---------------+
 |                                                               |
 |                            HHIT of                            |
-|                            Pa
+|              
