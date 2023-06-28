@@ -795,13 +795,11 @@ HI = Base64 Host Identity -- taken from HIP RR
 RVS = List of Rendevous Server addresses -- taken from HIP RR
 HID = HID Abbreviation
 SN = Serial Number
-URI = URI to assocaited DIA
+URI = URI to associated DIA
 Endorsement = Broadcast Endorsements in CBOR encoding
 ~~~~
 
 With the SN parameter this covers the "public mapping to DET" when using Sections 6.1.2 to 6.1.4. Section 6.1.1 does not use this RR and instead opts for a URI RR.
-
-
 
 ## Serial Numbers & Other UAS ID Types
 
@@ -1036,6 +1034,7 @@ generic_endorsement = {
 ~~~~
 self_endorsement = {
     scope: {
+
         vnb: number,
         vna: number
     },
@@ -1126,4 +1125,126 @@ Defined by {{drip-auth}} in a binary format to support Authentication over F3411
 
 ~~~~
  0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|                              VNB                              |
++---------------+---------------+---------------+---------------+
+|                              VNA                              |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                            HHIT of                            |
+|                             Child                             |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                             HI of                             |
+|                             Child                             |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                            HHIT of                            |
+|                            Parent                             |
+|                                                               |
++---------------+---------------+---------------+---------------+
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                           Signature                           |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
+|                                                               |
++---------------+---------------+---------------+---------------+
+~~~~
+{:fig #be-binary title="Broadcast Endorsement Binary"}
+
+~~~~
+TODO
+~~~~
+{:fig #be-cbor title="Broadcast Endorsement CBOR"}
+
+# DNS Examples
+
+## Serial Method 1
+
+~~~~text
+@ORIGIN mfr0.uas-sn.arpa
+example1.8 IN URI ( https://example.com/sn/EXAMPLE1 )
+~~~~
+
+## Serial Method 2
+
+~~~~text
+@ORIGIN mfr0.uas-sn.arpa
+example2.8 IN DET ( 5 20010033e872f705f3ce91124b677d65 ... "MFR MFR0" MFR08EXAMPLE2 https://example.com/sn/EXAMPLE2 ... active )
+
+@ORIGIN 3.2.f.7.0.f.a.1.3.0.0.1.0.0.2.ip6.arpa
+6.5.d.7.7.6.b.4.2.1.1.9.e.c.3.f.5.0 IN PTR example2.8.mfr0.uas-sn.arpa
+~~~~
+
+## Serial Method 3
+
+~~~~text
+@ORIGIN mfr0.uas-sn.arpa
+example3.8 IN DET ( 5 20010033e872f70584b1fa2b70421112 ... "MFR MFR0" MFR08EXAMPLE3 https://example.com/sn/EXAMPLE3 ... active )
+
+@ORIGIN 3.2.f.7.0.f.a.1.3.0.0.1.0.0.2.ip6.arpa
+2.1.1.1.2.4.0.7.b.2.a.f.1.b.4.8.5.0 IN PTR example3.8.mfr0.uas-sn.arpa
+~~~~
+
+## Serial Method 4
+
+~~~~text
+@ORIGIN mfr0.uas-sn.arpa
+example4.8 IN DET ( 5 20010033e872f705ba8af5252a35030e ... "MFR MFR0" MFR08EXAMPLE4 https://example.com/sn/EXAMPLE4 ... active )
+
+@ORIGIN 3.2.f.7.0.f.a.1.3.0.0.1.0.0.2.ip6.arpa
+e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0 IN PTR example4.8.mfr0.uas-sn.arpa
+~~~~
+
+## Operator
+
+~~~~text
+@ORIGIN 0000.3ffe.2001003.hhit.arpa
+ba8af5252a35030e.05.0000.3ffe.2001003.hhit.arpa IN DET ( 5 2001003fff800005ba8af5252a35030e ... "TEST DRIP" null https://example.com/operator/* ... active )
+
+@ORIGIN 0.0.0.8.f.f.f.3.0.0.1.0.0.2.ip6.arpa
+e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0 IN PTR ba8af5252a35030e.05.0000.3ffe.2001003.hhit.arpa
+~~~~
+
+## Session ID
+
+~~~~text
+@ORIGIN 0000.3ffe.2001003.hhit.arpa
+b6ce935b616306d4.05.0000.3ffe.2001003.hhit.arpa IN DET ( 5 2001003fff800005b6ce935b616306d4 ... "TEST DRIP" null https://example.com/session/* ... active )
+
+@ORIGIN 0.0.0.8.f.f.f.3.0.0.1.0.0.2.ip6.arpa
+4.d.6.0.3.6.1.6.b.5.3.9.e.c.6.b.5.0 IN PTR b6ce935b616306d4.05.0000.3ffe.2001003.hhit.arpa
+~~~~
+
+## Child DIME
+
+~~~~text
+RAA:
+@ORIGIN 8.f.f.f.3.0.0.1.0.0.2.ip6.arpa
+0.0.0 IN NS 0.0.0.8.f.f.f.3.0.0.1.0.0.2.ip6.arpa
+
+HDA:
+@ORIGIN 0.0.0.8.f.f.f.3.0.0.1.0.0.2.ip6.arpa
+9.6.6.b.b.0.6.a.4.9.3.6.8.4.e.4.5.0 IN PTR 4e486394a60bb669.05.0000.3ffe.2001003.hhit.arpa
+
+@ORIGIN 0000.3ffe.2001003.hhit.arpa
+4e486394a60bb669.05.0000.3ffe.2001003.hhit.arpa IN DET ( 5 2001003fff8000054e486394a60bb669 ... "TEST DRIP" null https://example.com/session/* ... active )
+~~~~
