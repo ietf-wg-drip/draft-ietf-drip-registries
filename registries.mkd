@@ -43,6 +43,7 @@ normative:
 
 informative:
     RFC1886: # ipv6 lookup
+    RFC5280:
     RFC5730: # epp
     RFC6698: # dane/tlsa
     RFC6841: # dnssec policy
@@ -59,6 +60,7 @@ informative:
     drip-auth: I-D.ietf-drip-auth
     drip-secure-nrid-c2: I-D.moskowitz-drip-secure-nrid-c2
     dane-clients: I-D.ietf-dance-client-auth
+    drip-dki: I-D.moskowitz-drip-dki
     NPRM:
         title: "Notice of Proposed Rule Making on Remote Identification of Unmanned Aircraft Systems"
         author:
@@ -867,25 +869,25 @@ The `signature` section contain the signature data for the Endorsement. The sign
 
 ## Certificate Policy and Certificate Stores
 
-X.509 certificates are optional for the DRIP entities covered in this document.  DRIP endpoint entities (EE) (i.e., UA, GCS, and Operators) may benefit from having X.509 certificates.  Most of these certificates will be for their DET and some will be for other UAS identities.  To provide for these certificates, some of the other entities covered in this document will also have certificates to create and manage the necessary PKI structure.
+X.509 certificates are optional for the DRIP entities covered in this document. DRIP endpoint entities (EE) (i.e., UA, GCS, and Operators) may benefit from having X.509 certificates. Most of these certificates will be for their DET and some will be for other UAS identities. To provide for these certificates, some of the other entities (e.g. USS) covered in this document will also have certificates to create and manage the necessary PKI structure.
 
-Any Certificate Authority (CA) supporting DRIP entities SHOULD adhere to the ICAO's International Aviation Trust Framework (IATF) Certificate Policy [ICAO-IATF-CP-draft].  The CA(s) supporting this CP MUST either be a part of the IATF Bridge PKI or part of the IATF CA Trust List.
+Three certificate profiles are defined, with examples, and explained in {{drip-dki}}. Each has a specific role to play and an EE may have its DET enrolled in all of them. There is a ‘Lite’ profile that would work well enough on constrained communication links for those instances where various issues push the use of X.509. There is a ‘Basic; profile that is more in line with {{RFC5280}} recommendations, but is still small enough for many constrained environments. Finally there is a profile to directly add DET support into the general aviation certificates as discussed below.
 
-EEs may use their X.509 certificates, rather than their rawPublicKey (i.e. HI) in authentication protocols (as not all may support rawPublicKey identities).  Some EE HI may not be 'worth' supporting the overhead of X.509.  Short lived DETs like those used for a single operation or even for a day's operations may not benefit from X.509. Creating then almost immediately revoking these certificates is a considerable burden on all parts of the system.  Even using a short not AfterDate will completely mitigate the burden of managing these certificates.  That said, many EEs will benefit to offset the effort. It may also be a regulator requirement to have these certificates.
+A Certificate Authority (CA) supporting DRIP entities MAY adhere to the ICAO's Aviation Common Certificate Policy (ACCP) [ICAO-IATF-CP-draft]. The CA(s) supporting this CP MUST either be a part of the ACCP cross-certification or part of the ACCP CA Trust List. It is possible that future versions of the ACCP will directly support the DRIP Basic profile.
+
+> Note ACCP is: ICAO Doc 10169 Aviation Common Certificate Policy (ACCP). I can’t get a url for that, but so far these is no changes from v 0.93 of the old IATF CP; changes are in the works then will be posted, so continue to reference IATF CP
+
+EEs may use their X.509 certificates, rather than their rawPublicKey (i.e. HI) in authentication protocols (as not all may support rawPublicKey identities). Short lived DETs like those used for a single operation or even for a day's operations may not benefit from X.509. Creating then almost immediately revoking these certificates is a considerable burden on all parts of the system. Even using a short notAfter date will not completely mitigate the burden of managing these certificates. That said, many EEs will benefit to offset the effort. It may also be a regulator requirement to have these certificates. Finally, certificates can provide the context of use for a DET (via policy constraint OIDs).
 
 Typically an HDA either does or does not issue a certificate for all its DETs. An RAA may specifically have some HDAs for DETs that do not want/need certificates and other HDAs for DETs that do need them. These types of HDAs could be managed by a single entity thus providing both environments for its customers.
 
-It is recommended that DRIP X.509 certificates be stored as DNS TLSA Resource Records.  This not only generally improves certificate lookups, but also enables use of DANE {{RFC6698}} for the various servers in the UTM and particularly DIME environment and DANCE {{dane-clients}} for EEs (e.g. {{drip-secure-nrid-c2}}). All DRIP certificates MUST be available via RDAP. LDAP/OCSP access for other UTM and ICAO uses SHOULD also be provided.
+It is recommended that DRIP X.509 certificates be stored as DNS TLSA Resource Records, using the DET as the lookup key. This not only generally improves certificate lookups, but also enables use of DANE {{RFC6698}} for the various servers in the UTM and particularly DIME environment and DANCE {{dane-clients}} for EEs (e.g. {{drip-secure-nrid-c2}}). All DRIP certificates MAY alternatively be available via RDAP. LDAP/OCSP access for other UTM and ICAO uses SHOULD also be provided.
 
 ## Certificate Management
 
-(mostly TBD still)
-
-PKIX standard X.509 issuance practices should be used. The certificate request SHOULD be included in the DET registration request. A successful DET registration then MUST include certificate creation, store, and return to the DET registrant.
+PKIX standard X.509 issuance practices should be used. The certificate request SHOULD be included in the DET registration request. A successful DET registration then MUST include certificate creation, store, and return to the DET registrant. It is possible that the DET registration is actually a X.509 registration. For example, PKIX CSR may be directly used and the DET registration and Endorsement creation are a addition to this process. Further ACME may be directly extendable to provide the DET registration.
 
 Certificate revocation will parallel DET revocation. TLSA RR MUST be deleted from DNS and RDAP, LDAP, and OCSP return revoked responses. CRLs SHOULD be maintained per the CP.
-
-Details of this are left out, as there are a number of approaches and further research and experience will be needed.
 
 ## Examples
 
