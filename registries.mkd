@@ -691,11 +691,11 @@ sessionid_info = {
 
 Future standards or implementations MAY add other keys to this list (for local features and/or local regulation).
 
-### UA Based
+### UA Based Session ID
 
 There may be some unmanned aircraft that have their own Internet connectivity allowing them to register a Session ID themselves without outside help from other devices such as a GCS. When such a system is in use its imperative that the Operator has some method to create the `Generic Endorsement: Operator on UA` to send to the DIME. The process and methods to perform this are out of scope for this document but MUST be done in a secure fashion.
 
-### UAS Based
+### UAS Based Session ID
 
 Most unmanned aircraft will not have their own Internet connectivity but will have a connection to a GCS. Typically a GCS is an application on a user device (such as smartphone) that allow the user to fly their aircraft. For the Session ID registration the DIME MUST be provided with an `Generic Endorsement: GCS on UA` which implies there is some mechanism extracting and inserting information from the unmanned aircraft to the GCS. These methods MUST be secure but are out of scope for this document.
 
