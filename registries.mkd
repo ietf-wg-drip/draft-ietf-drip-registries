@@ -441,7 +441,7 @@ There are four ways a Serial Number is supported by DRIP:
 
 ### Serial Method 1 {#serial-1}
 
-This is where a UA is provisioned with a Serial Number by the manufacturer. The Serial Number is just text string, defined by {{CTA2063A}}. The manufacturer runs an Name Server delegated under the Serial Number apex and points to information using a URI RR.
+This is where a UA is provisioned with a Serial Number by the manufacturer. The Serial Number is just text string, defined by {{CTA2063A}}. The manufacturer runs an Name Server delegated under the Serial Number apex and points to information using a DET RR (filling in only the Serial Number and URI fields).
 
 ~~~~
     +-------------------+
