@@ -470,7 +470,7 @@ This is where a UA is provisioned with a Serial Number by the manufacturer. The 
 (a) Serial Number,
     UA Information
 (b) Success Code
-(c) URI RR
+(c) DET RR
 (d) UA Information
 ~~~~
 {:fig #dime-sn1-example title="Example DIME:MAA with Serial Number Registration"}
