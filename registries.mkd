@@ -3,7 +3,7 @@ coding: utf-8
 
 title: DRIP Entity Tag (DET) Identity Management Architecture
 abbrev: DETIM Architecture
-docname: draft-ietf-drip-registries-11
+docname: draft-ietf-drip-registries-12
 category: info
 
 ipr: trust200902
@@ -36,12 +36,18 @@ author:
     email: jim@rfc1035.com
 
 normative:
+    drip-arch: I-D.ietf-drip-arch
+
     RFC8610: # CDDL
     RFC9153: # drip-requirements
     RFC9374: # drip-det
-    drip-arch: I-D.ietf-drip-arch
 
 informative:
+    drip-auth: I-D.ietf-drip-auth
+    drip-secure-nrid-c2: I-D.moskowitz-drip-secure-nrid-c2
+    dane-clients: I-D.ietf-dance-client-auth
+    drip-dki: I-D.moskowitz-drip-dki
+
     RFC1886: # ipv6 lookup
     RFC5280:
     RFC5730: # epp
@@ -51,16 +57,13 @@ informative:
     RFC8126: # iana-guidelines
     RFC9082: # rdap-query-format
     RFC9083: # rdap-json-responses
+
     CTA2063A:
         title: ANSI/CTA 2063-A Small Unmanned Aerial Systems Numbers
         author:
         org: "Consumer Technology Association (CTA)"
         target: https://shop.cta.tech/products/small-unmanned-aerial-systems-serial-numbers
         date: 2019-09
-    drip-auth: I-D.ietf-drip-auth
-    drip-secure-nrid-c2: I-D.moskowitz-drip-secure-nrid-c2
-    dane-clients: I-D.ietf-dance-client-auth
-    drip-dki: I-D.moskowitz-drip-dki
     NPRM:
         title: "Notice of Proposed Rule Making on Remote Identification of Unmanned Aircraft Systems"
         author:
