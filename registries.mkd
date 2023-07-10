@@ -225,7 +225,7 @@ hid = (4000 << 14) + mfr_int
 mfr_code = base34_encode(hid)
 ~~~~
 
-The Manufacturer Code character set is defined in {{CTA2063A}} with the values (0-9, A-Z in that order) being set as integers from 0 to 33.
+A character in a UAS Serial Number "shall include any combination of digits and uppercase letters, except the letters O and I, but may include all digits" {{CTA2063A}}. For HID determination, the character space \[0-9,A-H,J-N,P-Z\] is mapped to \[0-34\] to convert the 4 place Base34 Manufacturer Code to Base10 (Note this is different than the Base32 process in Section 4.2 of {{RFC9374}}).
 
 A DET can be encoded into a Serial Number (see {{RFC9374}}, Section 4.2) and this DIME MUST hold a mapping from the Serial Number to the DET and its artifacts.
 
