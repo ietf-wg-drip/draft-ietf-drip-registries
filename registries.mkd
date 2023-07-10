@@ -202,11 +202,11 @@ To manage the large Manufacturer Code space (34 character set; 4 characters; 1,3
 
 See {{mra}} for the HDA allocation of Manufacturer Codes under these RAAs.
 
-> Note: the upper RAAs in the range (4083 to 4095) are not used but are left reserved in this space for future action if requried.
+> Note: the upper RAAs in the range (4083 to 4095) are not used but are left reserved in this space for future action if required.
 
 ## Hierarchial HIT Domain Authority (HDA) {#hda}
 
-An HDA may be an USS, ISP, or any third party that takes on the business to register the actual entities that need DETs. This includes, but is not limited to UA, GCS, UAS Operators and infrastucture (such as Supplemental Data Service Providers). It should also provide needed UAS services including those required for HIP-enabled devices (e.g. RVS).
+An HDA may be an USS, ISP, or any third party that takes on the business to register the actual entities that need DETs. This includes, but is not limited to UA, GCS, UAS Operators and infrastructure (such as Supplemental Data Service Providers). It should also provide needed UAS services including those required for HIP-enabled devices (e.g. RVS).
 
 A primary function of HDAs for DRIP, in the context of UAS RID is the binding between a UAS Session ID (for DRIP the DET) and the UA Serial Number. The Serial Number MUST have its access protected to allow only authorized parties to obtain it. The Serial Number MUST be protected in a way only the authorized party can decrypt. As part of the UTM system HDAs can also hold a binding between a UAS ID (Serial Number or Session ID) and an Operational Intent. They may either be a direct logical part of a UAS Service Supplier (USS) or be a UTM wide service to USS's.
 
