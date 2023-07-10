@@ -16,7 +16,6 @@ stand_alone: yes
 pi: [toc, sortrefs, symrefs, comments]
 
 author:
-
 -   ins: A. Wiethuechter
     name: Adam Wiethuechter
     org: AX Enterprize, LLC
@@ -874,7 +873,7 @@ The `signature` section contain the signature data for the Endorsement. The sign
 
 X.509 certificates are optional for the DRIP entities covered in this document. DRIP endpoint entities (EE) (i.e., UA, GCS, and Operators) may benefit from having X.509 certificates. Most of these certificates will be for their DET and some will be for other UAS identities. To provide for these certificates, some of the other entities (e.g. USS) covered in this document will also have certificates to create and manage the necessary PKI structure.
 
-Three certificate profiles are defined, with examples, and explained in {{drip-dki}}. Each has a specific role to play and an EE may have its DET enrolled in all of them. There is a ‘Lite’ profile that would work well enough on constrained communication links for those instances where various issues push the use of X.509. There is a ‘Basic; profile that is more in line with {{RFC5280}} recommendations, but is still small enough for many constrained environments. Finally there is a profile to directly add DET support into the general aviation certificates as discussed below.
+Three certificate profiles are defined, with examples, and explained in {{drip-dki}}. Each has a specific role to play and an EE may have its DET enrolled in all of them. There is a ‘Lite’ profile that would work well enough on constrained communication links for those instances where various issues push the use of X.509. There is a ‘Basic; profile that is more in line with {{RFC5280}} recommendations, but is still small enough for many constrained environments. Finally there is a profile to directly add DET support into the civil/general aviation certificates as discussed below.
 
 A Certificate Authority (CA) supporting DRIP entities MAY adhere to the ICAO's Aviation Common Certificate Policy (ACCP) [ICAO-IATF-CP-draft]. The CA(s) supporting this CP MUST either be a part of the ACCP cross-certification or part of the ACCP CA Trust List. It is possible that future versions of the ACCP will directly support the DRIP Basic profile.
 
@@ -888,13 +887,15 @@ It is recommended that DRIP X.509 certificates be stored as DNS TLSA Resource Re
 
 ## Certificate Management
 
-PKIX standard X.509 issuance practices should be used. The certificate request SHOULD be included in the DET registration request. A successful DET registration then MUST include certificate creation, store, and return to the DET registrant. It is possible that the DET registration is actually a X.509 registration. For example, PKIX CSR may be directly used and the DET registration and Endorsement creation are a addition to this process. Further ACME may be directly extendable to provide the DET registration.
+PKIX standard X.509 issuance practices should be used. The certificate request SHOULD be included in the DET registration request. A successful DET registration then MUST include certificate creation, store, and return to the DET registrant. It is possible that the DET registration is actually an X.509 registration. For example, PKIX CSR may be directly used and the DET registration and Endorsement creation are a addition to this process. Further ACME may be directly extendable to provide the DET registration.
+
+Note that CSRs do not include the certificate `validityDate`; adding that is done by the CA.  If in the registration process, the EE is the source of `notBefore` and `notAfter` dates, they need to be sent along with the CSR.
 
 Certificate revocation will parallel DET revocation. TLSA RR MUST be deleted from DNS and RDAP, LDAP, and OCSP return revoked responses. CRLs SHOULD be maintained per the CP.
 
 ## Examples
 
-TBD
+For full examples of X.509 Certificates and the process to use them see {{drip-dki}}.
 
 ## Alternative Certificate Encoding
 
