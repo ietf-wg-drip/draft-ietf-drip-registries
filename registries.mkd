@@ -797,19 +797,17 @@ Reverse lookups of these IPv6 addresses will translate the address into a domain
 > Author Note: This section is very much a WIP, comments are welcome.
 
 ~~~~
-<domain> DET IN ( OGAID DET HI RVS HID [SN] URI Endorsement )
+<domain> DET IN ( DET TYPE STATUS HID [SN] Endorsement )
 
-OGAID = Integer value of OGA ID -- taken from HIP RR
-DET = Base16 DET -- taken from HIP RR
-HI = Base64 Host Identity -- taken from HIP RR
-RVS = List of Rendevous Server addresses -- taken from HIP RR
+DET = Base16 DET
+TYPE = enumeration of Type of DET
+STATUS = enumeration of Status of DET
 HID = HID Abbreviation
-SN = Serial Number
-URI = URI to associated DIA
-Endorsement = Broadcast Endorsements in CBOR encoding
+SN = Serial Number (optional)
+Endorsement = Broadcast Endorsement in CBOR encoding
 ~~~~
 
-With the SN parameter this covers the "public mapping to DET" when using Sections 6.1.2 to 6.1.4. Section 6.1.1 does not use this RR and instead opts for a URI RR.
+With the SN parameter this covers the "public mapping to DET" when a user/manufacturer already has a Serial Number that can not change and wishes to do DRIP Authentication.
 
 ## Serial Numbers & Other UAS ID Types
 
