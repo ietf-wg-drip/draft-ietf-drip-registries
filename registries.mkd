@@ -970,6 +970,22 @@ Aircraft Information Fields:
 | fuelCapacity | float | in liters |
 | previousSerial | tstr | legacy serial number(s) |
 
+### Endorsement Fields {#endorsement-fields}
+
+This document requests a new registry for Endorsement fields under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
+
+Endorsement Fields:
+
+: list of field keys to be used in an Endorsement and what section(s) they can be used in. Future additions to this registry are to be made through First Come First Served (Section 4.4 of {{RFC8126}}). The following values are defined:
+
+| Field Name | Type | Useable Sections | Description |
+|----------- | ---- | ---------------- | ----------- |
+| vna        | number | scope | Valid Not After, UTC Unix Timestamp |
+| vnb        | number | scope | Valid Not Before, UTC Unix Timestamp |
+| hhit       | bstr | identity | Hierarchial Host Identity Tag (HHIT), fixed size of 16 |
+| hi         | bstr | identity | Host Identity (HI) |
+| sig        | bstr | signature | Signature |
+
 # Security Considerations
 
 ## Key Rollover & Federation
