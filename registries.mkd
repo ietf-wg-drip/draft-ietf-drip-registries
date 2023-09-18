@@ -103,6 +103,8 @@ Finally, aircraft that support using a DET would provision per flight to a USS, 
 
 ## Supported Scenarios
 
+> Author Note: with the proposal to remove solving the issue of putting Serial Numbers into DNS from this document, this section most likely is removed or merged with another. The only point to merge is #6.
+
 1. UA using manufacturer generated Serial Number for UAS ID. No additional information provided.
 2. UA using manufacturer generated Serial Number for UAS ID. Manufacturer using a DIME. Manufacturer MUST provided pointer to additional information via DNS (even if null).
 3. UA using manufacturer generated Serial Number which is mapped to a DET by manufacturer for UAS ID. UA using manufacturer generated DET for Authentication. Manufacturer using a DIME. DIME MUST place public DET information into DNS (i.e. HI). DIME MUST provide mapping of Serial Number to DET in DNS. Manufacturer MUST provide pointer to additional information via DNS (even if null).
@@ -196,6 +198,8 @@ How a CAA handles their 4 allocations are out of scope of this document. Control
 
 ### Manufacturer Code Authority (MCA) {#irm}
 
+> Author Note: with the proposal to remove solving the issue of putting Serial Numbers into DNS from this document, this section is either moved to a new document or left here.
+
 An RAA-level DIME that hands out HDA values to participating Manufacturer's that hold an Manufacturer Code used in {{CTA2063A}} that is issued by ICAO.
 
 To manage the large Manufacturer Code space (34 character set; 4 characters; 1,336,336 possible codes) a range of RAA values are set aside for the use case. These are the RAA values of 4000 (0x0FA0) up to 4095 (0x0FFF). This allows a single HDA for each Manufacturer Code.
@@ -215,6 +219,8 @@ The HDA is a 14-bit field (16,384 HDAs per RAA) of a DET assigned by an RAA.  An
 An RAA may assign a block of values to an individual organization. This is completely up to the individual RAA's published policy for delegation. Such policy is out of scope.
 
 ### Manufacturer Unmanned Aircraft Authority (MAA) {#mra}
+
+> Author Note: with the proposal to remove solving the issue of putting Serial Numbers into DNS from this document, this section can be moved to the new document or left here.
 
 An HDA-level DIME run by a manufacturer of UAS systems that participate in Remote ID. Stores UAS Serial Numbers under a specific Manufacturer Code (assigned to the manufacturer by ICAO). The specific RAA (out of MCA space) and HDA use the following derivation:
 
@@ -428,6 +434,8 @@ In the following subsections an abbreviated form of {{dime-arch}} using co-locat
 Each section has an associated appendix ({{dns-examples}}) containing DNS examples.
 
 ## Serial Number
+
+> Author Note: with the proposal to remove solving the issue of putting Serial Numbers into DNS from this document, this section becomes the basis for a new document and is removed from here.
 
 There are four ways a Serial Number is supported by DRIP:
 
@@ -805,6 +813,8 @@ With the SN parameter this covers the "public mapping to DET" when using Section
 
 ## Serial Numbers & Other UAS ID Types
 
+> Author Note: with the proposal to remove solving the issue of putting Serial Numbers into DNS from this document, this section is removed and becomes part of a new document.
+
 > Author Note: There MUST be an entry point in DNS for the lookup of UAS Serial Numbers. This section is very much a shot in the dark.
 
 This document specifies the creation and delegation to ICAO of the subdomain `uas.icao.arpa`. To enable lookup of Serial Numbers a subdomains of `sn.uas.icao.arpa` is maintained. All entries under `sn.uas.icao.arpa` are to follow the convention found in {{sn-fqdn}}. This is to enable a singular lookup point for Serial Numbers for UAS.
@@ -996,6 +1006,8 @@ FQDN: c4651542a33fdc26.05.0014.000a.2001003.det.uas.icao.arpa.
 ~~~~
 
 ## UAS Serial Number {#sn-fqdn}
+
+> Author Note: with the proposal to remove solving the issue of putting Serial Numbers into DNS from this document, this section is removed and part of a new document.
 
 > {id}.{length}.{manufacturer-code}.{apex}.
 
