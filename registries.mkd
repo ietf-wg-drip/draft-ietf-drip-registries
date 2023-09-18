@@ -124,7 +124,7 @@ This document makes use of the terms (PII, USS, etc.) defined in {{RFC9153}}. Ot
 
 ## Role Abbreviation in DETs
 
-On receiver devices a DET can be translated to a more human readable form such as: `{RAA Abbreviation} {HDA Abbreviation} {Last 4 Characters of DET Hash}`. An example of this would be `US FAA FE23`. To support this DIMEs are RECOMMENDED to have an abbreviation that could be used for this form. These abbreviations SHOULD be a maximum of six characters in length. Spaces MUST NOT be used and be replaced with either underscores (`_`) or dashes (`-`).
+On receiver devices a DET can be translated to a more human readable form such as: `{RAA Abbreviation} {HDA Abbreviation} {Last 4 Characters of DET Hash}`. An example of this would be `US FAA FE23`. To support this DIMEs are RECOMMENDED to have an abbreviation that could be used for this form. These abbreviations SHOULD be a maximum of six characters in length. Spaces MUST NOT be used and be replaced with either underscores (`_`) or dashes (`-`). This is what fills in the `HID` field of the DET RR in {{det-rr}}.
 
 For RAAs allocated in the ISO range {{iso3166}}, the abbreviation MUST be set to the ISO 3166-1 country code (either Alpha-2 or Alpha-3).
 
@@ -630,7 +630,7 @@ Provided either by USS or CAA run HDAs. Regulation might require interaction bet
     Operator Self-Endorsement
 (b) Success Code,
     Generic Endorsement: HDA on Operator
-(c) DET RR
+(c) HIP RR, DET RR, TLSA RR, URI RR, PTR RR
 (d) Operator Information
 
 Note: (c) MAY be requested by the Operator to be omitted due to PII concerns.
@@ -673,7 +673,7 @@ Session IDs are generally handled by HDAs. In {{dime-sid-example}} the UAS compr
 (b) Success Code,
     Broadcast Endorsement: HDA on UA,
     Generic Endorsement: HDA on UAS
-(c) DET RR, PTR RR
+(c) HIP RR, DET RR, TLSA RR, URI RR, PTR RR
 (d) Session ID Information
 ~~~~
 {:fig #dime-sid-example title="Example DIME:HDA with Session ID (DET) Registration"}
@@ -744,8 +744,7 @@ Handled by the Apex and RAA's. This is an endpoint that handles dynamic registra
     Generic Endorsement: old HDA, new HDA
 (b) Success Code,
     Broadcast Endorsement: RAA on HDA
-(c) HIP RR,
-    CERT RRs
+(c) HIP RR, DET RR, TLSA RR, URI RR, PTR RR
 (d) HDA Information
 ~~~~
 {:fig #dime-hda-example title="Example DIME:RAA with DIME:HDA Registration"}
@@ -790,9 +789,9 @@ The prefix `2001:30/28` is registered with IANA {{RFC9374}} and `3.0.0.1.0.0.2.i
 
 Distribution of HHIT (IPv6 address) blocks SHOULD be done using the 14-bit RAA space as a framework. The Apex SHOULD allocate blocks to each entity who can then assign them to HDAs in accordance with local law and policy. All HDAs MUST have an IPv6 address in `2001:30/28`. A discrete zone SHOULD be delegated for each HDA. These MUST contain an DET resource record ({{det-resource-record}}) for itself.
 
-Reverse lookups of these IPv6 addresses will translate the address into a domain name in the manner defined in {{RFC1886}}. However, these lookups will query for an DET RRtype and not a PTR RRtype.
+Reverse lookups of these IPv6 addresses will translate the address into a domain name in the manner defined in {{RFC1886}}. However, these lookups will query for, depending on what is required: HIP, DET, TLSA, URI, or PTR RRTypes.
 
-### DET Resource Record
+### DET Resource Record {#det-rr}
 
 > Author Note: This section is very much a WIP, comments are welcome.
 
@@ -1011,7 +1010,7 @@ Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LL
 When building a DET FQDN it MUST must be built using the exploded (all padding present) form of the IPv6 address.
 
 ~~~~
-Apex: .det.uas.icao.arpa.
+Apex: .example.com
 DET: 2001:0030:0280:1405:c465:1542:a33f:dc26
 ID: c4651542a33fdc26
 OGA: 05
@@ -1019,7 +1018,7 @@ HID: 0028014
 HDA: 0014
 RAA: 000a
 Prefix: 2001003
-FQDN: c4651542a33fdc26.05.0014.000a.2001003.det.uas.icao.arpa.
+FQDN: c4651542a33fdc26.05.0014.000a.2001003.example.com
 ~~~~
 
 ## UAS Serial Number {#sn-fqdn}
