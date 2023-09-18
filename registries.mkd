@@ -124,6 +124,8 @@ This document makes use of the terms (PII, USS, etc.) defined in {{RFC9153}}. Ot
 
 ## Role Abbreviation in DETs
 
+> Author Note: move this to {{det-rr}}?
+
 On receiver devices a DET can be translated to a more human readable form such as: `{RAA Abbreviation} {HDA Abbreviation} {Last 4 Characters of DET Hash}`. An example of this would be `US FAA FE23`. To support this DIMEs are RECOMMENDED to have an abbreviation that could be used for this form. These abbreviations SHOULD be a maximum of six characters in length. Spaces MUST NOT be used and be replaced with either underscores (`_`) or dashes (`-`). This is what fills in the `HID` field of the DET RR in {{det-rr}}.
 
 For RAAs allocated in the ISO range {{iso3166}}, the abbreviation MUST be set to the ISO 3166-1 country code (either Alpha-2 or Alpha-3).
