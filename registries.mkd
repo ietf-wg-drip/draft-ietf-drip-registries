@@ -16,7 +16,8 @@ stand_alone: yes
 pi: [toc, sortrefs, symrefs, comments]
 
 author:
--   ins: A. Wiethuechter
+-   role: editor
+    ins: A. Wiethuechter
     name: Adam Wiethuechter
     org: AX Enterprize, LLC
     street: 4947 Commercial Drive
