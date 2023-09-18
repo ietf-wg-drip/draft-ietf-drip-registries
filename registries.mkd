@@ -695,6 +695,7 @@ sessionid_info = {
     operational_intent: tstr,
     intent_src: tstr,
     operator_id: tstr,
+    session_context: tstr,
     * tstr: any
 }
 ~~~~
