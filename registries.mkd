@@ -36,11 +36,10 @@ author:
     email: jim@rfc1035.com
 
 normative:
-    drip-arch: I-D.ietf-drip-arch
-
     RFC8610: # CDDL
     RFC9153: # drip-requirements
     RFC9374: # drip-det
+    RFC9434: # drip-arch
 
 informative:
     drip-auth: I-D.ietf-drip-auth
@@ -78,11 +77,11 @@ This document describes the high level architecture for the registration and dis
 
 # Introduction
 
-Registries are fundamental to Unmanned Aircraft System (UAS) Remote ID (RID). Only very limited operational information can be Broadcast, but extended information is sometimes needed. The most essential element of information is the UAS ID, the unique key for lookup of extended information in relevant registries (see Figure 4 of {{drip-arch}}).
+Registries are fundamental to Unmanned Aircraft System (UAS) Remote ID (RID). Only very limited operational information can be Broadcast, but extended information is sometimes needed. The most essential element of information is the UAS ID, the unique key for lookup of extended information in relevant registries (see Figure 4 of {{RFC9434}}).
 
-While it is expected that DRIP Identity Management Entity (DIME) functions will be integrated with UAS Service Suppliers (USS) (Appendix A.2 of {{drip-arch}}), who will provide DIME-like functions is not yet determined in most, and is expected to vary between, jurisdictions. However this evolves, the essential DIME-like functions (including the management of identifiers (such as the DRIP Entity Tag (DET))) are expected to remain the same, so are specified herein.
+While it is expected that DRIP Identity Management Entity (DIME) functions will be integrated with UAS Service Suppliers (USS) (Appendix A.2 of {{RFC9434}}), who will provide DIME-like functions is not yet determined in most, and is expected to vary between, jurisdictions. However this evolves, the essential DIME-like functions (including the management of identifiers (such as the DRIP Entity Tag (DET))) are expected to remain the same, so are specified herein.
 
-While most data to be sent via Broadcast RID (Section 1.2.1 of {{drip-arch}}) or Network RID (Section 1.2.2 of {{drip-arch}}) is public, much of the extended information in registries will be private. As discussed in Section 7 of {{drip-arch}}, Authentication, Attestation, Authorization, Access Control, Accounting, Attribution, and Audit (AAA) for registries is essential, not just to ensure that access is granted only to strongly authenticated, duly authorized parties, but also to support subsequent attribution of any leaks, audit of who accessed information when and for what purpose. As specific AAA requirements will vary by jurisdictional regulation, provider choices, customer demand, etc., they are left to specification in policies, which should be human readable to facilitate analysis and discussion, and machine readable to enable automated enforcement, using a language amenable to both (e.g., eXtensible Access Control Markup Language (XACML)).
+While most data to be sent via Broadcast RID (Section 1.2.1 of {{RFC9434}}) or Network RID (Section 1.2.2 of {{RFC9434}}) is public, much of the extended information in registries will be private. As discussed in Section 7 of {{RFC9434}}, Authentication, Attestation, Authorization, Access Control, Accounting, Attribution, and Audit (AAA) for registries is essential, not just to ensure that access is granted only to strongly authenticated, duly authorized parties, but also to support subsequent attribution of any leaks, audit of who accessed information when and for what purpose. As specific AAA requirements will vary by jurisdictional regulation, provider choices, customer demand, etc., they are left to specification in policies, which should be human readable to facilitate analysis and discussion, and machine readable to enable automated enforcement, using a language amenable to both (e.g., eXtensible Access Control Markup Language (XACML)).
 
 The intent of the access control requirements on registries is to ensure that no member of the public would be hindered from accessing public information, while only duly authorized parties would be enabled to access private information. Mitigation of Denial of Service (DoS) attacks and refusal to allow database mass scraping would be based on those behavior, not on identity or role of the party submitting the query per se, but querant identity information might be gathered (by security systems protecting DRIP implementations) on such misbehavior.
 
@@ -119,7 +118,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ## Additional Definitions
 
-This document makes use of the terms (PII, USS, etc.) defined in {{RFC9153}}. Other terms (DIME, Endorsement, etc.) are from {{drip-arch}}, while others (RAA, HDA, etc.) are from {{RFC9374}}.
+This document makes use of the terms (PII, USS, etc.) defined in {{RFC9153}}. Other terms (DIME, Endorsement, etc.) are from {{RFC9434}}, while others (RAA, HDA, etc.) are from {{RFC9374}}.
 
 ## Role Abbreviation in DETs
 
@@ -135,7 +134,7 @@ When talking about a DIME in documents it should be referred to as the role it i
 
 # DIME Roles {#dime-roles}
 
-{{drip-arch}} defines the DRIP Identity Management Entity (DIME) as an entity that vets Claims and/or Evidence from a registrant and delivers, to successful registrations, Endorsements and/or Certificates in response. The DIME encompasses various logical components and can be classified to serve a number of different roles, which are detailed in the following subsections. The general hierarchy of these initial roles (some highly specialized and predetermiend for the UAS use case) are illustrated in {{reg-class-fig}}.
+{{RFC9434}} defines the DRIP Identity Management Entity (DIME) as an entity that vets Claims and/or Evidence from a registrant and delivers, to successful registrations, Endorsements and/or Certificates in response. The DIME encompasses various logical components and can be classified to serve a number of different roles, which are detailed in the following subsections. The general hierarchy of these initial roles (some highly specialized and predetermiend for the UAS use case) are illustrated in {{reg-class-fig}}.
 
 {:fig: artwork-align="center"}
 ~~~~
@@ -749,9 +748,9 @@ It is OPTIONAL to implement this endpoint. This MAY be used to handle lower-leve
 
 # Differentiated Access Process {#dap}
 
-Per {{drip-arch}} all information classified as public is stored in a datastore protected using some form of differentiated access (i.e. AAA) to satisfy REG-2 from {{RFC9153}}.
+Per {{RFC9434}} all information classified as public is stored in a datastore protected using some form of differentiated access (i.e. AAA) to satisfy REG-2 from {{RFC9153}}.
 
-Differentiated access, as a process, is a requirement for DIMEs as defined in {{RFC9153}} by the combination of PRIV-1, PRIV-3, PRIV-4, REG-2 and REG-4. {{drip-arch}} further elaborates on the concept by citing RDAP (from {{RFC7480}}, {{RFC9082}} and {{RFC9083}}) as a potential means of fulfilling this requirement.
+Differentiated access, as a process, is a requirement for DIMEs as defined in {{RFC9153}} by the combination of PRIV-1, PRIV-3, PRIV-4, REG-2 and REG-4. {{RFC9434}} further elaborates on the concept by citing RDAP (from {{RFC7480}}, {{RFC9082}} and {{RFC9083}}) as a potential means of fulfilling this requirement.
 
 Typically the cognizant authority is the primary querant of private information from a DIME if a Session ID is reported (the case of the owner of the private information is ignored for the moment). This capability MAY be delegated to other parties at the authorities discretion (be it to a single user or many), thus requiring a flexible system to delegate, determine and revoke querent access rights for information. XACML MAY be a good technology choice for this flexibility.
 
@@ -765,7 +764,7 @@ DRIP has no intention to develop a new "art" of key management, instead hoping t
 
 # DRIP in the Domain Name System {#dns}
 
-Per {{drip-arch}} all information classified as public is stored in the DNS to satisfy REG-1 from {{RFC9153}}.
+Per {{RFC9434}} all information classified as public is stored in the DNS to satisfy REG-1 from {{RFC9153}}.
 
 The apex for domain names MUST be under the administrative control of ICAO, the international treaty organization providing the critical coordination platform for civil aviation. ICAO SHOULD be responsible for the operation of the DNS-related infrastructure for these domain name apexes. It MAY chose to run that infrastructure directly or outsource it to competent third parties or some combination of the two. ICAO SHOULD specify the technical and administrative criteria for the provision of these services: contractual terms (if any), reporting, uptime, SLAs (if any), DNS query handling capacity, response times incident handling, complaints, law enforcement interaction and so on.
 
