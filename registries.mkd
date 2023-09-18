@@ -128,7 +128,7 @@ When talking about a DIME in documents it should be referred to as the role it i
 
 # DIME Roles {#dime-roles}
 
-{{RFC9434}} defines the DRIP Identity Management Entity (DIME) as an entity that vets Claims and/or Evidence from a registrant and delivers, to successful registrations, Endorsements and/or Certificates in response. The DIME encompasses various logical components and can be classified to serve a number of different roles, which are detailed in the following subsections. The general hierarchy of these initial roles (some highly specialized and predetermiend for the UAS use case) are illustrated in {{reg-class-fig}}.
+{{RFC9434}} defines the DRIP Identity Management Entity (DIME) as an entity that vets Claims and/or Evidence from a registrant and delivers, to successful registrations, Endorsements and/or Certificates in response. The DIME encompasses various logical components and can be classified to serve a number of different roles, which are detailed in the following subsections. The general hierarchy of these initial roles (some highly specialized and predetermined for the UAS use case) are illustrated in {{reg-class-fig}}.
 
 {:fig: artwork-align="center"}
 ~~~~
@@ -154,7 +154,7 @@ HDAs        |  MAA  |  |  HDA  |  |  HDA  |
 
 The Apex is a special DIME role that holds the values of RAA=0-3 and HDA=0. It serves as the branch point from the larger DNS system in which DETs are defined. The Apex is the owner of the IPv6 prefix portion of the DET associated with it (2001:30/28) which is assigned by IANA from the special IPv6 address space for ORCHIDs.
 
-The Apex manages all delegations and allocations of the DET's RAA to various parties. Allocations of RAAs SHOULD be done in contigous groups of 4.
+The Apex manages all delegations and allocations of the DET's RAA to various parties. Allocations of RAAs SHOULD be done in contiguous groups of 4.
 
 | RAA Decimal Range | RAA Hex Range | Status |
 |------------------ | ------------- | ------ |
@@ -178,11 +178,11 @@ An RAA must provide a set of services to allocate HDAs to organizations. It must
 
 ### ISO 3166-1 Numeric Nations (INN) {#iso3166}
 
-The RAA range of 4 (0x0004) to 3999 (0x0F9F) are reserved for CAAs using the ISO 3166-1 Numeric Nation Code. The RAA can be derived from the ISO 3166-1 numeric code by multiplying the value by 4 (i.e. `raa_code = iso_code * 4`). Four contigous values are used in a single allocation. The inverse (RAA to ISO) works out as: `iso_code = floor(raa_code / 4)`.
+The RAA range of 4 (0x0004) to 3999 (0x0F9F) are reserved for CAAs using the ISO 3166-1 Numeric Nation Code. The RAA can be derived from the ISO 3166-1 numeric code by multiplying the value by 4 (i.e. `raa_code = iso_code * 4`). Four contiguous values are used in a single allocation. The inverse (RAA to ISO) works out as: `iso_code = floor(raa_code / 4)`.
 
 As an example the United States has an ISO 3166-1 Numeric Code of 840. This derives the following RAAs: 3360, 3361, 3362 and 3363.
 
-It should be noted that the range of codes from 900 to 999 are defined as "user assigned code elements" without specific claimaint predefined in the RAA space. Withdrawn and other special codes also do not have predetermined claimants.
+It should be noted that the range of codes from 900 to 999 are defined as "user assigned code elements" without specific claimant predefined in the RAA space. Withdrawn and other special codes also do not have predetermined claimants.
 
 How a CAA handles their 4 allocations are out of scope of this document. Control of these values are expected to be claimed by their respective owner. How a claim is vetted and validated is out of scope of this document. Protection against fraudulent claims of one of these values is out of scope for this document.
 
@@ -554,7 +554,7 @@ This is where a UAS has a Serial Number (from the manufacturer) and the user (vi
 
 ### Serial Method 4 {#serial-4}
 
-This is where a UAS manufacturer chooses to use the Serial Number scheme defined in {{RFC9374}} to create Serial Numbers, their associated DETs for {{drip-auth}} and provide additional information. This document RECOMMENDEDS that the manufacturer "locks" the device from changing its authentication method so identifiers in both the Basic ID Message and Authentication Message do not de-sync. The manufacturer MUST use an MAA for this task, with the mapping between their Manufacturer Code and the upper portion of the DET publicly available.
+This is where a UAS manufacturer chooses to use the Serial Number scheme defined in {{RFC9374}} to create Serial Numbers, their associated DETs for {{drip-auth}} and provide additional information. This document RECOMMENDS that the manufacturer "locks" the device from changing its authentication method so identifiers in both the Basic ID Message and Authentication Message do not de-sync. The manufacturer MUST use an MAA for this task, with the mapping between their Manufacturer Code and the upper portion of the DET publicly available.
 
 ~~~~
     +-------------------+
@@ -768,9 +768,9 @@ Per {{RFC9434}} all information classified as public is stored in the DNS to sat
 
 The apex for domain names MUST be under the administrative control of ICAO, the international treaty organization providing the critical coordination platform for civil aviation. ICAO SHOULD be responsible for the operation of the DNS-related infrastructure for these domain name apexes. It MAY chose to run that infrastructure directly or outsource it to competent third parties or some combination of the two. ICAO SHOULD specify the technical and administrative criteria for the provision of these services: contractual terms (if any), reporting, uptime, SLAs (if any), DNS query handling capacity, response times incident handling, complaints, law enforcement interaction and so on.
 
-The delegation of civil aviation authorities to RAAs is already done per {{iso3166}} using their ISO 3166-1 Numeric Codes. Since these are public, any entity can stand up an RAA with that value. ICAO SHOULD be the root of trust in a Endorsement or certificate chain that provides validation of any of these specific RAAs, in the ISO RAA range, thus protecting against bad actors standing up fraudlant RAAs. This also ensures DRIP complies with national law and regulation since these are matters of national sovereignty.
+The delegation of civil aviation authorities to RAAs is already done per {{iso3166}} using their ISO 3166-1 Numeric Codes. Since these are public, any entity can stand up an RAA with that value. ICAO SHOULD be the root of trust in a Endorsement or certificate chain that provides validation of any of these specific RAAs, in the ISO RAA range, thus protecting against bad actors standing up fraudulent RAAs. This also ensures DRIP complies with national law and regulation since these are matters of national sovereignty.
 
-Each national aviation authority SHOULD be responsible for the operation of the DNS-related infrastructure for their delegated subdomains. As with the domain apexes overseen by ICAO, each national aviation authority  MAY chose to run that infrastructure directly or outsource it to competent third parties or some combination of the two. National aviation authorities SHOULD specify the technical and administrative criteria for the provision of these services: contractual terms (if any), reporting, uptime, SLAs (if any), DNS query handling capacity, response times, incident handling, complaints, law enforcement interaction and so on. These are National Matters where national law/regulation prevail. National policy and reguations will define how long DNS data are stored or archived.
+Each national aviation authority SHOULD be responsible for the operation of the DNS-related infrastructure for their delegated subdomains. As with the domain apexes overseen by ICAO, each national aviation authority  MAY chose to run that infrastructure directly or outsource it to competent third parties or some combination of the two. National aviation authorities SHOULD specify the technical and administrative criteria for the provision of these services: contractual terms (if any), reporting, uptime, SLAs (if any), DNS query handling capacity, response times, incident handling, complaints, law enforcement interaction and so on. These are National Matters where national law/regulation prevail. National policy and regulations will define how long DNS data are stored or archived.
 
 DNSSEC is strongly RECOMMENDED (especially for RAA-level and higher zones). When a DIME decides to use DNSSEC they SHOULD define a framework for cryptographic algorithms and key management {{RFC6841}}. This may be influenced by frequency of updates, size of the zone, and policies.
 
