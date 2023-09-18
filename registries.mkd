@@ -913,6 +913,25 @@ For full examples of X.509 Certificates and the process to use them see {{drip-d
 
 # IANA Considerations
 
+## Delegation of Nibble Reversed IPv6 Prefix
+
+For DRIP to function in a interoperable way the easiest way to allow look up of DETs is through the already existing `ip6.arpa` domain structure (as defined in this document). Here IPv6 addresses are nibble reversed and usually have PTR records.
+
+With DRIP the prefix `2001:30/28` has been allocated by IANA already for DRIP use. However its representative reverse domain in `ip6.arpa` has not.
+
+There are a number of questions in this area for DRIP:
+
+1. What organization would have administrative control over the nibble-reversed `ip6.arpa` block for `2001:30/28`?
+   - How do they obtain this and from whom?
+   - What is the SLA between IANA/ICANN and the administrative organization for nibble-reversed `2001:30/28`?
+2. What organization would have technical control (i.e. day to day operations) over the nibble-reversed `ip6.arpa` block for `2001:30/28`?
+3. How are delegation/allocation of further nibble-reversed sub-blocks from `2001:30/28` handled by the administrative organization?
+   - This is partly covered in this document already (Apex->RAA->HDA)
+   - What is the SLA between the administrative organization and sub-organizations given delegations/allocations? This might be more general guidelines than an actual SLA?
+4. What goes into a nibble-reversed `ip6.arpa` domain for DRIP at each level?
+
+This is not an exhaustive list of questions, this is more to get discussion going.
+
 ## IANA DRIP Registry
 
 ### Aircraft Information Registry {#ua-info-registry}
