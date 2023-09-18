@@ -4,13 +4,13 @@ coding: utf-8
 title: DRIP Entity Tag (DET) Identity Management Architecture
 abbrev: DETIM Architecture
 docname: draft-ietf-drip-registries-13
-category: info
+category: std
 
 ipr: trust200902
 area: Internet
 wg: drip Working Group
 kw: Internet-Draft
-cat: info
+cat: std
 
 stand_alone: yes
 pi: [toc, sortrefs, symrefs, comments]
