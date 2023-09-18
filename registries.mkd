@@ -780,7 +780,7 @@ The REQUIRED mechanism is to place any information into `ip6.arpa` when using a 
 
 The prefix `2001:30/28` is registered with IANA {{RFC9374}} and `3.0.0.1.0.0.2.ip6.arpa` -- the corresponding reverse domain -- SHOULD be under the administrative control of the Apex. In addition to the DNS infrastructure for `3.0.0.1.0.0.2.ip6.arpa`, the Apex SHOULD be responsible for the allocation of IPv6 addresses in this prefix. An addressing plan will need to be developed.
 
-Distribution of HHIT (IPv6 address) blocks SHOULD be done using the 14-bit RAA space as a framework. The Apex SHOULD allocate blocks to each entity who can then assign them to HDAs in accordance with local law and policy. All HDAs MUST have an IPv6 address in `2001:30/28`. A discrete zone SHOULD be delegated for each HDA. These MUST contain an DET resource record ({{det-resource-record}}) for itself.
+Distribution of HHIT (IPv6 address) blocks SHOULD be done using the 14-bit RAA space as a framework. The Apex SHOULD allocate blocks to each entity who can then assign them to HDAs in accordance with local law and policy. All HDAs MUST have an IPv6 address in `2001:30/28`. A discrete zone SHOULD be delegated for each HDA. These MUST contain an DET resource record ({{det-rr}}) for itself.
 
 Reverse lookups of these IPv6 addresses will translate the address into a domain name in the manner defined in {{RFC1886}}. However, these lookups will query for, depending on what is required: HIP, DET, TLSA, URI, or PTR RRTypes.
 
