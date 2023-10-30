@@ -790,29 +790,43 @@ Reverse lookups of these IPv6 addresses will translate the address into a domain
 > Author Note: This section is very much a WIP, comments are welcome.
 
 ~~~~
-<domain> DET IN ( DET TYPE STATUS HID [SN] Endorsement )
+<domain> DET IN ( DET TYPE STATUS HID SN Endorsement )
 
 DET = Base16 DET
 TYPE = enumeration of Type of DET
 STATUS = enumeration of Status of DET
 HID = HID Abbreviation
-SN = Serial Number (optional)
-Endorsement = Broadcast Endorsement in CBOR encoding
+SN = Serial Number
+Endorsement = Broadcast Endorsement
 ~~~~
 
-With the SN parameter this covers the "public mapping to DET" when a user/manufacturer already has a Serial Number that can not change and wishes to do DRIP Authentication.
+#### Type {#rr-type}
 
-#### HID Abbreviation
+This field is a single byte with values defined in {{det-type}}.
 
-On receiver devices a DET can be translated to a more human readable form such as: `{RAA Abbreviation} {HDA Abbreviation} {Last 4 Characters of DET Hash}`. An example of this would be `US FAA FE23`.
+It is envisioned that there may be many types of DETs in use. In some cases it may be helpful to understand the DETs role in the ecosystem like described in {{drip-dki}}.
 
-To support this DIMEs are RECOMMENDED to have an abbreviation that could be used for this form. These abbreviations SHOULD be a maximum of six characters (for each section) in length. Spaces MUST NOT be used and be replaced with either underscores (`_`) or dashes (`-`).
+#### Status {#rr-status}
 
-The concatenation of `{RAA Abbreviation}` and `{HDA Abbreviation}` with a space between them is what fills in the `HID` field of the DET RR in {{det-rr}}.
+This field is a single byte with values defined in {{det-status}}.
 
-For RAAs allocated in the ISO range {{iso3166}}, the RAA abbreviation MUST be set to the ISO 3166-1 country code (either Alpha-2 or Alpha-3).
+A DET can go through various states during its life-cycle in the ecosystem. It is helpful for a querant to understand the current status as a further requirement for verification.
 
-If a DIME does not have an abbreviation or it can not be looked up then the receiver MUST use the uppercase 4-character hexadecimal encoding of the field it is missing.
+#### HID Abbreviation {#rr-hid}
+
+This field is an fixed length ASCII encoded string of 20 bytes null padded. When not included the field MUST be filled with nulls.
+
+The specific contents of this field are not defined here, but a recommendation/example can be found in {{hid-abbreviation}}.
+
+#### Serial Number {#rr-sn}
+
+This field is an fixed length ASCII encoded string of 20 bytes null padded. When not included the field MUST be filled with nulls.
+
+This covers the "public mapping to DET" when a user/manufacturer already has a Serial Number that can not change and wishes to do DRIP Authentication.
+
+#### Endorsement {#rr-endorsement}
+
+This field is the binary encoded Broadcast Endorsement ({{be}}) of the DET. This object is a fixed length of 136 bytes.
 
 ## Serial Numbers & Other UAS ID Types
 
@@ -1000,6 +1014,35 @@ Endorsement Fields:
 | hi         | bstr | identity | Host Identity (HI) |
 | sig        | bstr | signature | Signature |
 
+### DET Type {#det-type}
+
+This document requests a new registry for DET Type under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
+
+DET Type:
+
+: numeric, 8 bit, field of the DET RR to encode the DET Type. Future additions to this registry are to be made through First Come First Served (Section 4.4 of {{RFC8126}}). The following values are defined:
+
+| Type | Value | Description |
+| ---- | ----- | ----------- |
+| Not Defined | 0 | - |
+| Endpoint Entity (EE) | 1 | - |
+| Issuer CA | 2 | - |
+| Authentication CA | 3 | - |
+
+### DET Status {#det-status}
+
+This document requests a new registry for DET Status under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
+
+DET Status:
+
+: numeric, 8 bit, field of the DET RR to encode the DET Status. Future additions to this registry are to be made through First Come First Served (Section 4.4 of {{RFC8126}}). The following values are defined:
+
+| Status | Value | Description |
+| ------ | ----- | ----------- |
+| Not Defined | 0 | - |
+| Inactive | 1 | - |
+| Active | 2 | - |
+
 # Security Considerations
 
 ## Key Rollover & Federation
@@ -1031,6 +1074,18 @@ Keypairs are expected to be generated on the device hardware it will be used on.
 Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LLC) for their early work on the DRIP registries concept. Their early contributions laid the foundations for the content and processes of this architecture and document. Bob Moskowitz is also instrumental in the PKIX work defined in this document with his parallel work in ICAO.
 
 --- back
+
+# HID Abbreviation Recommendation {#hid-abbreviation}
+
+On receiver devices a DET can be translated to a more human readable form such as: `{RAA Abbreviation} {HDA Abbreviation} {Last 4 Characters of DET Hash}`. An example of this would be `US FAA FE23`.
+
+To support this DIMEs are RECOMMENDED to have an abbreviation that could be used for this form. These abbreviations SHOULD be a maximum of six characters (for each section) in length. Spaces MUST NOT be used and be replaced with either underscores (`_`) or dashes (`-`).
+
+The concatenation of `{RAA Abbreviation}` and `{HDA Abbreviation}` with a space between them can be what fills in the `HID` field of the DET RR in {{det-rr}}.
+
+For RAAs allocated in the ISO range {{iso3166}}, the RAA abbreviation SHOULD be set to the ISO 3166-1 country code (either Alpha-2 or Alpha-3). A common abbreviation for an RAAs four allocated RAA values are out of scope. Other documents such as {{drip-dki}} may have more specific recommendations or requirements.
+
+If a DIME does not have an abbreviation or it can not be looked up then the receiver MUST use the uppercase 4-character hexadecimal encoding of the field it is missing when using this form.
 
 # DRIP Fully Qualified Domain Names {#drip-fqdn}
 
