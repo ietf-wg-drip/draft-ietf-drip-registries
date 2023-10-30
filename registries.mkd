@@ -1069,6 +1069,14 @@ Option 2:
 
 Keypairs are expected to be generated on the device hardware it will be used on. Due to hardware limitations and connectivity it is acceptable, though not recommended, under DRIP to generate keypairs for the Aircraft on Operator devices and later securely inject them into the Aircraft. The methods to securely inject and store keypair information in a “secure element” of the Aircraft is out of scope of this document.
 
+# Public Key Exposure
+
+DETs are built upon asymmetric keypairs. As such the public key must be revealed to enable clients to perform signature verifications.
+
+While unlikely the forging of a corresponding private key is possible if given enough time (and computational power). As such it is RECOMMENDED that the public key for any DET not be exposed in DNS (using the HIP RR) until it is required.
+
+Optimally this requires the UAS somehow signal the DIME that a flight using a specific Session ID is underway or complete. It may also be facilitated under UTM if the USS (which may or may not be a DIME) signals when a given operation using a Session ID goes active.
+
 # Contributors
 
 Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LLC) for their early work on the DRIP registries concept. Their early contributions laid the foundations for the content and processes of this architecture and document. Bob Moskowitz is also instrumental in the PKIX work defined in this document with his parallel work in ICAO.
