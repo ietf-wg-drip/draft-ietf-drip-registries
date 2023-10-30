@@ -46,6 +46,7 @@ informative:
     drip-secure-nrid-c2: I-D.moskowitz-drip-secure-nrid-c2
     dane-clients: I-D.ietf-dance-client-auth
     drip-dki: I-D.moskowitz-drip-dki
+    cbor-cert: I-D.ietf-cose-cbor-encoded-cert
 
     RFC1886: # ipv6 lookup
     RFC5280:
@@ -911,7 +912,16 @@ For full examples of X.509 Certificates and the process to use them see {{drip-d
 
 ## Alternative Certificate Encoding
 
-(CBOR encoded certs here.  TBD)
+The CBOR Encoded X.509 Certificates (C509 Certificates) {{cbor-cert}} provides a standards-based approach to reduce the size of X.509 certificates both on-the-wire and in storage. The PKI-Lite RAA certificate example in Appendix B.2 is 331 bytes. The matching C509 certificate is 183 bytes. This sort of difference may have significant impact both on UAS storage requirements and over-the-air transmission impact.
+
+C509 provides two approaches for encoding X.509:
+
+1. An invertible CBOR re-encoding of DER encoded X.509 certificates {{RFC5280}}, which can be reversed to obtain the original DER encoded X.509 certificate.
+2. Natively signed C509 certificates, where the signature is calculated over the CBOR encoding instead of over the DER encoding as in 1. This removes the need for ASN.1 and DER parsing and the associated complexity but they are not backwards compatible with implementations requiring DER encoded X.509.
+
+The invertible CBOR encoding may be sufficient for most needs. The CBOR objects clearly indicate which approach was used, so that the receiver can properly process the C509 object. For interoperability in DRIP, it is recommended that invertible CBOR encoding be used.
+
+Using the invertible CBOR encoding is achieved through in-line libraries that convert in the desired direction. Since it is not expected that DNS protocols to implement this conversion, the DET RR SHOULD contain the normal X.509 DER encoding. The CBOR encoding MAY be used, but operational experience will be needed to see if there are measurable gains in doing so.
 
 # IANA Considerations
 
