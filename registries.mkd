@@ -626,7 +626,8 @@ Provided either by USS or CAA run HDAs. Regulation might require interaction bet
 (c) HIP RR, DET RR, TLSA RR, URI RR, PTR RR
 (d) Operator Information
 
-Note: (c) MAY be requested by the Operator to be omitted due to PII concerns.
+Note: (c) MAY be requested by the Operator 
+      to be omitted due to PII concerns.
 ~~~~
 {:fig #dime-operator-example title="Example DIME:HDA with Operator (DET) Registration"}
 
@@ -1247,7 +1248,7 @@ broadcast_endorsement = {
 ~~~~
 {:fig #be-cddl title="Broadcast Endorsement CDDL"}
 
-Defined by {{drip-auth}} in a binary format to support Authentication over F3411 constrained links. Used in the DRIP Link format. A required output of registration to a DIME at any level. `evidence` is a binary string of the concatination of a child entities (e.g. a UA) HHIT and its associated HI. `hhit` is of the parent entity (e.g. a DIME).
+Defined by {{drip-auth}} in a binary format to support Authentication over F3411 constrained links. Used in the DRIP Link format. A required output of registration to a DIME at any level. `evidence` is a binary string of the concatenation of a child entities (e.g. a UA) DET/HHIT and its associated HI. `hhit` is of the parent entity (e.g. a DIME).
 
 ~~~~
  0                   1                   2                   3
@@ -1316,50 +1317,72 @@ example1.8 IN URI ( https://example.com/sn/EXAMPLE1 )
 
 ~~~~text
 @ORIGIN mfr0.uas-sn.arpa
-example2.8 IN DET ( 5 20010033e872f705f3ce91124b677d65 ... "MFR MFR0" MFR08EXAMPLE2 https://example.com/sn/EXAMPLE2 ... active )
+example2.8 IN PTR 
+6.5.d.7.7.6.b.4.2.1.1.9.e.c.3.f.5.0.7.f.2.7.8.e.3.3.0.0.1.0.0.2.ip6.arpa
 
-@ORIGIN 3.2.f.7.0.f.a.1.3.0.0.1.0.0.2.ip6.arpa
-6.5.d.7.7.6.b.4.2.1.1.9.e.c.3.f.5.0 IN PTR example2.8.mfr0.uas-sn.arpa
+@ORIGIN 7.f.2.7.8.e.3.3.0.0.1.0.0.2.ip6.arpa
+6.5.d.7.7.6.b.4.2.1.1.9.e.c.3.f.5.0 IN DET 
+( 20010033e872f705f3ce91124b677d65 0 1 "MFR MFR0" "MFR08EXAMPLE2" ... )
+6.5.d.7.7.6.b.4.2.1.1.9.e.c.3.f.5.0 IN HIP 
+( 5 20010033e872f705f3ce91124b677d65 ... )
+6.5.d.7.7.6.b.4.2.1.1.9.e.c.3.f.5.0 IN URI 
+( https://example.com/sn/EXAMPLE2 )
 ~~~~
 
 ## Serial Method 3 {#dns-s3}
 
 ~~~~text
 @ORIGIN mfr0.uas-sn.arpa
-example3.8 IN DET ( 5 20010033e872f70584b1fa2b70421112 ... "MFR MFR0" MFR08EXAMPLE3 https://example.com/sn/EXAMPLE3 ... active )
+example3.8 IN PTR
+2.1.1.1.2.4.0.7.b.2.a.f.1.b.4.8.5.0.7.f.2.7.8.e.3.3.0.0.1.0.0.2.ip6.arpa
 
-@ORIGIN 3.2.f.7.0.f.a.1.3.0.0.1.0.0.2.ip6.arpa
-2.1.1.1.2.4.0.7.b.2.a.f.1.b.4.8.5.0 IN PTR example3.8.mfr0.uas-sn.arpa
+@ORIGIN 7.f.2.7.8.e.3.3.0.0.1.0.0.2.ip6.arpa
+2.1.1.1.2.4.0.7.b.2.a.f.1.b.4.8.5.0 IN DET 
+( 20010033e872f70584b1fa2b70421112 0 1 "MFR MFR0" "MFR08EXAMPLE3" ...)
+2.1.1.1.2.4.0.7.b.2.a.f.1.b.4.8.5.0 IN HIP 
+( 5 20010033e872f70584b1fa2b70421112 ... )
+2.1.1.1.2.4.0.7.b.2.a.f.1.b.4.8.5.0 IN URI 
+( https://example.com/sn/EXAMPLE3 )
 ~~~~
 
 ## Serial Method 4 {#dns-s4}
 
 ~~~~text
 @ORIGIN mfr0.uas-sn.arpa
-example4.8 IN DET ( 5 20010033e872f705ba8af5252a35030e ... "MFR MFR0" MFR08EXAMPLE4 https://example.com/sn/EXAMPLE4 ... active )
+example4.8 IN PTR
+e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0.7.f.2.7.8.e.3.3.0.0.1.0.0.2.ip6.arpa
 
-@ORIGIN 3.2.f.7.0.f.a.1.3.0.0.1.0.0.2.ip6.arpa
-e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0 IN PTR example4.8.mfr0.uas-sn.arpa
+@ORIGIN 7.f.2.7.8.e.3.3.0.0.1.0.0.2.ip6.arpa
+e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0 IN DET 
+( 2001003fff800005ba8af5252a35030e 0 1 "MFR MFR0" "MFR08EXAMPLE4" ... )
+e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0 IN HIP 
+( 5 2001003fff800005ba8af5252a35030e ... )
+e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0 IN URI 
+( https://example.com/sn/EXAMPLE4 )
 ~~~~
 
 ## Operator {#dns-op}
 
 ~~~~text
-@ORIGIN 0000.3ffe.2001003.hhit.arpa
-ba8af5252a35030e.05.0000.3ffe.2001003.hhit.arpa IN DET ( 5 2001003fff800005ba8af5252a35030e ... "TEST DRIP" null https://example.com/operator/* ... active )
-
 @ORIGIN 0.0.0.8.f.f.f.3.0.0.1.0.0.2.ip6.arpa
-e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0 IN PTR ba8af5252a35030e.05.0000.3ffe.2001003.hhit.arpa
+e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0 IN DET 
+( 2001003fff800005ba8af5252a35030e 0 1 "TEST DRIP" "" ... )
+e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0 IN HIP 
+( 5 2001003fff800005ba8af5252a35030e ... )
+e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0 IN URI 
+( https://example.com/operator/* )
 ~~~~
 
 ## Session ID {#dns-sid}
 
 ~~~~text
-@ORIGIN 0000.3ffe.2001003.hhit.arpa
-b6ce935b616306d4.05.0000.3ffe.2001003.hhit.arpa IN DET ( 5 2001003fff800005b6ce935b616306d4 ... "TEST DRIP" null https://example.com/session/* ... active )
-
 @ORIGIN 0.0.0.8.f.f.f.3.0.0.1.0.0.2.ip6.arpa
-4.d.6.0.3.6.1.6.b.5.3.9.e.c.6.b.5.0 IN PTR b6ce935b616306d4.05.0000.3ffe.2001003.hhit.arpa
+4.d.6.0.3.6.1.6.b.5.3.9.e.c.6.b.5.0 IN DET 
+( 2001003fff800005b6ce935b616306d4 0 1 "TEST DRIP" "" ... )
+4.d.6.0.3.6.1.6.b.5.3.9.e.c.6.b.5.0 IN HIP 
+( 5 2001003fff800005b6ce935b616306d4 ... )
+4.d.6.0.3.6.1.6.b.5.3.9.e.c.6.b.5.0 IN URI 
+( https://example.com/session/* )
 ~~~~
 
 ## Child DIME {#dns-child}
@@ -1371,8 +1394,10 @@ RAA:
 
 HDA:
 @ORIGIN 0.0.0.8.f.f.f.3.0.0.1.0.0.2.ip6.arpa
-9.6.6.b.b.0.6.a.4.9.3.6.8.4.e.4.5.0 IN PTR 4e486394a60bb669.05.0000.3ffe.2001003.hhit.arpa
-
-@ORIGIN 0000.3ffe.2001003.hhit.arpa
-4e486394a60bb669.05.0000.3ffe.2001003.hhit.arpa IN DET ( 5 2001003fff8000054e486394a60bb669 ... "TEST DRIP" null https://example.com/session/* ... active )
+9.6.6.b.b.0.6.a.4.9.3.6.8.4.e.4.5.0 IN DET 
+( 2001003fff8000054e486394a60bb669 0 1 "TEST DRIP" "" ... )
+9.6.6.b.b.0.6.a.4.9.3.6.8.4.e.4.5.0 IN HIP 
+( 5 2001003fff8000054e486394a60bb669 ... )
+9.6.6.b.b.0.6.a.4.9.3.6.8.4.e.4.5.0 IN URI 
+( https://example.com/dime/* )
 ~~~~
