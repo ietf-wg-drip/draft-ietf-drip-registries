@@ -842,7 +842,7 @@ DETs MUST not have a subdomain in `uas.icao.arpa` (such as `det.uas.icao.arpa`) 
 
 # Endorsements
 
-DRIP Endorsements are defined in a CDDL {{RFC8610}} structure ({{endorsement-cddl}}) that can be encoded to CBOR, JSON or have their CDDL keys removed and be sent as a binary blob. When the latter is used very specific forms are defined with naming conventions to know the data fields and their lengths for parsing and constrained envirornments. CBOR is the preferred encoding format.
+DRIP Endorsements are defined in a CDDL {{RFC8610}} structure ({{endorsement-cddl}}) that can be encoded to CBOR, JSON or have their CDDL keys removed and be sent as a binary blob. When the latter is used very specific forms are defined with naming conventions to know the data fields and their lengths for parsing and constrained environments. CBOR is the preferred encoding format.
 
 The CDDL was derived from the more specific structure developed for {{drip-auth}}. As such the structures found in {{drip-auth}}, such as the UA Signed Evidence and the contents of DRIP Link (known as a Broadcast Endorsement), are a subset of the below definition in a strict binary form.
 
@@ -902,9 +902,9 @@ X.509 certificates are optional for the DRIP entities covered in this document. 
 
 Three certificate profiles are defined, with examples, and explained in {{drip-dki}}. Each has a specific role to play and an EE may have its DET enrolled in all of them. There is a ‘Lite’ profile that would work well enough on constrained communication links for those instances where various issues push the use of X.509. There is a ‘Basic; profile that is more in line with {{RFC5280}} recommendations, but is still small enough for many constrained environments. Finally there is a profile to directly add DET support into the civil/general aviation certificates as discussed below.
 
-A Certificate Authority (CA) supporting DRIP entities MAY adhere to the ICAO's Aviation Common Certificate Policy (ACCP) [ICAO-IATF-CP-draft]. The CA(s) supporting this CP MUST either be a part of the ACCP cross-certification or part of the ACCP CA Trust List. It is possible that future versions of the ACCP will directly support the DRIP Basic profile.
+A Certificate Authority (CA) supporting DRIP entities MAY adhere to the ICAO's Aviation Common Certificate Policy (ACCP). The CA(s) supporting this CP MUST either be a part of the ACCP cross-certification or part of the ACCP CA Trust List. It is possible that future versions of the ACCP will directly support the DRIP Basic profile.
 
-> Note ACCP is: ICAO Doc 10169 Aviation Common Certificate Policy (ACCP). I can’t get a url for that, but so far these is no changes from v 0.93 of the old IATF CP; changes are in the works then will be posted, so continue to reference IATF CP
+> Authors Note: ACCP is ICAO Doc 10169 Aviation Common Certificate Policy (ACCP). I can’t get a url for that, but so far these is no changes from v 0.93 of the old IATF CP; changes are in the works then will be posted, so continue to reference IATF CP
 
 EEs may use their X.509 certificates, rather than their rawPublicKey (i.e. HI) in authentication protocols (as not all may support rawPublicKey identities). Short lived DETs like those used for a single operation or even for a day's operations may not benefit from X.509. Creating then almost immediately revoking these certificates is a considerable burden on all parts of the system. Even using a short notAfter date will not completely mitigate the burden of managing these certificates. That said, many EEs will benefit to offset the effort. It may also be a regulator requirement to have these certificates. Finally, certificates can provide the context of use for a DET (via policy constraint OIDs).
 
