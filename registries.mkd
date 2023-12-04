@@ -169,9 +169,11 @@ An RAA must provide a set of services to allocate HDAs to organizations. It must
 
 ### ISO 3166-1 Numeric Nations (INN) {#iso3166}
 
-The RAA range of 4 (0x0004) to 3999 (0x0F9F) are reserved for CAAs using the ISO 3166-1 Numeric Nation Code. The RAA can be derived from the ISO 3166-1 numeric code by multiplying the value by 4 (i.e. `raa_code = iso_code * 4`). Four contiguous values are used in a single allocation. The inverse (RAA to ISO) works out as: `iso_code = floor(raa_code / 4)`.
+The RAA range of 4 (0x0004) to 3999 (0x0F9F) are reserved for CAAs using the ISO 3166-1 Numeric Nation Code. The RAA can be derived from the ISO 3166-1 numeric code by multiplying the value by 4 (i.e. `raa_code = iso_code * 4`). Four contiguous values (`raa_code + 0`, `raa_code + 1`, `raa_code + 2` and `raa_code + 3`) are used in a single allocation. The inverse (RAA to ISO) works out as: `iso_code = floor(raa_code / 4)`.
 
 As an example the United States has an ISO 3166-1 Numeric Code of 840. This derives the following RAAs: 3360, 3361, 3362 and 3363.
+
+<!-- A table of current ISO 3166-1 countries and their RAA allocations are found in {{inn-allocations}}. -->
 
 It should be noted that the range of codes from 900 to 999 are defined as "user assigned code elements" without specific claimant predefined in the RAA space. Withdrawn and other special codes also do not have predetermined claimants.
 
