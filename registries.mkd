@@ -589,6 +589,8 @@ Reverse lookups of these IPv6 addresses will translate the address into a domain
 
 > Author Note: This section is very much a WIP, comments are welcome.
 
+The DET Resource Record is a metadata record for various bits of DRIP specific information that isn't available in pre-existing DNS RR Types (such as URI or HIP).
+
 ~~~~
 <domain> DET IN ( DET TYPE STATUS HID SN Endorsement )
 
