@@ -88,7 +88,7 @@ The intent of the access control requirements on registries is to ensure that no
 
 Registration under DRIP is vital to manage the inevitable collisions in the hash portion of the DET (Section 9.5 of {{RFC9374}}). Forgery of a DET is still possible, but including it as a part of a public registration mitigates this risk.
 
-This document creates the DET registration and discovery ecosystem.  This includes all components in the ecosystem (e.g., Unmanned Aircraft (UA), Registered Assigning Authority (RAA), Hierarchical HIT Domain Authority (HDA), Ground Control Station (GCS), and USS).
+This document creates the DRIP registration and discovery ecosystem focusing on the DET. This SHOULD support all components in the ecosystem (e.g., Unmanned Aircraft (UA), Registered Assigning Authority (RAA), Hierarchical HIT Domain Authority (HDA), Ground Control Station (GCS), and USS) that can use a DET.
 
 This document uses the Concise Data Definition Language (CDDL) {{RFC8610}} for describing the registration data.
 
@@ -101,17 +101,6 @@ Manufacturers that wish to participate in DRIP should not only support DRIP as a
 Operators are registered with a number of registries or their regional RAA. This acts as a verification check when a user performs other registration operations; such as provisioning an aircraft with a new Session ID. It is an open question if an Operator registers to their CAA (the RAA's direct HDA) or multiple USS's (HDA's). PII of the Operator would vary based on the CAA they are under and the DIME.
 
 Finally, aircraft that support using a DET would provision per flight to a USS, proposing a DET to the DIME to generate a binding between the aircraft (Session ID, Serial Number, and Operational Intent), operator and DIME. The aircraft then follows {{drip-auth}} to meet various requirements from {{RFC9153}} during a flight.
-
-## Supported Scenarios
-
-> Author Note: with the proposal to remove solving the issue of putting Serial Numbers into DNS from this document, this section most likely is removed or merged with another. The only point to merge is #6.
-
-1. UA using manufacturer generated Serial Number for UAS ID. No additional information provided.
-2. UA using manufacturer generated Serial Number for UAS ID. Manufacturer using a DIME. Manufacturer MUST provided pointer to additional information via DNS (even if null).
-3. UA using manufacturer generated Serial Number which is mapped to a DET by manufacturer for UAS ID. UA using manufacturer generated DET for Authentication. Manufacturer using a DIME. DIME MUST place public DET information into DNS (i.e. HI). DIME MUST provide mapping of Serial Number to DET in DNS. Manufacturer MUST provide pointer to additional information via DNS (even if null).
-4. UA using manufacturer generated DRIP enhanced Serial Number for UAS ID. UA using manufacturer generated DET for Authentication. Manufacturer using a DIME. DIME MUST place public information into DNS (i.e. HI) - either directly or as a mapping to a DET. DIME MUST provide pointer to additional information via DNS (even if null).
-5. UA using manufacturer generated Serial Number for UAS ID. UA using user generated DET for Authentication. User uses DIME with capability to publicly map Serial Number to a DET (via a USS). DIME MUST place public DET information into DNS (i.e. HI). DIME MUST provide mapping of Serial Number to DET in DNS. DIME MUST provide pointer to additional information via DNS (even if null).
-6. UA provisioned with DET (i.e. Session ID) with a DIME (via a USS) for UAS ID and Authentication. DIME MUST place public DET information into DNS (i.e. HI). DIME MUST NOT (unless required) provide mapping of DET to Serial Number in DNS. USS MUST provide pointer to additional information via DNS (even if null).
 
 # Terminology {#terminology}
 
@@ -161,15 +150,16 @@ The Apex manages all delegations and allocations of the DET's RAA to various par
 |------------------ | ------------- | ------ |
 | 0 - 3             | 0x0000 - 0x0003 | Apex |
 | 4 - 3999          | 0x0004 - 0x0F9F | ISO 3166-1 Countries ({{iso3166}}) |
-| 4000 - 4095       | 0x0FA0 - 0x0FFF | Manufacturer Code Authorities ({{irm}}) |
-| 4096 - 16375      | 0x1000 - 0x3FFF | Reserved |
+| 4000 - 16375      | 0x1000 - 0x3FFF | Reserved |
 | 16376 - 16383     | 0x3FF8 - 0x3FFF | DRIP WG Experimental Use |
+
+<!-- | 4000 - 4095       | 0x0FA0 - 0x0FFF | Manufacturer Code Authorities ({{irm}}) | -->
 
 > Note: that the first column of this table is *decimal* values **not** *hexadecimal*.
 
 RAA values of 0 (0x0000) to 3 (0x0003) are reserved to the Apex exclusively.
 
-The Experimental range of 16376 (0x3FF8) to 16383 (0x3FFF), eight (8) RAAs, is allocated to the DRIP working group itself. 16376 to 16379 are setup by DRIP experts to act as RAAs for potential HDA users to test against. RAA 16376 is already "in use" with `driptesting.org`. 16379 is to be setup as an RAA to act as a MCA {{irm}} for UAS manufacturers to test their HDAs against and have their Manufacturer Code properly managed. The rest of the range (16380 to 16383) are reserved to be allocate by the DRIP experts to agencies that wish to test being an RAA.
+The Experimental range of 16376 (0x3FF8) to 16383 (0x3FFF), eight (8) RAAs, is allocated to the DRIP working group itself. 16376 to 16379 are setup by DRIP experts to act as RAAs for potential HDA users to test against. RAA 16376 is already "in use" with `driptesting.org`. The rest of the range (16377 to 16383) are reserved to be allocate by the DRIP experts to agencies that wish to test.
 
 ## Registered Assigning Authority (RAA) {#raa}
 
@@ -189,18 +179,6 @@ How a CAA handles their 4 allocations are out of scope of this document. Control
 
 > Note: A single entity may control more than one NAS (for example LU and BE being covered by Skeyes.be) and would manage two allocation spaces. How this is claimed and handled is out of scope for this document.
 
-### Manufacturer Code Authority (MCA) {#irm}
-
-> Author Note: with the proposal to remove solving the issue of putting Serial Numbers into DNS from this document, this section is either moved to a new document or left here.
-
-An RAA-level DIME that hands out HDA values to participating Manufacturer's that hold an Manufacturer Code used in {{CTA2063A}} that is issued by ICAO.
-
-To manage the large Manufacturer Code space (34 character set; 4 characters; 1,336,336 possible codes) a range of RAA values are set aside for the use case. These are the RAA values of 4000 (0x0FA0) up to 4095 (0x0FFF). This allows a single HDA for each Manufacturer Code.
-
-See {{mra}} for the HDA allocation of Manufacturer Codes under these RAAs.
-
-> Note: the upper RAAs in the range (4083 to 4095) are not used but are left reserved in this space for future action if required.
-
 ## Hierarchial HIT Domain Authority (HDA) {#hda}
 
 An HDA may be an USS, ISP, or any third party that takes on the business to register the actual entities that need DETs. This includes, but is not limited to UA, GCS, UAS Operators and infrastructure (such as Supplemental Data Service Providers). It should also provide needed UAS services including those required for HIP-enabled devices (e.g. RVS).
@@ -210,22 +188,6 @@ A primary function of HDAs for DRIP, in the context of UAS RID is the binding be
 The HDA is a 14-bit field (16,384 HDAs per RAA) of a DET assigned by an RAA.  An HDA should maintain a set of RVS servers for UAS clients that may use HIP.  How this is done and scales to the potentially millions of customers are outside the scope of this document. This service should be discoverable through the DNS zone maintained by the HDA's RAA.
 
 An RAA may assign a block of values to an individual organization. This is completely up to the individual RAA's published policy for delegation. Such policy is out of scope.
-
-### Manufacturer Unmanned Aircraft Authority (MAA) {#mra}
-
-> Author Note: with the proposal to remove solving the issue of putting Serial Numbers into DNS from this document, this section can be moved to the new document or left here.
-
-An HDA-level DIME run by a manufacturer of UAS systems that participate in Remote ID. Stores UAS Serial Numbers under a specific Manufacturer Code (assigned to the manufacturer by ICAO). The specific RAA (out of MCA space) and HDA use the following derivation:
-
-~~~~
-mfr_int = base34_decode(mfr_code)
-hid = (4000 << 14) + mfr_int
-mfr_code = base34_encode(hid)
-~~~~
-
-A character in a UAS Serial Number "shall include any combination of digits and uppercase letters, except the letters O and I, but may include all digits" {{CTA2063A}}. For HID determination, the character space \[0-9,A-H,J-N,P-Z\] is mapped to \[0-34\] to convert the 4 place Base34 Manufacturer Code to Base10 (Note this is different than the Base32 process in Section 4.2 of {{RFC9374}}).
-
-A DET can be encoded into a Serial Number (see {{RFC9374}}, Section 4.2) and this DIME MUST hold a mapping from the Serial Number to the DET and its artifacts.
 
 # DIME Architecture {#dime-arch}
 
@@ -425,171 +387,6 @@ The general process for a registering party is as follows:
 In the following subsections an abbreviated form of {{dime-arch}} using co-located components is used to describe the flow of information. The data elements being transmitted between entities is marked accordingly in each figure for the specific examples.
 
 Each section has an associated appendix ({{dns-examples}}) containing DNS examples.
-
-## Serial Number
-
-> Author Note: with the proposal to remove solving the issue of putting Serial Numbers into DNS from this document, this section becomes the basis for a new document and is removed from here.
-
-There are four ways a Serial Number is supported by DRIP:
-
-1. As a clear-text string with additional information ({{serial-1}})
-2. As a clear-text string mapped to a DET "post" generation by the **manufacturer** (for use in authentication) and additional information ({{serial-2}})
-3. As a clear-text string mapped to a DET "post" generation by the **user (via an HDA)** (for use in authentication) and additional information ({{serial-3}})
-4. As an encoding of an HI and associated DET by the **manufacturer** (for use in authentication) with additional information ({{serial-4}})
-
-> Note: additional information here refers to any subset of keys defined in {{ua-info-registry}}.
-
-### Serial Method 1 {#serial-1}
-
-This is where a UA is provisioned with a Serial Number by the manufacturer. The Serial Number is just text string, defined by {{CTA2063A}}. The manufacturer runs an Name Server delegated under the Serial Number apex and points to information using a DET RR (filling in only the Serial Number and URI fields).
-
-~~~~
-    +-------------------+
-    | Unmanned Aircraft |
-    +--o---o------------+
-       |   ^
-   (a) |   | (b)
-       |   |
-*******|***|*****************************
-*      |   |    DIME: MAA               *
-*      |   |                            *
-*      v   |             +----------+   *
-*   +--o---o--+          |          |   *
-*   |   DPA   o--------->o          |   *
-*   +----o----+   (d)    |          |   *
-*        |               |          |   *
-*        | (c)           | DIA/RDDS |   *
-*        v               |          |   *
-*   +----o--------+      |          |   *
-*   | Registry/NS |      |          |   *
-*   +-------------+      |          |   *
-*                        +----------+   *
-*                                       *
-*****************************************
-
-(a) Serial Number,
-    UA Information
-(b) Success Code
-(c) DET RR
-(d) UA Information
-~~~~
-{:fig #dime-sn1-example title="Example DIME:MAA with Serial Number Registration"}
-
-### Serial Method 2 {#serial-2}
-
-This is where a UAS is provisioned with a Serial Number and DET by the manufacturer enabling their devices to use {{drip-auth}} and provide additional information. A public mapping of the Serial Number to DET and all public artifacts MUST be provided by the manufacturer. The manufacturer MUST use an MAA for this task.
-
-The device MAY allow the DET to be regenerated dynamically with the MAA.
-
-~~~~
-    +-------------------+
-    | Unmanned Aircraft |
-    +--o---o------------+
-       |   ^
-   (a) |   | (b)
-       |   |
-*******|***|*****************************
-*      |   |    DIME: MAA               *
-*      |   |                            *
-*      v   |             +----------+   *
-*   +--o---o--+          |          |   *
-*   |   DPA   o--------->o          |   *
-*   +----o----+   (d)    |          |   *
-*        |               |          |   *
-*        | (c)           | DIA/RDDS |   *
-*        v               |          |   *
-*   +----o--------+      |          |   *
-*   | Registry/NS |      |          |   *
-*   +-------------+      |          |   *
-*                        +----------+   *
-*                                       *
-*****************************************
-
-(a) Serial Number,
-    UA Information,
-    Self-Endorsement: UA
-(b) Success Code,
-    Broadcast Endorsement: MAA on UA
-(c) DET RR, PTR RR
-(d) UA Information
-~~~~
-{:fig #dime-sn2-example title="Example DIME:MAA with Serial Number + DET Registration"}
-
-### Serial Method 3 {#serial-3}
-
-This is where a UAS has a Serial Number (from the manufacturer) and the user (via a DIME) has a mechanism to generate and map a DET to the Serial Number after production. This can provide dynamic signing keys for DRIP Authentication Messages via {{drip-auth}} for UAS that MUST fly only using Serial Numbers. Registration SHOULD be allowed to any relevant DIME that supports it. A public mapping of the DET to the Serial Number SHOULD be provided.
-
-~~~~
-    +-------------------+
-    | Unmanned Aircraft |
-    +--o---o------------+
-       |   ^
-   (a) |   | (b)
-       |   |
-*******|***|*****************************
-*      |   |      DIME                  *
-*      |   |                            *
-*      v   |             +----------+   *
-*   +--o---o--+          |          |   *
-*   |   DPA   o--------->o          |   *
-*   +----o----+   (d)    |          |   *
-*        |               |          |   *
-*        | (c)           | DIA/RDDS |   *
-*        v               |          |   *
-*   +----o--------+      |          |   *
-*   | Registry/NS |      |          |   *
-*   +-------------+      |          |   *
-*                        +----------+   *
-*                                       *
-*****************************************
-
-(a) Serial Number,
-    UA Information,
-    Self-Endorsement: UA
-(b) Success Code,
-    Broadcast Endorsement: DIME on UA
-(c) DET RR
-(d) UA Information
-~~~~
-{:fig #dime-sn3-example title="Example DIME with Serial Number + DET Registration"}
-
-### Serial Method 4 {#serial-4}
-
-This is where a UAS manufacturer chooses to use the Serial Number scheme defined in {{RFC9374}} to create Serial Numbers, their associated DETs for {{drip-auth}} and provide additional information. This document RECOMMENDS that the manufacturer "locks" the device from changing its authentication method so identifiers in both the Basic ID Message and Authentication Message do not de-sync. The manufacturer MUST use an MAA for this task, with the mapping between their Manufacturer Code and the upper portion of the DET publicly available.
-
-~~~~
-    +-------------------+
-    | Unmanned Aircraft |
-    +--o---o------------+
-       |   ^
-   (a) |   | (b)
-       |   |
-*******|***|*****************************
-*      |   |    DIME: MAA               *
-*      |   |                            *
-*      v   |             +----------+   *
-*   +--o---o--+          |          |   *
-*   |   DPA   o--------->o          |   *
-*   +----o----+   (d)    |          |   *
-*        |               |          |   *
-*        | (c)           | DIA/RDDS |   *
-*        v               |          |   *
-*   +----o--------+      |          |   *
-*   | Registry/NS |      |          |   *
-*   +-------------+      |          |   *
-*                        +----------+   *
-*                                       *
-*****************************************
-
-(a) Serial Number,
-    UA Information,
-    Self-Endorsement: UA
-(b) Success Code,
-    Broadcast Endorsement: MAA on UA
-(c) DET RR
-(d) UA Information
-~~~~
-{:fig #dime-sn4-example title="Example DIME:MAA with DRIP Serial Number Registration"}
 
 ## Operator
 
@@ -829,18 +626,6 @@ This covers the "public mapping to DET" when a user/manufacturer already has a S
 
 This field is the binary encoded Broadcast Endorsement ({{be}}) of the DET. This object is a fixed length of 136 bytes.
 
-## Serial Numbers & Other UAS ID Types
-
-> Author Note: with the proposal to remove solving the issue of putting Serial Numbers into DNS from this document, this section is removed and becomes part of a new document.
-
-> Author Note: There MUST be an entry point in DNS for the lookup of UAS Serial Numbers. This section is very much a shot in the dark.
-
-This document specifies the creation and delegation to ICAO of the subdomain `uas.icao.arpa`. To enable lookup of Serial Numbers a subdomains of `sn.uas.icao.arpa` is maintained. All entries under `sn.uas.icao.arpa` are to follow the convention found in {{sn-fqdn}}. This is to enable a singular lookup point for Serial Numbers for UAS.
-
-Note that other subdomains under `uas.icao.arpa` can be made to support other identifiers in UAS. The creation and use of other such other subdomains are out of scope for this document. The further use and creation of items under `icao.arpa` is the authority of ICAO (which has been delegated control).
-
-DETs MUST not have a subdomain in `uas.icao.arpa` (such as `det.uas.icao.arpa`) as they fit within the predefined `ip6.arpa` as they are IPv6 addresses.
-
 # Endorsements
 
 DRIP Endorsements are defined in a CDDL {{RFC8610}} structure ({{endorsement-cddl}}) that can be encoded to CBOR, JSON or have their CDDL keys removed and be sent as a binary blob. When the latter is used very specific forms are defined with naming conventions to know the data fields and their lengths for parsing and constrained environments. CBOR is the preferred encoding format.
@@ -961,44 +746,6 @@ This is not an exhaustive list of questions, this is more to get discussion goin
 
 ## IANA DRIP Registry
 
-### Aircraft Information Registry {#ua-info-registry}
-
-This document requests a new registry for aircraft information fields under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
-
-Aircraft Information Fields:
-
-: list of acceptable keys to be used in `UA Information` during a UA registration to a DIME. Future additions to this registry are to be made through First Come First Served (Section 4.4 of {{RFC8126}}). The following values are defined:
-
-| Key Name | Type | Description |
-|--------- | ---- | ----------- |
-| length | float | length, in millimeters |
-| width | float | width, in millimeters |
-| height | float | height, in millimeters |
-| constructionMaterial | tstr | materials, comma separated if multiple |
-| color | tstr | colors, comma separated if multiple |
-| serial | tstr | ANSI CTA 2063-A Serial Number |
-| manufacturer | tstr | manufacturer name |
-| make | tstr | aircraft make |
-| model | tstr | aircraft model |
-| dryWeight | float | weight of aircraft with no payloads |
-| numRotors | int | Number of rotators |
-| propLength | float | Length of props, in centimeters |
-| numBatteries | int | |
-| batteryCapacity | float | in milliampere hours |
-| batteryWeight | float | in kilograms |
-| batteryVoltage | float | in volts |
-| batteryChemistry | tstr | |
-| maxTakeOffWeight | float | in kilograms |
-| maxPayloadWeight | float | in kilograms |
-| maxFlightTime | float | in minutes |
-| minOperatingTemp | float | in Celsius |
-| maxOperatingTemp | float | in Celsius |
-| ipRating | tstr | standard IP rating |
-| engineType | tstr | |
-| fuelType | tstr | |
-| fuelCapacity | float | in liters |
-| previousSerial | tstr | legacy serial number(s) |
-
 ### Endorsement Fields {#endorsement-fields}
 
 This document requests a new registry for Endorsement fields under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
@@ -1114,21 +861,6 @@ HDA: 0014
 RAA: 000a
 Prefix: 2001003
 FQDN: c4651542a33fdc26.05.0014.000a.2001003.example.com
-~~~~
-
-## UAS Serial Number {#sn-fqdn}
-
-> Author Note: with the proposal to remove solving the issue of putting Serial Numbers into DNS from this document, this section is removed and part of a new document.
-
-> {id}.{length}.{manufacturer-code}.{apex}.
-
-~~~~
-Apex: .sn.uas.icao.arpa.
-Serial: MFR0ADR1P1SC00L
-Manufacturer Code: MFR0
-Length: A
-ID: DR1P1SC00L
-FQDN: dr1p1sc00l.a.mfr0.sn.uas.icao.arpa.
 ~~~~
 
 # DRIP Endorsements for UAS {#drip-endorsements}
@@ -1303,63 +1035,6 @@ TODO
 {:fig #be-cbor title="Broadcast Endorsement CBOR"}
 
 # DNS Examples
-
-> Author Note: with the proposal to remove solving the issue of putting Serial Numbers into DNS from this document, Serial Numbers section is removed and part of a new document.
-
-## Serial Method 1 {#dns-s1}
-
-~~~~text
-@ORIGIN mfr0.uas-sn.arpa
-example1.8 IN URI ( https://example.com/sn/EXAMPLE1 )
-~~~~
-
-## Serial Method 2 {#dns-s2}
-
-~~~~text
-@ORIGIN mfr0.uas-sn.arpa
-example2.8 IN PTR 
-6.5.d.7.7.6.b.4.2.1.1.9.e.c.3.f.5.0.7.f.2.7.8.e.3.3.0.0.1.0.0.2.ip6.arpa
-
-@ORIGIN 7.f.2.7.8.e.3.3.0.0.1.0.0.2.ip6.arpa
-6.5.d.7.7.6.b.4.2.1.1.9.e.c.3.f.5.0 IN DET 
-( 20010033e872f705f3ce91124b677d65 0 1 "MFR MFR0" "MFR08EXAMPLE2" ... )
-6.5.d.7.7.6.b.4.2.1.1.9.e.c.3.f.5.0 IN HIP 
-( 5 20010033e872f705f3ce91124b677d65 ... )
-6.5.d.7.7.6.b.4.2.1.1.9.e.c.3.f.5.0 IN URI 
-( https://example.com/sn/EXAMPLE2 )
-~~~~
-
-## Serial Method 3 {#dns-s3}
-
-~~~~text
-@ORIGIN mfr0.uas-sn.arpa
-example3.8 IN PTR
-2.1.1.1.2.4.0.7.b.2.a.f.1.b.4.8.5.0.7.f.2.7.8.e.3.3.0.0.1.0.0.2.ip6.arpa
-
-@ORIGIN 7.f.2.7.8.e.3.3.0.0.1.0.0.2.ip6.arpa
-2.1.1.1.2.4.0.7.b.2.a.f.1.b.4.8.5.0 IN DET 
-( 20010033e872f70584b1fa2b70421112 0 1 "MFR MFR0" "MFR08EXAMPLE3" ...)
-2.1.1.1.2.4.0.7.b.2.a.f.1.b.4.8.5.0 IN HIP 
-( 5 20010033e872f70584b1fa2b70421112 ... )
-2.1.1.1.2.4.0.7.b.2.a.f.1.b.4.8.5.0 IN URI 
-( https://example.com/sn/EXAMPLE3 )
-~~~~
-
-## Serial Method 4 {#dns-s4}
-
-~~~~text
-@ORIGIN mfr0.uas-sn.arpa
-example4.8 IN PTR
-e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0.7.f.2.7.8.e.3.3.0.0.1.0.0.2.ip6.arpa
-
-@ORIGIN 7.f.2.7.8.e.3.3.0.0.1.0.0.2.ip6.arpa
-e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0 IN DET 
-( 2001003fff800005ba8af5252a35030e 0 1 "MFR MFR0" "MFR08EXAMPLE4" ... )
-e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0 IN HIP 
-( 5 2001003fff800005ba8af5252a35030e ... )
-e.0.3.0.5.3.a.2.5.2.5.f.a.8.a.b.5.0 IN URI 
-( https://example.com/sn/EXAMPLE4 )
-~~~~
 
 ## Operator {#dns-op}
 
