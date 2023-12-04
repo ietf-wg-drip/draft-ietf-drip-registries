@@ -622,7 +622,7 @@ The specific contents of this field are not defined here, but a recommendation/e
 
 #### Serial Number {#rr-sn}
 
-This field is an fixed length ASCII encoded string of 20 bytes null padded. When not included the field MUST be filled with nulls.
+This field is an fixed length ASCII encoded string of 20 bytes null padded {{CTA2063A}}. When not included the field MUST be filled with nulls.
 
 This covers the "public mapping to DET" when a user/manufacturer already has a Serial Number that can not change and wishes to do DRIP Authentication.
 
