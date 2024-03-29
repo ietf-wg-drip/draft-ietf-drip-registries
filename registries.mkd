@@ -497,7 +497,7 @@ This covers the "public mapping to DET" when a user/manufacturer already has a S
 
 #### Endorsement {#rr-endorsement}
 
-This field is the binary encoded Broadcast Endorsement ({{be}}) of the DET. This object is a fixed length of 136 bytes.
+This field is the binary encoded Broadcast Endorsement ({{be}}) of the DET. This object is a fixed length of 136 bytes. A special case for the Apex is that the Broadcast Endorsement is filled with its own DET and HI as evidence (i.e. a self-signed Broadcast Endorsement).
 
 # Endorsements
 
