@@ -306,7 +306,7 @@ The interface between a DIA and an RDDS is out of scope for this document.
 The general process for a registering party is as follows:
 
 1. Verify inputs (such as Endorsement(s)) from registering party
-2. Check for collision of DET and HI
+2. DPA checks for collision of DET and HI
 3. Populate Registry/Name Server with resource record(s)
 4. Populate RDDS via DIA with PII and other info
 5. Generate and return Endorsement(s)
@@ -318,7 +318,7 @@ In the following subsections an abbreviated form of {{dime-arch}} seen below in 
     |  Client  |
     +--o---o---+
        |   ^
-   (a) |   | (b)
+ (1,2) |   | (5)
        |   |
 *******|***|*****************************
 *      |   |      DIME                  *
@@ -326,9 +326,9 @@ In the following subsections an abbreviated form of {{dime-arch}} seen below in 
 *      v   |             +----------+   *
 *   +--o---o--+          |          |   *
 *   |   DPA   o--------->o          |   *
-*   +----o----+   (d)    |          |   *
+*   +----o----+   (4)    |          |   *
 *        |               |          |   *
-*        | (c)           | DIA/RDDS |   *
+*        | (3)           | DIA/RDDS |   *
 *        v               |          |   *
 *   +----o--------+      |          |   *
 *   | Registry/NS |      |          |   *
@@ -337,7 +337,7 @@ In the following subsections an abbreviated form of {{dime-arch}} seen below in 
 *                                       *
 *****************************************
 ~~~~
-{:fig #process-example title="Example Registration Architecture"}
+{:fig #process-example title="Example Registration Architecture & Process"}
 
 ## DET Registration Data Model {#det-reg-model}
 
