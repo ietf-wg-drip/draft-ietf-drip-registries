@@ -152,7 +152,7 @@ HDAs        |  HDA  |
 
 ## Apex
 
-The Apex is a special DIME role that holds the values of RAA=0-3 and HDA=0. It serves as the branch point from the larger DNS system in which DETs are defined. The Apex is the owner of the IPv6 prefix portion of the DET associated with it (2001:30/28) which is assigned by IANA from the special IPv6 address space for ORCHIDs.
+The Apex is a special DIME role that holds the values of RAA=0-3 and HDA=0. It serves as the branch point from the larger DNS system in which DETs are defined. The Apex is the owner of the IPv6 prefix portion of the DET associated with it (`2001:30/28`) which is assigned by IANA from the special IPv6 address space for ORCHIDs.
 
 The Apex manages all delegations and allocations of the DET's RAA to various parties. Allocations of RAAs SHOULD be done in contiguous groups of 4.
 
