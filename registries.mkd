@@ -441,7 +441,11 @@ Each national aviation authority SHOULD be responsible for the operation of the 
 
 DNSSEC is strongly RECOMMENDED (especially for RAA-level and higher zones). When a DIME decides to use DNSSEC they SHOULD define a framework for cryptographic algorithms and key management {{RFC6841}}. This may be influenced by frequency of updates, size of the zone, and policies.
 
-## DRIP Entity Tags
+Static UAS specific information that is publicly available MAY also be stored in DNS but is out of scope for this document.
+
+> Author Note: proposal for a UAS RR that is a CBOR map of static UAS data elements (UAS ID, UAS Type, Self Description, etc.)
+
+## DRIP Entity Tags {#det-dns}
 
 The REQUIRED mechanism is to place any information into `ip6.arpa` when using a DET. Since the DET is an IPv6 address it can be nibble-reversed and used in the zone, per standard conventions.
 
