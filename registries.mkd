@@ -415,7 +415,7 @@ For Session ID & Authentication use of a DET, registration requires the followin
 
 # Differentiated Access Process {#dap}
 
-Per {{RFC9434}} all information classified as public is stored in a datastore protected using some form of differentiated access (i.e. AAA) to satisfy REG-2 from {{RFC9153}}.
+Per {{RFC9434}} all information classified as private is stored in a datastore protected using some form of differentiated access (i.e. AAA) to satisfy REG-2 from {{RFC9153}}.
 
 Differentiated access, as a process, is a requirement for DIMEs as defined in {{RFC9153}} by the combination of PRIV-1, PRIV-3, PRIV-4, REG-2 and REG-4. {{RFC9434}} further elaborates on the concept by citing RDAP (from {{RFC7480}}, {{RFC9082}} and {{RFC9083}}) as a potential means of fulfilling this requirement.
 
