@@ -779,6 +779,7 @@ FQDN: c4651542a33fdc26.05.0014.000a.2001003.example.com
 
 ~~~~
 self_endorsement = {
+    e_type: number = 0
     scope: {
 
         vnb: number,
@@ -850,6 +851,7 @@ TODO
 
 ~~~~
 broadcast_endorsement = {
+    e_type: number = 4
     scope: {
         vnb: number,
         vna: number
