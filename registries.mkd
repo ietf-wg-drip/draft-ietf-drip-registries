@@ -762,29 +762,6 @@ FQDN: c4651542a33fdc26.05.0014.000a.2001003.example.com
 
 # DRIP Endorsements for UAS {#drip-endorsements}
 
-## Generic Endorsement {#ge}
-
-~~~~
-generic_endorsement = {
-    scope: {
-        vnb: number,
-        vna: number
-    },
-    evidence: bstr,
-    endorser: {
-        identity: {
-            hhit: bstr .size 16
-        },
-        signature: {
-            sig: bstr
-        }
-    }
-}
-~~~~
-{:fig #ge-cddl title="Generic Endorsement CDDL"}
-
-`evidence` is a binary string with specified contents (in format and ordering) by specific use-cases. As an example this format is used by {{drip-auth}} to support Authentication over F3411 constrained links. `evidence` data is defined by {{drip-auth}} for DRIP Wrapper, Manifest and Frame formats.
-
 ## Self Endorsement {#se}
 
 ~~~~
