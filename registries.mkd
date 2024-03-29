@@ -191,7 +191,7 @@ The RAA range of 4 (0x0004) to 3999 (0x0F9F) are reserved for CAAs using the ISO
 
 As an example the United States has an ISO 3166-1 Numeric Code of 840. This derives the following RAAs: 3360, 3361, 3362 and 3363.
 
-<!-- A table of current ISO 3166-1 countries and their RAA allocations are found in {{inn-allocations}}. -->
+It should be noted that the range of codes from 900 to 999 are defined (by ISO 3166-1) as "user assigned code elements" and do not have specific claimants predefined in the RAA space. Withdrawn and other special codes also do not have predetermined claimants.
 
 It should be noted that the range of codes from 900 to 999 are defined as "user assigned code elements" without specific claimant predefined in the RAA space. Withdrawn and other special codes also do not have predetermined claimants.
 
