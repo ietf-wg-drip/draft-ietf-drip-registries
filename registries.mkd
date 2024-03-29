@@ -301,29 +301,23 @@ The interface between a DIA and an RDDS is out of scope for this document.
 
 The general process for a registering party is as follows:
 
-1. Verify input Endorsement(s) from registering party
+1. Verify inputs (such as Endorsement(s)) from registering party
 2. Check for collision of DET and HI
 3. Populate Registry/Name Server with resource record(s)
 4. Populate RDDS via DIA with PII and other info
 5. Generate and return Endorsement(s)
 
-In the following subsections an abbreviated form of {{dime-arch}} using co-located components is used to describe the flow of information. The data elements being transmitted between entities is marked accordingly in each figure for the specific examples.
-
-Each section has an associated appendix ({{dns-examples}}) containing DNS examples.
-
-## Operator
-
-Provided either by USS or CAA run HDAs. Regulation might require interaction between them. An Operator can request that certain information normally generated and provisioned into DNS be omitted due to privacy concerns.
+In the following subsections an abbreviated form of {{dime-arch}} seen below in {{process-example}} uses co-located components to describe the flow of information. Each section gives specific example details for the components, interfaces and data elements. Each section has an associated appendix ({{dns-examples}}) containing DNS examples.
 
 ~~~~
     +----------+
-    | Operator |
+    |  Client  |
     +--o---o---+
        |   ^
    (a) |   | (b)
        |   |
 *******|***|*****************************
-*      |   |    DIME:HDA                *
+*      |   |      DIME                  *
 *      |   |                            *
 *      v   |             +----------+   *
 *   +--o---o--+          |          |   *
@@ -338,135 +332,86 @@ Provided either by USS or CAA run HDAs. Regulation might require interaction bet
 *                        +----------+   *
 *                                       *
 *****************************************
-
-(a) Operator Information,
-    Operator Self-Endorsement
-(b) Success Code,
-    Generic Endorsement: HDA on Operator
-(c) HIP RR, DET RR, TLSA RR, URI RR, PTR RR
-(d) Operator Information
-
-Note: (c) MAY be requested by the Operator 
-      to be omitted due to PII concerns.
 ~~~~
-{:fig #dime-operator-example title="Example DIME:HDA with Operator (DET) Registration"}
+{:fig #process-example title="Example Registration Architecture"}
 
-The definition of Operator Information is out of scope of this document and left to local regulations (both in its format and contents).
+## DET Registration Data Model {#det-reg-model}
 
-## Session ID
-
-Session IDs are generally handled by HDAs. In {{dime-sid-example}} the UAS comprises of an unmanned aircraft and a Ground Control Station (GCS). Both parties are involved in the registration process.
+The following is the general data model for DET registration data to be sent to the DPA from a client. This model is defined for and used by {{det-auth-reg}}, {{det-id-reg}} and {{det-id-auth-reg}}.
 
 ~~~~
-    +---------+
-    |   UAS   |
-    +--o---o--+
-       |   ^
-   (a) |   | (b)
-       |   |
-*******|***|*****************************
-*      |   |    DIME: HDA               *
-*      |   |                            *
-*      v   |             +----------+   *
-*   +--o---o--+          |          |   *
-*   |   DPA   o--------->o          |   *
-*   +----o----+   (d)    |          |   *
-*        |               |          |   *
-*        | (c)           | DIA/RDDS |   *
-*        v               |          |   *
-*   +----o--------+      |          |   *
-*   | Registry/NS |      |          |   *
-*   +-------------+      |          |   *
-*                        +----------+   *
-*                                       *
-*****************************************
-
-(a) Mutual Endorsement: HDA on GCS,
-    Generic Endorsement: GCS on UA,
-    Session ID Information
-(b) Success Code,
-    Broadcast Endorsement: HDA on UA,
-    Generic Endorsement: HDA on UAS
-(c) HIP RR, DET RR, TLSA RR, URI RR, PTR RR
-(d) Session ID Information
-~~~~
-{:fig #dime-sid-example title="Example DIME:HDA with Session ID (DET) Registration"}
-
-Through mechanisms not specified in this document the Operator should have methods (via the GCS) to instruct the unmanned aircraft onboard systems to generate a keypair, DET and `Self-Endorsement: UA`. The `Self-Endorsement: UA` is extracted by the Operator onto the GCS.
-
-The GCS is already pre-provisioned and registered to the DIME with its own keypair, DET, `Self-Endorsement: GCS` and `Generic Endorsement: HDA on GCS`. The GCS creates a new `Generic Endorsement: GCS on UA` and also creates `Mutual Endorsement: HDA on GCS`. These new endorsements along with Session ID Information are sent to the DIME via a secure channel.
-
-The GCS injects the `Broadcast Endorsement: HDA on UA` securely into the unmanned aircraft. `Endorsement: HDA on GCS` is securely stored by the GCS.
-
-> Note: in {{dime-sid-example}} the Session ID Information is expected to contain the Serial Number along with other PII specific information (such as UTM data) related to the Session ID.
-
-Session ID Information is defined as the current model:
-
-~~~~
-sessionid_info = {
-    serial: tstr .size 20,
-    session_id: tstr,
-    operational_intent: tstr,
-    intent_src: tstr,
-    operator_id: tstr,
-    session_context: tstr,
-    * tstr: any
+det_registration_info = {
+    serial_number: tstr .size 20,  ; ANSI CTA2063-A UAS Serial Number
+    uas_id: bstr .size 20,  ; UAS ID per ASTM F3411-22a Basic ID Message
+    uas_id_type: 0..15,  ; UAS ID Type per ASTM F3411-22a
+    ? key_id: bstr,
+    ? self_endorsement: bstr .size 120,
+    ? utm_binding,
+    * tstr => any
 }
+utm_binding = (
+    utm_id: bstr .size 16,  ; Operational Intent (UUIDv4)
+    utm_source: tstr  ; URI to USS with Operational Intent
+)
 ~~~~
 
-Future standards or implementations MAY add other keys to this list (for local features and/or local regulation).
+UAS ID Type (`uas_id_type`) and UAS ID (`uas_id`):
 
-### UA Based Session ID
+: defined per ASTM {{F3411}}. See {{uas-id-handling}} for handling specific instructions during registration.
 
-There may be some unmanned aircraft that have their own Internet connectivity allowing them to register a Session ID themselves without outside help from other devices such as a GCS. When such a system is in use its imperative that the Operator has some method to create the `Generic Endorsement: Operator on UA` to send to the DIME. The process and methods to perform this are out of scope for this document but MUST be done in a secure fashion.
+UAS Serial Number (`serial_number`):
 
-### UAS Based Session ID
+: defined per {{CTA2063A}}. Other UAS Serial Number formats (considered legacy) are out of scope for this document.
 
-Most unmanned aircraft will not have their own Internet connectivity but will have a connection to a GCS. Typically a GCS is an application on a user device (such as smartphone) that allow the user to fly their aircraft. For the Session ID registration the DIME MUST be provided with an `Generic Endorsement: GCS on UA` which implies there is some mechanism extracting and inserting information from the unmanned aircraft to the GCS. These methods MUST be secure but are out of scope for this document.
+UTM Assigned ID (`utm_id`):
 
-With this system it is also possible to have the GCS generate the DET based Session ID and insert it securely into the unmanned aircraft after registration is done. This is NOT RECOMMENDED as this invalidates the objective of the asymmetric cryptography in the underlying DET as the private key MAY get in the possession of another entity other than the unmanned aircraft. See {{det-gen-concern}} for more details.
+: also known as an Operational Intent, defined per ADD-UTM-REF and ASTM {{F3411}} as a UUIDv4.
 
-## Child DIME
+Self Endorsement (`self_endorsement`):
 
-Handled by the Apex and RAA's. This is an endpoint that handles dynamic registration (or key roll-over) of lower-level DIMEs (RAAs to Apex and HDAs to RAAs) in the hierarchy.
+: defined per {{endorsements}} and {{se}}. See {{se-handling}} for handling specific instructions during registration.
 
-~~~~
-    +---------------+
-    |   DIME: HDA   |
-    +--o---o--------+
-       |   ^
-   (a) |   | (b)
-       |   |
-*******|***|*****************************
-*      |   |    DIME: RAA               *
-*      |   |                            *
-*      v   |             +----------+   *
-*   +--o---o--+          |          |   *
-*   |   DPA   o--------->o          |   *
-*   +----o----+   (d)    |          |   *
-*        |               |          |   *
-*        | (c)           | DIA/RDDS |   *
-*        v               |          |   *
-*   +----o--------+      |          |   *
-*   | Registry/NS |      |          |   *
-*   +-------------+      |          |   *
-*                        +----------+   *
-*                                       *
-*****************************************
+It is RECOMMENDED that the information above is signed over in some way to ensure integrity of the registration data. A recommended way to do this is with a JWT ({{RFC7519}}) or CWT ({{RFC8392}}) using the clients key.
 
-(a) Self-Endorsement: HDA,
-    HDA Information or
-    Generic Endorsement: old HDA, new HDA
-(b) Success Code,
-    Broadcast Endorsement: RAA on HDA
-(c) HIP RR, DET RR, TLSA RR, URI RR, PTR RR
-(d) HDA Information
-~~~~
-{:fig #dime-hda-example title="Example DIME:RAA with DIME:HDA Registration"}
+### UAS ID Handling {#uas-id-handling}
 
-It should be noted that this endpoint DOES NOT hand out dynamically RAA/HDA values to systems that hit the endpoint. This is done out-of-band through processes specified by local regulations and performed by cognizant authorities. The endpoint MUST NOT accept queries it is not previously informed of being expected via mechanisms not defined in this document.
+The `uas_id_type` field MUST be set to same UAS ID Type in the ASTM {{F3411}} Basic ID Message to ensure proper decoding of the `uas_id` field.
 
-It is OPTIONAL to implement this endpoint. This MAY be used to handle lower-level DIME key roll-over.
+The `uas_id` field MUST be set with the octets found in the ASTM {{F3411}} Basic ID Message UAS ID field. By using identical contents of the Basic ID Message the Specific Session ID Type octet (the first octet in the UAS ID when using UAS ID Type is `0x4`) is preserved. When a DET is used a Session ID, the value of this first octet MUST be `0x01`.
+
+### Self Endorsement {#se-handling}
+
+The `self_endorsement` is included when a DET is used either as a Session ID (in `uas_id`) or for Authentication (in `key_id`).
+
+The value is verified by the DPA and its contents used to generate a Broadcast Endorsement for use in {{drip-auth}} and put into DNS.
+
+### Service Tuple
+
+Five critical pieces of information are required to provide the services listed in {{intro-concept}} that make a tuple. These are: UAS ID, UAS ID Type, UAS Serial Number, Key ID and UTM Assigned ID. The UAS ID, UAS ID Type and UAS Serial Number fields are mandatory and MUST NOT be null for entry as defined .
+
+This tuple encodes the services that the specific registration is being used. A few examples can be seen in the table below.
+
+| Service                         | UAS ID            | UAS ID Type | UAS Serial Number | Key ID | UTM Assigned ID |
+| ------------------------------- | ----------------- | ----------- | ----------------- | ------ | --------------- |
+| DET Authentication              | TEST3ABC          | 0x1         | TEST3ABC          | DET    | -               |
+| DET Session ID                  | 0x1 + DET         | 0x4         | TEST3ABC          | -      | -               |
+| DET Session ID + Authentication | 0x1 + DET         | 0x4         | TEST3ABC          | DET    | -               |
+
+As this document focuses on DETs exclusively the use of the Key ID using other cryptographic identifiers and how to distinguish between them (such as how UAS ID and UAS ID Type is used) is out of scope of this document.
+
+## DET Authentication {#det-auth-reg}
+
+For Authentication use of a DET, registration requires the following additional data elements: `key_id`, `self_endorsement`. {{se-handling}} MUST be followed.
+
+## DET Session ID {#det-id-reg}
+
+For the registration of a DET as a Session ID the client is typically the UAS. The mechanisms of how the UAS generates a DET are out of scope for this document.
+
+For Session ID use of a DET, registration requires the following additional data elements: `self_endorsement`. Both {{uas-id-handling}} and {{se-handling}} MUST be followed.
+
+## DET Session ID & Authentication {#det-id-auth-reg}
+
+For Session ID & Authentication use of a DET, registration requires the following additional data elements: `key_id`, `self_endorsement`. Both {{uas-id-handling}} and {{se-handling}} MUST be followed.
 
 # Differentiated Access Process {#dap}
 
