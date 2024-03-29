@@ -720,7 +720,7 @@ DETs are built upon asymmetric keypairs. As such the public key must be revealed
 
 While unlikely the forging of a corresponding private key is possible if given enough time (and computational power). As such it is RECOMMENDED that the public key for any DET not be exposed in DNS (using the HIP RR) until it is required.
 
-Optimally this requires the UAS somehow signal the DIME that a flight using a specific Session ID is underway or complete. It may also be facilitated under UTM if the USS (which may or may not be a DIME) signals when a given operation using a Session ID goes active.
+Optimally this requires the UAS somehow signal the DIME that a flight using a Specific Session ID is underway or complete. It may also be facilitated under UTM if the USS (which may or may not be a DIME) signals when a given operation using a Session ID goes active.
 
 # Contributors
 
