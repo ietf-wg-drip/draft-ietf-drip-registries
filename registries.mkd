@@ -64,7 +64,7 @@ informative:
         org: "Consumer Technology Association (CTA)"
         target: https://shop.cta.tech/products/small-unmanned-aerial-systems-serial-numbers
         date: 2019-09
-    NPRM:
+    FAA-RID-NPRM:
         title: "Notice of Proposed Rule Making on Remote Identification of Unmanned Aircraft Systems"
         author:
         org: "United States Federal Aviation Administration (FAA)"
@@ -809,7 +809,7 @@ This attribute could also allow for a single DIME to be "federated" across multi
 
 > Author Note: is this section valid anymore? Perhaps we hard specify that devices ONLY generate on their own hardware instead of "out-sourcing" as this section implies.
 
-Under the FAA {{NPRM}}, it is expecting that IDs for UAS are assigned by the UTM and are generally one-time use. The methods for this however are unspecified leaving two options.
+Under the FAA {{FAA-RID-NPRM}}, it is expecting that IDs for UAS are assigned by the UTM and are generally one-time use. The methods for this however are unspecified leaving two options.
 
 Option 1:
 
