@@ -213,42 +213,44 @@ An RAA may assign a block of values to an individual organization. This is compl
 
 # DIME Architecture {#dime-arch}
 
-The DIME, in any of its roles ({{dime-roles}}), is comprised of a number of logical components that are depicted in {{dime-arch-fig}}. Any of these components could be delegated to other entities as a service both co-located or remote. For example:
+The DIME, in any of its roles ({{dime-roles}}), is comprised of a number of logical components that are depicted in {{dime-arch-fig}}. Any of these components could be delegated to other entities as a service both co-located or remote.
 
-- The Name Server component could be handled by a well-established DNS registrar/registry with the DRIP Provisioning Agent (DPA) ({{dpa}}) interfacing to them
-  - Either the DPA or the Registry/Name Server interfaces to the DRIP Information Agent (DIA)
-- The DPA, Registry, and Name Server may all be co-located in one implementation with an interface to a DIA offered by another organization from any one of the co-located components
+Interfaces with a specific transport requirement (such as HTTPS) are labeled accordingly. Interfaces not labeled can be implementation specific or proprietary due to co-location of components. For example the interface between the DPA and Registry/Name Server, when delegated, might be Extensional Provisioning Protocol (EPP) {{RFC5730}} (due to Registry/Name Server requirements) while implementations co-locating these components might use an internal code library. These non-labeled interfaces are out of scope for this document.
 
 ~~~~
 +--------------------+
 | Registering Client |
 +---------o----------+
-          | 
-**********|******************************************************
-*         |     DRIP Identity Management Entity (DIME)          *
-*         |                                                     *
-*  +------o-------+      +-------------+      +--------------+  *
-*  | DRIP         |      |             |      |              |  *
-*  | Provisioning o------o             |      |              |  *
-*  | Agent (DPA)  |      |             |      |              |  *
-*  +-------o------+      |             |      |              |  *
-*          |             |             |      |              |  *
-*          |             | DRIP        |      | Registration |  *
-*  +-------o--+          | Information o------o Data         |  *
-*  | Registry o----------o Agent (DIA) |      | Directory    |  *
-*  +-------o--+          |             |      | Service      |  *
-*          |             |             |      | (RDDS)       |  *
-*          |             |             |      |              |  *
-*  +-------o----------+  |             |      |              |  *
-*  | Name Server (NS) |  |             |      |              |  *
-*  +------o-----------+  +-----o-------+      +------o-------+  *
-*         |                    |                     |          * 
-*         |                    |                     |          *
-**********|********************|*********************|***********
-          |                    |                     |
-          |            +-------o-------+             |
-          '------------o Lookup Client o-------------'
-                       +---------------+
+          |
+          | HTTPS
+          |
+**********|*********************************************************
+*         |       DRIP Identity Management Entity (DIME)           *
+*         |                                                        *
+*  +------o-------+         +-------------+      +--------------+  *
+*  | DRIP         |         |             |      |              |  *
+*  | Provisioning o---------o             |      |              |  *
+*  | Agent (DPA)  |         |             |      |              |  *
+*  +-------o------+         |             |      |              |  *
+*          |                |             |      |              |  *
+*          |                | DRIP        |      | Registration |  *
+*          |                | Information o------o Data         |  *
+*          |                | Agent (DIA) |      | Directory    |  *
+*          |                |             |      | Service      |  *
+*  +-------o----------+     |             |      | (RDDS)       |  *
+*  |     Registry     |     |             |      |              |  *
+*  |        /         |     |             |      |              |  *
+*  | Name Server (NS) |     |             |      |              |  *
+*  +------o-----------+     +-----o-------+      +--------------+  *
+*         |                       |                                * 
+*         |                       |                                *
+**********|***********************|*********************************
+          |                       |
+          | TCP/UDP               | RDAP
+          |                       |
+          |               +-------o-------+
+          '---------------o Lookup Client |
+                          +---------------+
 ~~~~
 {:fig #dime-arch-fig title="DIME Logical Components"}
 
