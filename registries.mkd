@@ -283,63 +283,21 @@ The Registry is the component that interfaces the DIME into the DNS hierarchy an
 
 ## DRIP Information Agent (DIA) & Registration Data Directory Service (RDDS) {#dia}
 
-The DIA is the main component handling requests for information from entities outside of the DIME. Typically this is when an Observer looks up a Session ID from an UA and gets pointed to the DIA to obtain information not available publicly (i.e. via DNS).
+The DIA is the main component handling information ingress (via registration) and egress (via lookup) of the RDDS.
 
-The information contained in the DIA is generally more oriented around the Operator of a given UAS and is thus classified as Personally Identifiable Information (PII). To protect the privacy of an Operator of the UAS this information is not publicly accessible and is only available behind policy driven differentiated access mechanisms (see {{dap}}).
+The DIA:
 
-For DRIP, the Registration Data Access Protocol (RDAP) ({{RFC7480}}, {{RFC9082}} and {{RFC9083}}) is the selected protocol to provide policy driven differentiated access for queries of information from clients.
+- MUST have an access controlled interface for add/delete/update of information that MAY be publicly available
+  - this interface definition is out of scope for this document
+- MUST have an access controlled interface to query for information that MAY be publicly available
+  - if this interface is publicly available it MUST use Registration Data Access Protocol (RDAP) ({{RFC7480}}, {{RFC9082}} and {{RFC9083}})
+  - if this interface is not publicly available its specification is out of scope for this document
 
-There MUST be a standardized interface for the DPA or Registry to add, update or delete information into the DIA. Specific details for these interfaces are out of scope for this document.
+Certain information stored within the RDDS, due to policy, may be considered PII and MUST be protected from access using AAA (for example using XACML). See {{dap}} for more information.
 
-An interface defined by the Registration Data Directory Service (RDDS) ({{rdds}}) is also required as specified by the RDDS.
+The interface between a DIA and an RDDS is out of scope for this document.
 
-~~~~
-                         +-----+
-                         | DPA |
-                         +--o--+
-                            |
-                            |
-                            | TBD
-                            |
-  +----------+    TBD    +--o--+             +------+
-  | Registry o-----------o DIA o-------------o RDDS |
-  +----------+           +--o--+     TBD     +------+
-                            |
-                            |
-                       RDAP |
-                            |
-                    +-------o-------+
-                    | Lookup Client |
-                    +---------------+
-~~~~
-{:fig #dia-figure title="DIA Interface Mapping"}
-
-## Registration Data Directory Service (RDDS) {#rdds}
-
-This is the primary information database for the DIA. An interface MUST be provided to the DIA but its specification is out of scope for this document.
-
-~~~~
-   +-----+
-   | DIA |
-   +--o--+
-      |
-      |
-      | TBD
-      |
-  +---o--+
-  | RDDS |
-  +--o---+
-     |
-     |
-     | RDAP
-     |
-+----o----------+
-| Lookup Client |
-+---------------+
-~~~~
-{:fig #rdds-figure title="RDDS Interface Mapping"}
-
-# Registration/Provisioning Process
+# Registration Process
 
 The general process for a registering party is as follows:
 
