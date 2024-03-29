@@ -377,6 +377,8 @@ Self Endorsement (`self_endorsement`):
 
 It is RECOMMENDED that the information above is signed over in some way to ensure integrity of the registration data. A recommended way to do this is with a JWT ({{RFC7519}}) or CWT ({{RFC8392}}) using the clients key.
 
+Other data elements MAY be added to this model. A DIME MUST have a public API detailing additional elements expected for their implementations. These elements and reference is out of scope for this document.
+
 ### UAS ID Handling {#uas-id-handling}
 
 The `uas_id_type` field MUST be set to same UAS ID Type in the ASTM {{F3411}} Basic ID Message to ensure proper decoding of the `uas_id` field.
