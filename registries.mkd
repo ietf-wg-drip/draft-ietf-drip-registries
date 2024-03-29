@@ -266,58 +266,22 @@ The DPA:
 
 Specific details of the public HTTPS interface (such as advertisement) is out of scope for this document.
 
+## Registry & Name Server (NS) {#nameserver}
 
-There MAY be interface from the Registry to a DRIP Information Agent ({{dia}}) as defined by the DIA.
+The Registry & Name Server component handles all the required DNS based requirements of the DIME to function. This includes the registration and maintenance of various DNS Resource Records used in public lookups.
 
-~~~~
-    +-----+
-    | DPA |
-    +--o--+
-       |
-       | HTTPS or EPP
-       |
-       |
-+------o---+           +-----+
-| Registry o-----------o DIA |
-+-----o----+    TBD    +-----+
-      |
-      |
-      | TBD
-      |
-  +---o--+
-  |  NS  |
-  +------+
-~~~~
-{:fig #registry-figure title="Registry Interface Mapping"}
+The Registry:
 
-## Name Server (NS) {#nameserver}
+- MUST provide an interface (for example EPP) for management of DNS functions
+- MUST provide a standard DNS query interface
 
-The interface of the Name Server to any component (nominally the Registry) in a DIME is out of scope as typically they are implementation specific.
+The detailed specification of either interface is out of scope for this document.
+
+The Registry is the component that interfaces the DIME into the DNS hierarchy and thus operation SHOULD follow best common practices, specifically in security (such as running DNSSEC) as appropriate. Specific instruction for operating a Registry & Name Server is out of scope for this document. However the following references are presented as pointers to material that might be useful: TODO: add list of useful RFCs?
 
 > Author Note: This may be very important here as we should not preclude a USS from running his own Name Server but they are not DNS experts and will need guidance or at least pointers to it to not mess it up. Such as SOA and NS formats to allow delegation if acting as an RAA.
 
-~~~~
-+----------+
-| Registry |
-+-----o----+
-      |
-      |
-      | TBD
-      |
-  +---o--+
-  |  NS  |
-  +--o---+
-     |
-     |
-     | DNS Query/Response
-     |
-+----o----------+
-| Lookup Client |
-+---------------+
-~~~~
-{:fig #ns-figure title="Name Server Interface Mapping"}
-
-## DRIP Information Agent (DIA) {#dia}
+## DRIP Information Agent (DIA) & Registration Data Directory Service (RDDS) {#dia}
 
 The DIA is the main component handling requests for information from entities outside of the DIME. Typically this is when an Observer looks up a Session ID from an UA and gets pointed to the DIA to obtain information not available publicly (i.e. via DNS).
 
