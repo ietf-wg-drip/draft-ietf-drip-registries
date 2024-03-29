@@ -54,9 +54,12 @@ informative:
     RFC6698: # dane/tlsa
     RFC6841: # dnssec policy
     RFC7480: # rdap-http-use
+    RFC7519: # jwt
     RFC8126: # iana-guidelines
+    RFC8392: # cwt
     RFC9082: # rdap-query-format
     RFC9083: # rdap-json-responses
+    RFC9164: # cbor-ip-addr-tags
 
     CTA2063A:
         title: ANSI/CTA 2063-A Small Unmanned Aerial Systems Numbers
@@ -69,6 +72,16 @@ informative:
         author:
         org: "United States Federal Aviation Administration (FAA)"
         date: 2019-12
+    F3411:
+      title: Standard Specification for Remote ID and Tracking
+      author:
+        - 
+          org: ASTM International
+      target: https://www.astm.org/f3411-22a.html
+      date: July 2022
+      seriesinfo:
+        ASTM: F3411-22A
+        DOI: 10.1520/F3411-22A
 
 --- abstract
 
