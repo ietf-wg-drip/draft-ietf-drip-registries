@@ -869,7 +869,9 @@ broadcast_endorsement = {
 ~~~~
 {:fig #be-cddl title="Broadcast Endorsement CDDL"}
 
-Defined by {{drip-auth}} in a binary format to support Authentication over F3411 constrained links. Used in the DRIP Link format. A required output of registration to a DIME at any level. `evidence` is a binary string of the concatenation of a child entities (e.g. a UA) DET/HHIT and its associated HI. `hhit` is of the parent entity (e.g. a DIME).
+Defined by {{drip-auth}} in a binary format to support Authentication over ASTM {{F3411}} constrained links. Used in the DRIP Link format. A required output of registration to a DIME at any level. `evidence` is a binary string of the concatenation of a child entities (e.g. a UA) DET/HHIT and its associated HI. `hhit` is of the parent entity (e.g. a DIME).
+
+Note that the Endorsement Type (`e_type`) field is the same value as the SAM Type allocated to DRIP (i.e. the value 1). As such for DRIP Authentication the `e_type` field is not encoded into the binary form and is instead handled by the SAM Type of the Authentication framing.
 
 ~~~~
  0                   1                   2                   3
