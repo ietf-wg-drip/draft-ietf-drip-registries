@@ -171,6 +171,8 @@ RAA values of 0 (0x0000) to 3 (0x0003) are reserved to the Apex exclusively.
 
 The Experimental range of 16376 (0x3FF8) to 16383 (0x3FFF), eight (8) RAAs, is allocated to the DRIP working group itself. RAA 16376 is already "in use" with `driptesting.org`. The rest of the range (16377 to 16383) are reserved to be allocated by the DRIP experts to agencies that wish to test.
 
+While the individual Apexes can be designated for different purposes they share the same pool of RAAs to be allocated. Such operation would require policy by the administrator of the Apex group to avoid simultaneous allocation and is out of scope for this document.
+
 ## Registered Assigning Authority (RAA) {#raa}
 
 RAA's are the upper hierarchy in DRIP (denoted by a 14-bit field, i.e. 16,384 RAAs, of an DET). An RAA is a business or organization that manages a DIME of HDAs ({{hda}}). Most are contemplated to be Civil Aviation Authorities (CAA), such as the Federal Aviation Authority (FAA), that then delegate HDAs to manage their National Air Space (NAS). This is does not preclude other entities to operate an RAA if the Apex allows it.
