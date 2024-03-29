@@ -175,9 +175,15 @@ While the individual Apexes can be designated for different purposes they share 
 
 ## Registered Assigning Authority (RAA) {#raa}
 
-RAA's are the upper hierarchy in DRIP (denoted by a 14-bit field, i.e. 16,384 RAAs, of an DET). An RAA is a business or organization that manages a DIME of HDAs ({{hda}}). Most are contemplated to be Civil Aviation Authorities (CAA), such as the Federal Aviation Authority (FAA), that then delegate HDAs to manage their National Air Space (NAS). This is does not preclude other entities to operate an RAA if the Apex allows it.
+An RAA is a business or organization that runs a DIME to register HDAs ({{hda}}). Most are contemplated to be CAAs (using {{iso3166}}), such as the Federal Aviation Authority (FAA), that then delegate HDAs to manage their National Air Space (NAS). This is does not preclude other entities to operate an RAA if the Apex allows it.
 
-An RAA must provide a set of services to allocate HDAs to organizations. It must have a public policy on what is necessary to obtain an HDA. It must maintain a DNS zone minimally for discovering HID RVS servers. All RAA's have a single reserved HDA value: 0 (0x0000) for itself to support various functions or services. Other HDA values can be allocated or reserved per RAA policy.
+An RAA:
+
+- MUST provide a set of services to allocate HDAs to organizations
+- MUST have a public policy on what is necessary to obtain an HDA
+- SHOULD maintain a DNS zone minimally for discovering HIP RVS servers
+  
+All RAA's have a single reserved HDA value: 0 (0x0000) for itself to support various functions or services. Other HDA values can be allocated or reserved per RAA policy.
 
 ### ISO 3166-1 Numeric Nations (INN) {#iso3166}
 
