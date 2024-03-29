@@ -256,39 +256,16 @@ Interfaces with a specific transport requirement (such as HTTPS) are labeled acc
 
 ## DRIP Provisioning Agent (DPA) {#dpa}
 
-The DPA performs the important task of vetting information coming from clients wishing to register and then delegate (internally or externally) various items to other components in the DIME.
+The DPA performs the important task of vetting information coming from clients wishing to register and then delegates (internally or externally) various items to other components in the DIME. This is the primary component that handles all DRIP related cryptographic operations for incoming registrations to the DIME.
 
-A standard interface MUST be provided for clients to access. An HTTPS based interface is RECOMMENDED. This interface specification is out of scope for this document.
+The DPA:
 
-There MUST be an interface from the DPA to a Registry ({{registry}}) component which handles the DNS specific requirements of the DIME as defined by the Registry. There MAY also be interface from the DPA to a DRIP Information Agent ({{dia}}) as defined by the DIA.
+- MUST have a publicly accessible and discoverable HTTPS interface for clients to register through
+- MUST use a provided interface from a DRIP Information Agent ({{dia}})
+- MUST use a provided interface from a Registry/Name Server ({{nameserver}})
 
-~~~~
-+-------------+
-| Registering |
-|   Client    |
-+------o------+
-       |
-       | HTTPS
-       |
-       |
-    +--o--+           +-----+
-    | DPA o-----------o DIA |
-    +--o--+    TBD    +-----+
-       |
-       |
-       | HTTPS or EPP
-       |
-+------o---+
-| Registry |
-+----------+
-~~~~
-{:fig #dpa-figure title="DPA Interface Mapping"}
+Specific details of the public HTTPS interface (such as advertisement) is out of scope for this document.
 
-## Registry
-
-The Registry component handles all the required DNS based requirements of the DIME to function for DRIP. This includes the registration and maintenance of various DNS Resource Records.
-
-A standardized interface MUST be implemented for interactions with the DPA ({{dpa}}). This interface MAY be over HTTPS using JSON/CBOR encoding or MAY use the Extensional Provisioning Protocol (EPP) {{RFC5730}}. The detailed specification of either of these interfaces is out of scope for this document.
 
 There MAY be interface from the Registry to a DRIP Information Agent ({{dia}}) as defined by the DIA.
 
