@@ -193,11 +193,9 @@ As an example the United States has an ISO 3166-1 Numeric Code of 840. This deri
 
 It should be noted that the range of codes from 900 to 999 are defined (by ISO 3166-1) as "user assigned code elements" and do not have specific claimants predefined in the RAA space. Withdrawn and other special codes also do not have predetermined claimants.
 
-It should be noted that the range of codes from 900 to 999 are defined as "user assigned code elements" without specific claimant predefined in the RAA space. Withdrawn and other special codes also do not have predetermined claimants.
+How a CAA handles their allocated values are out of scope of this document. Control of these values are expected to be claimed by their respective owner. How a claim is vetted and validated is out of scope of this document. Protection against fraudulent claims of one of these values is out of scope for this document.
 
-How a CAA handles their 4 allocations are out of scope of this document. Control of these values are expected to be claimed by their respective owner. How a claim is vetted and validated is out of scope of this document. Protection against fraudulent claims of one of these values is out of scope for this document.
-
-> Note: A single entity may control more than one NAS (for example LU and BE being covered by Skeyes.be) and would manage two allocation spaces. How this is claimed and handled is out of scope for this document.
+> Informational Note: A single entity may control more than one NAS (for example LU and BE being covered by Skeyes.be) and would manage two allocation spaces. How this is claimed and handled is out of scope for this document.
 
 ## Hierarchial HIT Domain Authority (HDA) {#hda}
 
