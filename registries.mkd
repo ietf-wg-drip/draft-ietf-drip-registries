@@ -683,8 +683,10 @@ DET Status:
 | Status | Value | Description |
 | ------ | ----- | ----------- |
 | Not Defined | 0 | - |
-| Inactive | 1 | - |
-| Active | 2 | - |
+| Inactive | 1 | Default when accepted by DIME |
+| Active | 2 | Set when in use |
+| Expired | 3 | Set when past VNA |
+| Deprecated | 4 | Set when no longer in use (but not expired) |
 
 # Security Considerations
 
