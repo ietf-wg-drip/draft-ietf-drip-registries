@@ -165,26 +165,13 @@ HDAs        |  HDA  |
 
 ## Apex
 
-The Apex is a special DIME role that holds the values of RAA=0-3 and HDA=0. It serves as the branch point from the larger DNS system in which DETs are defined. The Apex is the owner of the IPv6 prefix portion of the DET associated with it (`2001:30/28`) which is assigned by IANA from the special IPv6 address space for ORCHIDs.
+The Apex is the owner of the IPv6 prefix portion of the DET associated with it which is assigned by IANA from the special IPv6 address space for ORCHIDs. It serves as the branch point from the larger DNS system in which DETs are defined. The Apex manages all delegations and allocations of RAAs to various parties. The Apex MUST reserve an allocation for itself that it MAY use.
 
-The Apex manages all delegations and allocations of RAAs to various parties. Allocations of RAAs SHOULD be done in contiguous groups of 4. This is to support the nibble reversing of the DET to be placed in DNS ({{det-dns}}).
+### DRIP Apex for UAS RID {#drip-apex}
 
-| RAA Decimal Range | RAA Hex Range | Status |
-|------------------ | ------------- | ------ |
-| 0 - 3             | 0x0000 - 0x0003 | Apex |
-| 4 - 3999          | 0x0004 - 0x0F9F | ISO 3166-1 Countries ({{iso3166}}) |
-| 4000 - 16375      | 0x1000 - 0x3FFF | Reserved |
-| 16376 - 16383     | 0x3FF8 - 0x3FFF | DRIP WG Experimental Use |
+For UAS RID the Apex manages the IPv6 prefix of `2001:30/28`. Allocations of RAAs in this prefix SHOULD be done in contiguous groups of 4. This is to support the nibble reversing of the DET to be placed in DNS ({{det-dns}}). See {{iana-apex}} for the RAA allocations.
 
-<!-- | 4000 - 4095       | 0x0FA0 - 0x0FFF | Manufacturer Code Authorities ({{irm}}) | -->
-
-> Note: that the first column of this table is *decimal* values **not** *hexadecimal*.
-
-RAA values of 0 (0x0000) to 3 (0x0003) are reserved to the Apex exclusively.
-
-The Experimental range of 16376 (0x3FF8) to 16383 (0x3FFF), eight (8) RAAs, is allocated to the DRIP working group itself. RAA 16376 is already "in use" with `driptesting.org`. The rest of the range (16377 to 16383) are reserved to be allocated by the DRIP experts to agencies that wish to test.
-
-While the individual Apexes can be designated for different purposes they share the same pool of RAAs to be allocated. Such operation would require policy by the administrator of the Apex group to avoid simultaneous allocation and is out of scope for this document.
+Values 0 (0x0000) through 3 (0x0003) MUST be reserved for the UAS RID Apex and SHOULD be used to endorse RAA delegations in Endorsements ({{endorsement}}). While the individual Apexes can be designated for different purposes they share the same pool of RAAs to be allocated. Such operation would require policy by the administrator of the Apex to avoid simultaneous allocation and is out of scope for this document.
 
 ## Registered Assigning Authority (RAA) {#raa}
 
@@ -196,7 +183,7 @@ An RAA:
 - MUST have a public policy on what is necessary to obtain an HDA
 - SHOULD maintain a DNS zone minimally for discovering HIP RVS servers
   
-All RAA's have a single reserved HDA value: 0 (0x0000) for itself to support various functions or services. Other HDA values can be allocated or reserved per RAA policy.
+All RAA's MUST have a single reserved HDA value: 0 (0x0000) for itself to support various functions or services. Other HDA values SHOULD be allocated or reserved per RAA policy.
 
 ### ISO 3166-1 Numeric Nations (INN) {#iso3166}
 
@@ -209,6 +196,10 @@ It should be noted that the range of codes from 900 to 999 are defined (by ISO 3
 How a CAA handles their allocated values are out of scope of this document. Control of these values are expected to be claimed by their respective owner. How a claim is vetted and validated is out of scope of this document. Protection against fraudulent claims of one of these values is out of scope for this document.
 
 > Informational Note: A single entity may control more than one NAS (for example LU and BE being covered by Skeyes.be) and would manage two allocation spaces. How this is claimed and handled is out of scope for this document.
+
+### Experimental {#experimental-raa}
+
+The RAA range of 16376 (0x3FF8) to 16383 (0x3FFF), eight (8) RAAs, is allocated to the DRIP working group itself as an experimental range. RAA 16376 is already "in use" with `driptesting.org`. The rest of the range (16377 to 16383) are reserved to be allocated by the DRIP experts to agencies or organizations that wish to test for a period of time.
 
 ## Hierarchial HIT Domain Authority (HDA) {#hda}
 
@@ -486,13 +477,13 @@ Endorsement = Broadcast Endorsement
 
 #### Type {#rr-type}
 
-This field is a single byte with values defined in {{det-type}}.
+This field is a single byte with values defined in {{iana-det-type}}.
 
 It is envisioned that there may be many types of DETs in use. In some cases it may be helpful to understand the DETs role in the ecosystem like described in {{drip-dki}}.
 
 #### Status {#rr-status}
 
-This field is a single byte with values defined in {{det-status}}.
+This field is a single byte with values defined in {{iana-det-status}}.
 
 A DET can go through various states during its life-cycle in the ecosystem. It is helpful for a querant to understand the current status as a further requirement for verification.
 
@@ -548,27 +539,27 @@ endorsement = {
 
 > Author Note: under review - perhaps we use arrays instead of maps for inner structs? An `e_type` MUST then hard specify elements of the array in order for each section an array is present. That or we fully simplify this structure to be 5 array elements in the following order: number (for `e_type`), bstr for scope, bstr for evidence, bstr for endorser and bstr for signature.
 
-### Endorsement Type
+### Endorsement Type {#e-type}
 
 The `e_type` is a 16-bit value used to hint at the content of the `evidence` section. Four special values (1 through 4) map to the SAM Type of the Authentication framing in {{drip-auth}}, allowing the 16-bit value to be excluded from the Endorsement structure.
 
-### Scope
+### Scope {#e-scope}
 
 The `scope` section is more formally "the scope of validity of the endorsement". The scope can come in various forms but MUST always have a "valid not before" (`vnb`) and "valid not after" (`vna`) timestamps.
 
 Other forms of the scope could for example be a 4-dimensional volume definition. This could be in raw latitude, longitude, altitude pairs or may be a URI pointing to scope information. Additional scope fields are out of scope for this document and should be defined for specific Endorsement structures if they are desired.
 
-### Evidence
+### Evidence {#e-evidence}
 
 The `evidence` section contain a byte string of evidence. Specific content of evidence (such as subfields, length and ordering) is defined in specific Endorsement structures.
 
-### Endorser
+### Endorser {#e-endorser}
 
 The `endorser` section is where the main identity information of the signer of the Endorsement is found. The identity can take many forms such as a handle to the identity (e.g. an HHIT), or can include more explicit data such as the public key (e.g. an HI). Other keys, for different identifiers, can be provided and MUST be defined in their specific Endorsement.
 
 The length of the `hi` can be determined when using `ipv6` by decoding the provided IPv6 address. The prefix will inform of the ORCHID construction being used, which informs the locations of the OGA ID in the address. The OGA ID will then inform the user of the key algorithm selected which has the key length defined. When using the `ipv6` key {{RFC9164}} MUST be followed encoding into CBOR.
 
-### Signature
+### Signature {#e-signature}
 
 The `signature` section contain the signature data for the Endorsement. The signature itself MUST be provided under the `sig` key. Other forms or data elements could also be present in the `signature` section if specified in a specific Endorsement. Signatures MUST be generated using the preceding sections in their binary forms (i.e. as a bytestring with no keys).
 
@@ -617,28 +608,40 @@ Using the invertible CBOR encoding is achieved through in-line libraries that co
 
 # IANA Considerations
 
-## Delegation of Nibble Reversed IPv6 Prefix
+## Management of DRIP Apex
 
-For DRIP to function in a interoperable way the easiest way to allow look up of DETs is through the already existing `ip6.arpa` domain structure (as defined in this document). Here IPv6 addresses are nibble reversed and usually have PTR records.
+A discussion between the authors of this document, DRIP AD and IANA was held during IETF 118. Those present were:
 
-With DRIP the prefix `2001:30/28` has been allocated by IANA already for DRIP use. However its representative reverse domain in `ip6.arpa` has not.
+- Eric Vyncke (AD of DRIP WG)
+- Bob Moskowitz ()
+- Jim Ried (Author of this RFC)
+- Adam Wiethuechter (Editor of this RFC)
+- Kim Davia (IANA)
 
-There are a number of questions in this area for DRIP:
+IANA agreed that they would be willing to manage the Apex for DRIP until the desired Apex manager, International Civil Aviation Organization (ICAO), is ready. This is expected to be in the next 5 years due to ICAO process. The hand-over to ICAO is TBD at that time but various options are available.
 
-1. What organization would have administrative control over the nibble-reversed `ip6.arpa` block for `2001:30/28`?
-   - How do they obtain this and from whom?
-   - What is the SLA between IANA/ICANN and the administrative organization for nibble-reversed `2001:30/28`?
-2. What organization would have technical control (i.e. day to day operations) over the nibble-reversed `ip6.arpa` block for `2001:30/28`?
-3. How are delegation/allocation of further nibble-reversed sub-blocks from `2001:30/28` handled by the administrative organization?
-   - This is partly covered in this document already (Apex->RAA->HDA)
-   - What is the SLA between the administrative organization and sub-organizations given delegations/allocations? This might be more general guidelines than an actual SLA?
-4. What goes into a nibble-reversed `ip6.arpa` domain for DRIP at each level?
-
-This is not an exhaustive list of questions, this is more to get discussion going.
+Further discussion of the SLA required to RAAs by IANA is and other requirements to IANA are TBD.
 
 ## IANA DRIP Registry
 
-### Endorsement Types {#endorsement-types}
+### DRIP RAA Allocations {#iana-apex}
+
+This document requests a new registry for RAA Allocations under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
+
+RAA Allocations:
+
+: a 14-bit value that is allocated in groups of 4. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values/ranges are defined:
+
+| RAA Value(s)  | Status    | Allocation                 | Reference                       |
+| ------------- | --------- | -------------------------- | ------------------------------- |
+| 0 - 3         | Allocated | UAS RID (DRIP) Apex        | This RFC ({{drip-apex}})        |
+| 4 - 3999      | Allocated | ISO 3166-1 Countries       | This RFC ({{iso3166}})          |
+| 4000 - 16375  | Reserved  | N/A                        | N/A                             |
+| 16375 - 16383 | Allocated | DRIP WG (Experimental Use) | This RFC ({{experimental-raa}}) |
+
+<!-- TODO: text on Expert Review process -->
+
+### Endorsement Types {#iana-e-types}
 
 This document requests a new registry for Endorsement Type under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
 
@@ -646,13 +649,13 @@ Endorsement Type:
 
 : A 16-bit value to provide hinting of the content of the `evidence` section of an Endorsement. Future additions to this registry are to be made through Specification Required (Section 4.3 of {{RFC8126}}) for values 0x0000 to 0xEFFF and First Come First Served (Section 4.4 of {{RFC8126}}) for the values 0xF000 to 0xFFFF. The following values are defined:
 
-| Endorsement Type | Name                     | Reference                |
-| ---------------- | ------------------------ | ------------------------ |
-| 0                | Self-Endorsement         | This RFC                 |
-| 1                | Broadcast Endorsement    | {{drip-auth}}            |
-| 2                | Wrapper                  | {{drip-auth}}            |
-| 3                | Manifest                 | {{drip-auth}}            |
-| 4                | Frame                    | {{drip-auth}}            |
+| Value | Endorsement Type         | Reference                |
+| ----- | ------------------------ | ------------------------ |
+| 0     | Self-Endorsement         | This RFC                 |
+| 1     | Broadcast Endorsement    | {{drip-auth}}            |
+| 2     | Wrapper                  | {{drip-auth}}            |
+| 3     | Manifest                 | {{drip-auth}}            |
+| 4     | Frame                    | {{drip-auth}}            |
 
 ### Endorsement Fields {#endorsement-fields}
 
@@ -662,44 +665,47 @@ Endorsement Fields:
 
 : list of field keys to be used in an Endorsement and what section(s) they can be used in. Future additions to this registry are to be made through First Come First Served (Section 4.4 of {{RFC8126}}). The following values are defined:
 
-| Field Name | Type | Useable Sections | Description |
-|----------- | ---- | ---------------- | ----------- |
-| vna        | number | scope | Valid Not After, UTC Unix Timestamp |
-| vnb        | number | scope | Valid Not Before, UTC Unix Timestamp |
-| hhit       | bstr | identity | Hierarchial Host Identity Tag (HHIT), fixed size of 16 |
-| hi         | bstr | identity | Host Identity (HI) |
-| sig        | bstr | signature | Signature |
+| Field Name | Type   | Useable Sections | Description                          | Reference                  |
+|----------- | ------ | ---------------- | ------------------------------------ | -------------------------- |
+| vna        | number | scope            | Valid Not After, UTC Unix Timestamp  | This RFC ({{e-scope}})     |
+| vnb        | number | scope            | Valid Not Before, UTC Unix Timestamp | This RFC ({{e-scope}})     |
+| ipv6       | bstr   | identity         | IPv6 Address as octets               | This RFC ({{e-endorser}})  |
+| hi         | bstr   | identity         | Host Identity (HI)                   | This RFC ({{e-endorser}})  |
+| sig        | bstr   | signature        | Signature                            | This RFC ({{e-signature}}) |
 
-### DET Type {#det-type}
+### DET Type {#iana-det-type}
 
 This document requests a new registry for DET Type under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
 
 DET Type:
 
-: numeric, 8 bit, field of the DET RR to encode the DET Type. Future additions to this registry are to be made through First Come First Served (Section 4.4 of {{RFC8126}}). The following values are defined:
+: numeric, 8 bit, field of the DET RR to encode the DET Type. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
 
-| Type | Value | Description |
-| ---- | ----- | ----------- |
-| Not Defined | 0 | - |
-| Endpoint Entity (EE) | 1 | - |
-| Issuer CA | 2 | - |
-| Authentication CA | 3 | - |
+| Value | Type                 | Description | Reference |
+| ----- | -------------------- | ----------- | --------- |
+| 0     | Not Defined          | -           | This RFC  |
+| 1     | Endpoint Entity (EE) | -           | This RFC  |
+| 2     | Issuer CA            | -           | This RFC  |
+| 3     | Authentication CA    | -           | This RFC  |
 
-### DET Status {#det-status}
+<!-- TODO: text on Expert Review process -->
+
+### DET Status {#iana-det-status}
 
 This document requests a new registry for DET Status under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
 
 DET Status:
 
-: numeric, 8 bit, field of the DET RR to encode the DET Status. Future additions to this registry are to be made through First Come First Served (Section 4.4 of {{RFC8126}}). The following values are defined:
+: numeric, 8 bit, field of the DET RR to encode the DET Status. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
 
-| Status | Value | Description |
-| ------ | ----- | ----------- |
-| Not Defined | 0 | - |
-| Inactive | 1 | Default when accepted by DIME |
-| Active | 2 | Set when in use |
-| Expired | 3 | Set when past VNA |
-| Deprecated | 4 | Set when no longer in use (but not expired) |
+| Value | Status     | Description                                 | Reference |
+| ----- | ---------- | ------------------------------------------- | --------- |
+| 0     | Inactive   | Default when accepted by DIME               | This RFC  |
+| 1     | Active     | Set when in use                             | This RFC  |
+| 2     | Expired    | Set when past VNA                           | This RFC  |
+| 3     | Deprecated | Set when no longer in use (but not expired) | This RFC  |
+
+<!-- TODO: text on Expert Review process -->
 
 # Security Considerations
 
