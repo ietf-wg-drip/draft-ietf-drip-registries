@@ -625,6 +625,22 @@ This is not an exhaustive list of questions, this is more to get discussion goin
 
 ## IANA DRIP Registry
 
+### Endorsement Types {#endorsement-types}
+
+This document requests a new registry for Endorsement Type under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
+
+Endorsement Type:
+
+: A 16-bit value to provide hinting of the content of the `evidence` section of an Endorsement. Future additions to this registry are to be made through Specification Required (Section 4.3 of {{RFC8126}}) for values 0x0000 to 0xEFFF and First Come First Served (Section 4.4 of {{RFC8126}}) for the values 0xF000 to 0xFFFF. The following values are defined:
+
+| Endorsement Type | Name                     | Reference                |
+| ---------------- | ------------------------ | ------------------------ |
+| 0                | Self-Endorsement         | This RFC                 |
+| 1                | Broadcast Endorsement    | {{drip-auth}}            |
+| 2                | Wrapper                  | {{drip-auth}}            |
+| 3                | Manifest                 | {{drip-auth}}            |
+| 4                | Frame                    | {{drip-auth}}            |
+
 ### Endorsement Fields {#endorsement-fields}
 
 This document requests a new registry for Endorsement fields under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
