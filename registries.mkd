@@ -462,13 +462,12 @@ Reverse lookups of these IPv6 addresses will translate the address into a domain
 The DET Resource Record is a metadata record for various bits of DRIP specific information that isn't available in pre-existing DNS RR Types (such as URI or HIP).
 
 ~~~~
-<domain> DET IN ( DET TYPE STATUS HID SN Endorsement )
+<domain> DET IN ( DET TYPE STATUS ABBREV Endorsement )
 
 DET = Base16 DET
 TYPE = enumeration of Type of DET
 STATUS = enumeration of Status of DET
-HID = HID Abbreviation
-SN = Serial Number
+ABBREV = HID Abbreviation
 Endorsement = Broadcast Endorsement
 ~~~~
 
@@ -484,17 +483,17 @@ This field is a single byte with values defined in {{det-status}}.
 
 A DET can go through various states during its life-cycle in the ecosystem. It is helpful for a querant to understand the current status as a further requirement for verification.
 
-#### HID Abbreviation {#rr-hid}
+#### Abbreviation {#rr-hid}
 
-This field is an fixed length ASCII encoded string of 20 bytes null padded. When not included the field MUST be filled with nulls.
+This field is an fixed length ASCII encoded string of 20 bytes null padded. When not included the field MUST be filled with nulls. It is meant to provide an abbreviation to the HID structure for display devices.
 
 The specific contents of this field are not defined here, but a recommendation/example can be found in {{hid-abbreviation}}.
 
-#### Serial Number {#rr-sn}
+<!-- #### Serial Number {#rr-sn}
 
 This field is an fixed length ASCII encoded string of 20 bytes null padded {{CTA2063A}}. When not included the field MUST be filled with nulls.
 
-This covers the "public mapping to DET" when a user/manufacturer already has a Serial Number that can not change and wishes to do DRIP Authentication.
+This covers the "public mapping to DET" when a user/manufacturer already has a Serial Number that can not change and wishes to do DRIP Authentication. -->
 
 #### Endorsement {#rr-endorsement}
 
