@@ -696,7 +696,7 @@ During key rollover the DIME MUST inform all children and parents of the change 
 
 A DET has a natural ability for a single DIME to hold different cryptographic identities under the same HID values. This is due to the lower 64-bits of the DET being a hash of the public key and the HID of the DET being generated. As such during key rollover, only the lower 64-bits would change and a check for a collision would be required.
 
-This attribute could also allow for a single DIME to be "federated" across multiple DETs sharing the same HID value. This method of deployment has not been thoroughly studied at this time. An endpoint such as in {{child-dime}} is a possible place to have these functions.
+This attribute could also allow for a single DIME to be "federated" across multiple DETs sharing the same HID value. This method of deployment has not been thoroughly studied at this time.
 
 ## DET Generation {#det-gen-concern}
 
