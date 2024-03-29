@@ -199,13 +199,17 @@ How a CAA handles their allocated values are out of scope of this document. Cont
 
 ## Hierarchial HIT Domain Authority (HDA) {#hda}
 
-An HDA may be an USS, ISP, or any third party that takes on the business to register the actual entities that need DETs. This includes, but is not limited to UA, GCS, UAS Operators and infrastructure (such as Supplemental Data Service Providers). It should also provide needed UAS services including those required for HIP-enabled devices (e.g. RVS).
+An HDA may be an USS, ISP, or any third party that takes on the business to register client entities that need DETs. This includes, but is not limited to UA, GCS, UAS Operators and UAS/UTM infrastructure (such as Supplemental Data Service Providers). It SHOULD also provide needed UAS services including those required for HIP-enabled devices (e.g. RVS).
 
-A primary function of HDAs for DRIP, in the context of UAS RID is the binding between a UAS Session ID (for DRIP the DET) and the UA Serial Number. The Serial Number MUST have its access protected to allow only authorized parties to obtain it. The Serial Number MUST be protected in a way only the authorized party can decrypt. As part of the UTM system HDAs can also hold a binding between a UAS ID (Serial Number or Session ID) and an Operational Intent. They may either be a direct logical part of a UAS Service Supplier (USS) or be a UTM wide service to USS's.
+For UAS RID, HDAs can provide any of the following services:
 
-The HDA is a 14-bit field (16,384 HDAs per RAA) of a DET assigned by an RAA.  An HDA should maintain a set of RVS servers for UAS clients that may use HIP.  How this is done and scales to the potentially millions of customers are outside the scope of this document. This service should be discoverable through the DNS zone maintained by the HDA's RAA.
+- registration and public lookup of DETs as a Key ID for Authentication as defined in {{drip-auth}}
+- registration and access controlled lookup of DETs as a pseudo-anonymous UAS Session ID
+- registration of UAS ID and UTM Operational Intent to bind them together (if allowed by cognizant authority)
 
-An RAA may assign a block of values to an individual organization. This is completely up to the individual RAA's published policy for delegation. Such policy is out of scope.
+An HDA SHOULD maintain a set of RVS servers for UAS clients that may use HIP.  How this is done and scales to the potentially millions of customers are outside the scope of this document. This service MUST be discoverable through the DNS zone maintained by the HDA's RAA.
+
+An RAA may assign a block of values to an individual organization. This is completely up to the individual RAA's published policy for delegation. Such policy is out of scope for this document.
 
 # DIME Architecture {#dime-arch}
 
