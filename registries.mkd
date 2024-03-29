@@ -513,7 +513,7 @@ The CDDL was derived from the more specific structure developed for {{drip-auth}
 
 ~~~~
 endorsement = {
-    ; TODO: add tag for self-describing type or leave up to cbor?
+    e_type: number,
     scope: {
         vnb: number,
         vna: number,
@@ -521,17 +521,23 @@ endorsement = {
     },
     evidence: bstr,
     endorser: {
-        identity: {
-            hhit: bstr .size 16, ? hi: bstr // * tstr => any
-        },
-        signature: {
-            sig: bstr,
-            * tstr => any
-        }
+        ipv6: bstr .size 16,  ; RFC9164?
+        ? hi: bstr,
+        * tstr => any
+    },
+    signature: {
+        sig: bstr,
+        * tstr => any
     }
 }
 ~~~~
 {:fig #endorsement-cddl title="Endorsement CDDL"}
+
+> Author Note: under review - perhaps we use arrays instead of maps for inner structs? An `e_type` MUST then hard specify elements of the array in order for each section an array is present. That or we fully simplify this structure to be 5 array elements in the following order: number (for `e_type`), bstr for scope, bstr for evidence, bstr for endorser and bstr for signature.
+
+### Endorsement Type
+
+The `e_type` is a 16-bit value used to hint at the content of the `evidence` section. Four special values (1 through 4) map to the SAM Type of the Authentication framing in {{drip-auth}}, allowing the 16-bit value to be excluded from the Endorsement structure.
 
 ### Scope
 
@@ -543,11 +549,11 @@ Other forms of the scope could for example be a 4-dimensional volume definition.
 
 The `evidence` section contain a byte string of evidence. Specific content of evidence (such as subfields, length and ordering) is defined in specific Endorsement structures.
 
-### Identity
+### Endorser
 
-The `identity` section is where the main identity information of the signer of the Endorsement is found. The identity can take many forms such as a handle to the identity (e.g. an HHIT), or can include more explicit data such as the public key (e.g. an HI). Other keys, for different identifiers, can be provided and MUST be defined in their specific Endorsement.
+The `endorser` section is where the main identity information of the signer of the Endorsement is found. The identity can take many forms such as a handle to the identity (e.g. an HHIT), or can include more explicit data such as the public key (e.g. an HI). Other keys, for different identifiers, can be provided and MUST be defined in their specific Endorsement.
 
-The length of the `hi` can be determined when using `hhit` by decoding the provided IPv6 address. The prefix will inform of the ORCHID construction being used, which informs the locations of the OGA ID in the address. The OGA ID will then inform the user of the key algorithm selected which has the key length defined.
+The length of the `hi` can be determined when using `ipv6` by decoding the provided IPv6 address. The prefix will inform of the ORCHID construction being used, which informs the locations of the OGA ID in the address. The OGA ID will then inform the user of the key algorithm selected which has the key length defined. When using the `ipv6` key {{RFC9164}} MUST be followed encoding into CBOR.
 
 ### Signature
 
