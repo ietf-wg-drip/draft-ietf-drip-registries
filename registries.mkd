@@ -437,17 +437,17 @@ DRIP has no intention to develop a new "art" of key management, instead hoping t
 
 Per {{RFC9434}} all information classified as public is stored in the DNS to satisfy REG-1 from {{RFC9153}}.
 
-The apex for domain names MUST be under the administrative control of ICAO, the international treaty organization providing the critical coordination platform for civil aviation. ICAO SHOULD be responsible for the operation of the DNS-related infrastructure for these domain name apexes. It MAY chose to run that infrastructure directly or outsource it to competent third parties or some combination of the two. ICAO SHOULD specify the technical and administrative criteria for the provision of these services: contractual terms (if any), reporting, uptime, SLAs (if any), DNS query handling capacity, response times incident handling, complaints, law enforcement interaction and so on.
+DIMEs MUST be responsible for the operation of the DNS-related infrastructure for domain names under DRIP. It MAY chose to run that infrastructure directly or outsource it to competent third parties or some combination of the two.
 
-The delegation of civil aviation authorities to RAAs is already done per {{iso3166}} using their ISO 3166-1 Numeric Codes. Since these are public, any entity can stand up an RAA with that value. ICAO SHOULD be the root of trust in a Endorsement or certificate chain that provides validation of any of these specific RAAs, in the ISO RAA range, thus protecting against bad actors standing up fraudulent RAAs. This also ensures DRIP complies with national law and regulation since these are matters of national sovereignty.
-
-Each national aviation authority SHOULD be responsible for the operation of the DNS-related infrastructure for their delegated subdomains. As with the domain apexes overseen by ICAO, each national aviation authority  MAY chose to run that infrastructure directly or outsource it to competent third parties or some combination of the two. National aviation authorities SHOULD specify the technical and administrative criteria for the provision of these services: contractual terms (if any), reporting, uptime, SLAs (if any), DNS query handling capacity, response times, incident handling, complaints, law enforcement interaction and so on. These are National Matters where national law/regulation prevail. National policy and regulations will define how long DNS data are stored or archived.
+DIMEs SHOULD specify the technical and administrative criteria for the provision of these services: contractual terms (if any), reporting, uptime, SLAs (if any), DNS query handling capacity, response times, incident handling, complaints, law enforcement interaction and so on. National policy and regulations will define how long DNS data are stored or archived. These are all National Matters where national law/regulation prevail ensuring DRIP complies with national law and regulation since these are matters of national sovereignty.
 
 DNSSEC is strongly RECOMMENDED (especially for RAA-level and higher zones). When a DIME decides to use DNSSEC they SHOULD define a framework for cryptographic algorithms and key management {{RFC6841}}. This may be influenced by frequency of updates, size of the zone, and policies.
 
 Static UAS specific information that is publicly available MAY also be stored in DNS but is out of scope for this document.
 
 > Author Note: proposal for a UAS RR that is a CBOR map of static UAS data elements (UAS ID, UAS Type, Self Description, etc.)
+
+For DRIP, IANA has agreed to act as the Apex at least initially (see {{iana-apex}} for more details). The delegation of civil aviation authorities to RAAs is already done per {{iso3166}} using their ISO 3166-1 Numeric Codes. Since these are public, any entity can stand up an RAA with that value. The Apex SHOULD be the root of trust in a Endorsement or certificate chain that provides validation of any of these specific RAAs, in the ISO RAA range, thus protecting against bad actors standing up fraudulent RAAs.
 
 ## DRIP Entity Tags {#det-dns}
 
@@ -608,7 +608,7 @@ Using the invertible CBOR encoding is achieved through in-line libraries that co
 
 # IANA Considerations
 
-## Management of DRIP Apex
+## Management of DRIP Apex {#iana-apex}
 
 A discussion between the authors of this document, DRIP AD and IANA was held during IETF 118. Those present were:
 
@@ -624,7 +624,7 @@ Further discussion of the SLA required to RAAs by IANA is and other requirements
 
 ## IANA DRIP Registry
 
-### DRIP RAA Allocations {#iana-apex}
+### DRIP RAA Allocations {#iana-raa}
 
 This document requests a new registry for RAA Allocations under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
 
