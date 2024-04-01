@@ -764,19 +764,21 @@ This field is a list of CBOR encoded Endorsements in `e-type` order. It MUST inc
 
 # HID Abbreviation Recommendation {#hid-abbreviation}
 
+This appendix is informative.
+
 On receiver devices a DET can be translated to a more human readable form such as: `{RAA Abbreviation} {HDA Abbreviation} {Last 4 Characters of DET Hash}`. An example of this would be `US FAA FE23`.
 
-To support this DIMEs are RECOMMENDED to have an abbreviation that could be used for this form. These abbreviations SHOULD be a maximum of six characters (for each section) in length. Spaces MUST NOT be used and be replaced with either underscores (`_`) or dashes (`-`).
+To support this DIMEs are recommended to have an abbreviation that could be used for this form. These abbreviations should be a maximum of six characters (for each section) in length. Spaces should not be used and be replaced with either underscores (`_`) or dashes (`-`).
 
-The concatenation of `{RAA Abbreviation}` and `{HDA Abbreviation}` with a space between them can be what fills in the `HID` field of the DET RR in {{det-rr}}.
+The concatenation of `{RAA Abbreviation}` and `{HDA Abbreviation}` with a space between them can be what fills in the `HID` field of the HHIT RR in {{det-rr}}.
 
-For RAAs allocated in the ISO range {{iso3166}}, the RAA abbreviation SHOULD be set to the ISO 3166-1 country code (either Alpha-2 or Alpha-3). A common abbreviation for an RAAs four allocated RAA values are out of scope. Other documents such as {{drip-dki}} may have more specific recommendations or requirements.
+For RAAs allocated in the ISO range {{iso3166}}, the RAA abbreviation should be set to the ISO 3166-1 country code (either Alpha-2 or Alpha-3). A common abbreviation for an RAAs four allocated RAA values are out of scope. Other documents such as {{drip-dki}} may have more specific recommendations or requirements.
 
-If a DIME does not have an abbreviation or it can not be looked up then the receiver MUST use the uppercase 4-character hexadecimal encoding of the field it is missing when using this form.
+If a DIME does not have an abbreviation or it can not be looked up then the receiver must use the uppercase 4-character hexadecimal encoding of the field it is missing when using this form.
 
-# DRIP Fully Qualified Domain Names {#drip-fqdn}
+# DETs as Fully Qualified Domain Names {#det-fqdn}
 
-## DRIP Entity Tag {#det-fqdn}
+This appendix is informative.
 
 > {hash}.{oga_id}.{hda}.{raa}.{prefix}.{apex}.
 
@@ -990,6 +992,8 @@ TODO
 {:fig #fe-binary title="Frame Endorsement Binary"}
 
 # DNS Examples
+
+This appendix is informative.
 
 ## Operator {#dns-op}
 
