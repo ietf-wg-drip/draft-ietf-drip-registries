@@ -569,7 +569,7 @@ C509 provides two approaches for encoding X.509:
 
 The invertible CBOR encoding may be sufficient for most needs. The CBOR objects clearly indicate which approach was used, so that the receiver can properly process the C509 object. For interoperability in DRIP, it is recommended that invertible CBOR encoding be used.
 
-Using the invertible CBOR encoding is achieved through in-line libraries that convert in the desired direction. Since it is not expected that DNS protocols to implement this conversion, the DET RR SHOULD contain the normal X.509 DER encoding. The CBOR encoding MAY be used, but operational experience will be needed to see if there are measurable gains in doing so.
+Using the invertible CBOR encoding is achieved through in-line libraries that convert in the desired direction. Since it is not expected that DNS protocols to implement this conversion, the HHIT RR SHOULD contain the normal X.509 DER encoding. The CBOR encoding MAY be used, but operational experience will be needed to see if there are measurable gains in doing so.
 
 # IANA Considerations
 
@@ -624,13 +624,13 @@ Endorsement Type:
 
 <!-- TODO: text on Expert Review process -->
 
-### DET Type {#iana-det-type}
+### HHIT Type {#iana-hhit-type}
 
-This document requests a new registry for DET Type under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
+This document requests a new registry for HHIT Type under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
 
-DET Type:
+HHIT Type:
 
-: numeric, 16-bit, field of the DET RR to encode the DET Type. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
+: numeric, 16-bit, field of the HHIT RR to encode the HHIT Type. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
 
 | Value         | Type                                       | Reference    |
 | ------------- | ------------------------------------------ | ------------ |
@@ -663,13 +663,13 @@ DET Type:
 
 <!-- TODO: text on Expert Review process -->
 
-### DET Status {#iana-det-status}
+### HHIT Status {#iana-hhit-status}
 
-This document requests a new registry for DET Status under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
+This document requests a new registry for HHIT Status under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
 
-DET Status:
+HHIT Status:
 
-: numeric, 8 bit, field of the DET RR to encode the DET Status. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
+: numeric, 8 bit, field of the HHIT RR to encode the HHIT Status. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
 
 | Value | Status     | Description                                 | Reference |
 | ----- | ---------- | ------------------------------------------- | --------- |
@@ -720,7 +720,7 @@ Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LL
 
 --- back
 
-# HHIT Resource Record {#det-rr}
+# HHIT Resource Record {#hhit-rr}
 
 This appendix is normative.
 
@@ -742,27 +742,21 @@ endorsements = [1* endorsement]  ; MUST be in e-type order
 ~~~~
 {:fig #rr-text-cddl title="Resource Record Text CDDL"}
 
-## Type {#rr-type}
+Type:
 
-This field is two octets with values defined in {{iana-det-type}}.
+: This field is two octets with values defined in {{iana-hhit-type}}. It is envisioned that there may be many types of HHITs in use. In some cases it may be helpful to understand the HHITs role in the ecosystem like described in {{drip-dki}}.
 
-It is envisioned that there may be many types of HHITs in use. In some cases it may be helpful to understand the HHITs role in the ecosystem like described in {{drip-dki}}.
+Status:
 
-## Status {#rr-status}
+: This field is a single byte with values defined in {{iana-hhit-status}}. A HHIT can go through various states during its life-cycle in the ecosystem. It is helpful for a querant to understand the current status as a further requirement for verification.
 
-This field is a single byte with values defined in {{iana-det-status}}.
+Abbreviation:
 
-A HHIT can go through various states during its life-cycle in the ecosystem. It is helpful for a querant to understand the current status as a further requirement for verification.
+: This field is meant to provide an abbreviation to the HID structure for display devices. The specific contents of this field are not defined here, but a recommendation/example can be found in {{hid-abbreviation}}.
 
-## Abbreviation {#rr-hid}
+Endorsements:
 
-This field is an fixed length ASCII encoded string of 20 bytes null padded. When not included the field MUST be filled with nulls. It is meant to provide an abbreviation to the HID structure for display devices.
-
-The specific contents of this field are not defined here, but a recommendation/example can be found in {{hid-abbreviation}}.
-
-## Endorsements {#rr-endorsement}
-
-This field is a list of CBOR encoded Endorsements in `e-type` order. It MUST included at least one Broadcast Endorsement ({{be}}). A special case for the Apex is that the Broadcast Endorsement is filled with its own DET and HI as evidence (i.e. a self-signed Broadcast Endorsement).
+: This field is a list of CBOR encoded Endorsements in `e-type` order. It MUST included at least one Broadcast Endorsement ({{be}}). A special case for the Apex is that the Broadcast Endorsement is filled with its own DET and HI as evidence (i.e. a self-signed Broadcast Endorsement).
 
 # HID Abbreviation Recommendation {#hid-abbreviation}
 
@@ -772,7 +766,7 @@ On receiver devices a DET can be translated to a more human readable form such a
 
 To support this DIMEs are recommended to have an abbreviation that could be used for this form. These abbreviations should be a maximum of six characters (for each section) in length. Spaces should not be used and be replaced with either underscores (`_`) or dashes (`-`).
 
-The concatenation of `{RAA Abbreviation}` and `{HDA Abbreviation}` with a space between them can be what fills in the `HID` field of the HHIT RR in {{det-rr}}.
+The concatenation of `{RAA Abbreviation}` and `{HDA Abbreviation}` with a space between them can be what fills in the `HID` field of the HHIT RR in {{hhit-rr}}.
 
 For RAAs allocated in the ISO range {{iso3166}}, the RAA abbreviation should be set to the ISO 3166-1 country code (either Alpha-2 or Alpha-3). A common abbreviation for an RAAs four allocated RAA values are out of scope. Other documents such as {{drip-dki}} may have more specific recommendations or requirements.
 
