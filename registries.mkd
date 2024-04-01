@@ -59,7 +59,6 @@ informative:
     RFC8392: # cwt
     RFC9082: # rdap-query-format
     RFC9083: # rdap-json-responses
-    RFC9164: # cbor-ip-addr-tags
 
     CTA2063A:
         title: ANSI/CTA 2063-A Small Unmanned Aerial Systems Numbers
@@ -161,7 +160,7 @@ As a review, HHITs are comprised of four major components: a Prefix, a Hierarchy
         | (14-bits)                      | (14-bits)             |
         +--------------------------------+-----------------------+
 ~~~~
-{:fig #hhit-fig title="DIME Roles and Hierarchy"}
+{:fig #hhit-fig title="DRIP Entity Tag Breakdown"}
 
 {{RFC9434}} defines the DRIP Identity Management Entity (DIME) as an entity that vets Claims and/or Evidence from a registrant and delivers, to successful registrations, Endorsements and/or Certificates in response. The DIME encompasses various logical components ({{dime-arch}}) and can be classified to serve a number of different roles, mapped to levels in the hierarchy, which are detailed in the following subsections.
 
@@ -469,15 +468,11 @@ DRIP Endorsements are defined in a CDDL {{RFC8610}} structure ({{endorsement-cdd
 
 The CDDL was derived from the more specific structure developed for {{drip-auth}}. As such the structures found in {{drip-auth}}, such as the UA Signed Evidence and the contents of DRIP Link (known as a Broadcast Endorsement), are a subset of the below definition in a strict binary form.
 
-{{drip-endorsements}} specifies Endorsement structures for the UAS RID use-case.
-
 > Note: this section uses the term HHIT instead of DET as the Endorsements are designed to be generic and re-useable for other HHIT use-cases.
 
-## Endorsement Structure
-
 ~~~~
-endorsement = 6.xxx(endorsement-data: array)
-endorsement-data = [e-type, scope, ? $$evidence, $$endorser, $$signature]
+endorsement = 6.xxx(e-data: array)
+e-data = [e-type, scope, ? $$evidence, $$endorser, $$signature]
 
 e-type = uint .size(2)
 scope = (vnb: time, vna: time, ? $$scope-ext)
@@ -493,27 +488,27 @@ eddsa25519-sig = bstr .size(64)
 ~~~~
 {:fig #endorsement-cddl title="Endorsement CDDL"}
 
-### Endorsement Type {#e-type}
+Endorsement Type (e-type):
 
-The `e-type` is a 16-bit value used to hint at the content of the `evidence` section. Four special values (1 through 4) map to the SAM Type of the Authentication framing in {{drip-auth}}, allowing the 16-bit value to be excluded from the Endorsement structure. See {{iana-e-types}} for more details.
+: a 16-bit value used to hint at the content of the `$$evidence` group. Four special values (1 through 4) map to the SAM Type of the Authentication framing in {{drip-auth}}, allowing the 16-bit value to be excluded from the Endorsement structure. See {{iana-e-types}} for more details.
 
-### Scope {#e-scope}
+Scope & Scope Extensions (scope / scope-ext):
 
-The `scope` section is more formally "the scope of validity of the endorsement". The scope can come in various forms but MUST always have a "valid not before" (`vnb`) and "valid not after" (`vna`) timestamps.
+: The `scope` section is more formally "the scope of validity of the endorsement". The scope can come in various forms but MUST always have a "valid not before" (`vnb`) and "valid not after" (`vna`) timestamps. Other forms of the scope could for example be a 4-dimensional volume definition. This could be in raw latitude, longitude, altitude pairs or may be a URI pointing to scope information. Additional scope fields are out of scope for this document and should be defined for specific Endorsement structures if they are desired using the `$$scope-ext` socket group.
 
-Other forms of the scope could for example be a 4-dimensional volume definition. This could be in raw latitude, longitude, altitude pairs or may be a URI pointing to scope information. Additional scope fields are out of scope for this document and should be defined for specific Endorsement structures if they are desired.
+Evidence:
 
-### Evidence {#e-evidence}
+: socket group containing a set claims. The content and order of claims is specified explicitly for each `e-type`.
 
-The `$$evidence` section contains a group of claims. This is specified explicitly for each `e-type`.
+Endorser:
 
-### Endorser {#e-endorser}
+: socket group where the main identity information of the signer of the Endorsement is found. The identity can take many forms such as a handle to the identity (e.g. an HHIT), or can include more explicit data such as the public key (e.g. an HI). The content and ordering is specified explicitly for each `e-type`.
 
-The `$$endorser` section is where the main identity information of the signer of the Endorsement is found. The identity can take many forms such as a handle to the identity (e.g. an HHIT), or can include more explicit data such as the public key (e.g. an HI). This is specified explicitly for each `e-type`.
+Signature:
 
-### Signature {#e-signature}
+: socket group containing the signature data for the Endorsement. The content and ordering is specified explicitly for each `e-type`. Signatures MUST be generated using the preceding sections (except for `e-type`) in their binary forms (i.e. as a concatenated bytestring of values) rather than their CBOR encoding.
 
-The `$$signature` section contain the signature data for the Endorsement. The length and content is specified explicitly for each `e-type`. Signatures MUST be generated using the preceding sections (except for `e-type`) in their binary forms (i.e. as a concatenated bytestring of values) rather than their CBOR encoding.
+{{drip-endorsements}} specifies Endorsement structures for the UAS RID use-case.
 
 # X.509 Certificates {#x509}
 
