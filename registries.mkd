@@ -461,53 +461,9 @@ The REQUIRED mechanism is to place any information into `ip6.arpa` when using a 
 
 The prefix `2001:30/28` is registered with IANA {{RFC9374}} and `3.0.0.1.0.0.2.ip6.arpa` -- the corresponding reverse domain -- SHOULD be under the administrative control of the Apex. In addition to the DNS infrastructure for `3.0.0.1.0.0.2.ip6.arpa`, the Apex SHOULD be responsible for the allocation of IPv6 addresses in this prefix. An addressing plan will need to be developed.
 
-Distribution of HHIT (IPv6 address) blocks SHOULD be done using the 14-bit RAA space as a framework. The Apex SHOULD allocate blocks to each entity who can then assign them to HDAs in accordance with local law and policy. All HDAs MUST have an IPv6 address in `2001:30/28`. A discrete zone SHOULD be delegated for each HDA. These MUST contain an DET resource record ({{det-rr}}) for itself.
+Distribution of HHIT (IPv6 address) blocks SHOULD be done using the 14-bit RAA space as a framework. The Apex SHOULD allocate blocks to each entity who can then assign them to HDAs in accordance with local law and policy. All HDAs MUST have an IPv6 address in `2001:30/28`. A discrete zone SHOULD be delegated for each HDA. These MUST contain an HHIT resource record ({{hhit-rr}}) for itself.
 
-Reverse lookups of these IPv6 addresses will translate the address into a domain name in the manner defined in {{RFC1886}}. However, these lookups will query for, depending on what is required: HIP, DET, TLSA, URI, or PTR RRTypes.
-
-### DET Resource Record {#det-rr}
-
-> Author Note: This section is very much a WIP, comments are welcome.
-
-The DET Resource Record is a metadata record for various bits of DRIP specific information that isn't available in pre-existing DNS RR Types (such as URI or HIP).
-
-~~~~
-<domain> DET IN ( DET TYPE STATUS ABBREV Endorsement )
-
-DET = Base16 DET
-TYPE = enumeration of Type of DET
-STATUS = enumeration of Status of DET
-ABBREV = HID Abbreviation
-Endorsement = Broadcast Endorsement
-~~~~
-
-#### Type {#rr-type}
-
-This field is a single byte with values defined in {{iana-det-type}}.
-
-It is envisioned that there may be many types of DETs in use. In some cases it may be helpful to understand the DETs role in the ecosystem like described in {{drip-dki}}.
-
-#### Status {#rr-status}
-
-This field is a single byte with values defined in {{iana-det-status}}.
-
-A DET can go through various states during its life-cycle in the ecosystem. It is helpful for a querant to understand the current status as a further requirement for verification.
-
-#### Abbreviation {#rr-hid}
-
-This field is an fixed length ASCII encoded string of 20 bytes null padded. When not included the field MUST be filled with nulls. It is meant to provide an abbreviation to the HID structure for display devices.
-
-The specific contents of this field are not defined here, but a recommendation/example can be found in {{hid-abbreviation}}.
-
-<!-- #### Serial Number {#rr-sn}
-
-This field is an fixed length ASCII encoded string of 20 bytes null padded {{CTA2063A}}. When not included the field MUST be filled with nulls.
-
-This covers the "public mapping to DET" when a user/manufacturer already has a Serial Number that can not change and wishes to do DRIP Authentication. -->
-
-#### Endorsement {#rr-endorsement}
-
-This field is the binary encoded Broadcast Endorsement ({{be}}) of the DET. This object is a fixed length of 136 bytes. A special case for the Apex is that the Broadcast Endorsement is filled with its own DET and HI as evidence (i.e. a self-signed Broadcast Endorsement).
+Reverse lookups of these IPv6 addresses will translate the address into a domain name in the manner defined in {{RFC1886}}. However, these lookups will query for, depending on what is required: HIP, HHIT, TLSA, URI, or PTR RRTypes.
 
 # Endorsements
 
@@ -672,14 +628,36 @@ This document requests a new registry for DET Type under the [DRIP registry grou
 
 DET Type:
 
-: numeric, 8 bit, field of the DET RR to encode the DET Type. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
+: numeric, 16-bit, field of the DET RR to encode the DET Type. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
 
-| Value | Type                 | Description | Reference |
-| ----- | -------------------- | ----------- | --------- |
-| 0     | Not Defined          | -           | This RFC  |
-| 1     | Endpoint Entity (EE) | -           | This RFC  |
-| 2     | Issuer CA            | -           | This RFC  |
-| 3     | Authentication CA    | -           | This RFC  |
+| Value         | Type                                       | Reference    |
+| ------------- | ------------------------------------------ | ------------ |
+| 0             | Not Defined                                | This RFC     |
+| 1             | DRIP Identity Management Entity (DIME)     | This RFC     |
+| 2             | Apex                                       | This RFC     |
+| 3             | Registered Assigning Authority (RAA)       | This RFC     |
+| 4             | HHIT Domain Authority (HDA)                | This RFC     |
+| 5             | DIME Provisioning Agent (DPA)              | This RFC     |
+| 6             | DIME Information Agent (DIA)               | This RFC     |
+| 7             | Name Server (NS)                           | This RFC     |
+| 8             | Registration Data Directory Service (RDDS) | This RFC     |
+| 9             | ISO 3166-1 Numeric Nation (INN)            | This RFC     |
+| 10 - 15       | Reserved                                   |              |
+| 16            | Endpoint Entity (EE)                       | {{drip-dki}} |
+| 17            | Issuer CA                                  | {{drip-dki}} |
+| 18            | Authentication CA                          | {{drip-dki}} |
+| 19            | Uncrewed Aircraft (UA)                     | This RFC     |
+| 20            | Ground Control Station (GCS)               | This RFC     |
+| 21            | Uncrewed Aerial System (UAS)               | This RFC     |
+| 22            | Remote Identification (RID) Module         | This RFC     |
+| 23            | Pilot                                      | This RFC     |
+| 24            | Operator                                   | This RFC     |
+| 25            | Discovery & Synchronization Service (DSS)  | This RFC     |
+| 26            | UAS Service Supplier (USS)                 | This RFC     |
+| 27            | Network RID Service Provider (SP)          | This RFC     |
+| 28            | Network RID Display Provider (DP)          | This RFC     |
+| 29            | Supplemental Data Service Provider (SDSP)  | This RFC     |
+| 30 - 65535    | Reserved                                   |              |
 
 <!-- TODO: text on Expert Review process -->
 
@@ -739,6 +717,50 @@ Optimally this requires the UAS somehow signal the DIME that a flight using a Sp
 Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LLC) for their early work on the DRIP registries concept. Their early contributions laid the foundations for the content and processes of this architecture and document. Bob Moskowitz is also instrumental in the PKIX work defined in this document with his parallel work in ICAO.
 
 --- back
+
+# HHIT Resource Record {#det-rr}
+
+This appendix is normative.
+
+The HHIT Resource Record is a metadata record for various bits of HHIT specific information that isn't available in the pre-existing HIP RR Type. It is encoded as a CBOR array.
+
+~~~~
+rr = 6.xxx(rr_data: array)
+rr_data= [hhit, type, status, abbreviation, endorsements]
+hhit = #6.54(bstr .size(16))
+type = uint .size(2)
+status = uint .size(1)
+abbreviation = tstr .size(15)
+endorsements = [1* endorsement]  ; MUST be in e-type order
+~~~~
+{:fig #rr-wire-cddl title="Resource Record Wire CDDL"}
+
+~~~~
+<domain> HHIT IN ( HHIT TYPE STATUS ABBREV [Endorsement(s)] )
+~~~~
+{:fig #rr-text-cddl title="Resource Record Text CDDL"}
+
+## Type {#rr-type}
+
+This field is two octets with values defined in {{iana-det-type}}.
+
+It is envisioned that there may be many types of HHITs in use. In some cases it may be helpful to understand the HHITs role in the ecosystem like described in {{drip-dki}}.
+
+## Status {#rr-status}
+
+This field is a single byte with values defined in {{iana-det-status}}.
+
+A HHIT can go through various states during its life-cycle in the ecosystem. It is helpful for a querant to understand the current status as a further requirement for verification.
+
+## Abbreviation {#rr-hid}
+
+This field is an fixed length ASCII encoded string of 20 bytes null padded. When not included the field MUST be filled with nulls. It is meant to provide an abbreviation to the HID structure for display devices.
+
+The specific contents of this field are not defined here, but a recommendation/example can be found in {{hid-abbreviation}}.
+
+## Endorsements {#rr-endorsement}
+
+This field is a list of CBOR encoded Endorsements in `e-type` order. It MUST included at least one Broadcast Endorsement ({{be}}). A special case for the Apex is that the Broadcast Endorsement is filled with its own DET and HI as evidence (i.e. a self-signed Broadcast Endorsement).
 
 # HID Abbreviation Recommendation {#hid-abbreviation}
 
