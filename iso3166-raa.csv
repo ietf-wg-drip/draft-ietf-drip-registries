@@ -1,0 +1,997 @@
+name,country-code,raa,raa_hex
+Afghanistan,4,16,0x0010
+Afghanistan,4,17,0x0011
+Afghanistan,4,18,0x0012
+Afghanistan,4,19,0x0013
+Åland Islands,248,992,0x03e0
+Åland Islands,248,993,0x03e1
+Åland Islands,248,994,0x03e2
+Åland Islands,248,995,0x03e3
+Albania,8,32,0x0020
+Albania,8,33,0x0021
+Albania,8,34,0x0022
+Albania,8,35,0x0023
+Algeria,12,48,0x0030
+Algeria,12,49,0x0031
+Algeria,12,50,0x0032
+Algeria,12,51,0x0033
+American Samoa,16,64,0x0040
+American Samoa,16,65,0x0041
+American Samoa,16,66,0x0042
+American Samoa,16,67,0x0043
+Andorra,20,80,0x0050
+Andorra,20,81,0x0051
+Andorra,20,82,0x0052
+Andorra,20,83,0x0053
+Angola,24,96,0x0060
+Angola,24,97,0x0061
+Angola,24,98,0x0062
+Angola,24,99,0x0063
+Anguilla,660,2640,0x0a50
+Anguilla,660,2641,0x0a51
+Anguilla,660,2642,0x0a52
+Anguilla,660,2643,0x0a53
+Antarctica,10,40,0x0028
+Antarctica,10,41,0x0029
+Antarctica,10,42,0x002a
+Antarctica,10,43,0x002b
+Antigua and Barbuda,28,112,0x0070
+Antigua and Barbuda,28,113,0x0071
+Antigua and Barbuda,28,114,0x0072
+Antigua and Barbuda,28,115,0x0073
+Argentina,32,128,0x0080
+Argentina,32,129,0x0081
+Argentina,32,130,0x0082
+Argentina,32,131,0x0083
+Armenia,51,204,0x00cc
+Armenia,51,205,0x00cd
+Armenia,51,206,0x00ce
+Armenia,51,207,0x00cf
+Aruba,533,2132,0x0854
+Aruba,533,2133,0x0855
+Aruba,533,2134,0x0856
+Aruba,533,2135,0x0857
+Australia,36,144,0x0090
+Australia,36,145,0x0091
+Australia,36,146,0x0092
+Australia,36,147,0x0093
+Austria,40,160,0x00a0
+Austria,40,161,0x00a1
+Austria,40,162,0x00a2
+Austria,40,163,0x00a3
+Azerbaijan,31,124,0x007c
+Azerbaijan,31,125,0x007d
+Azerbaijan,31,126,0x007e
+Azerbaijan,31,127,0x007f
+Bahamas,44,176,0x00b0
+Bahamas,44,177,0x00b1
+Bahamas,44,178,0x00b2
+Bahamas,44,179,0x00b3
+Bahrain,48,192,0x00c0
+Bahrain,48,193,0x00c1
+Bahrain,48,194,0x00c2
+Bahrain,48,195,0x00c3
+Bangladesh,50,200,0x00c8
+Bangladesh,50,201,0x00c9
+Bangladesh,50,202,0x00ca
+Bangladesh,50,203,0x00cb
+Barbados,52,208,0x00d0
+Barbados,52,209,0x00d1
+Barbados,52,210,0x00d2
+Barbados,52,211,0x00d3
+Belarus,112,448,0x01c0
+Belarus,112,449,0x01c1
+Belarus,112,450,0x01c2
+Belarus,112,451,0x01c3
+Belgium,56,224,0x00e0
+Belgium,56,225,0x00e1
+Belgium,56,226,0x00e2
+Belgium,56,227,0x00e3
+Belize,84,336,0x0150
+Belize,84,337,0x0151
+Belize,84,338,0x0152
+Belize,84,339,0x0153
+Benin,204,816,0x0330
+Benin,204,817,0x0331
+Benin,204,818,0x0332
+Benin,204,819,0x0333
+Bermuda,60,240,0x00f0
+Bermuda,60,241,0x00f1
+Bermuda,60,242,0x00f2
+Bermuda,60,243,0x00f3
+Bhutan,64,256,0x0100
+Bhutan,64,257,0x0101
+Bhutan,64,258,0x0102
+Bhutan,64,259,0x0103
+Bolivia (Plurinational State of),68,272,0x0110
+Bolivia (Plurinational State of),68,273,0x0111
+Bolivia (Plurinational State of),68,274,0x0112
+Bolivia (Plurinational State of),68,275,0x0113
+"Bonaire, Sint Eustatius and Saba",535,2140,0x085c
+"Bonaire, Sint Eustatius and Saba",535,2141,0x085d
+"Bonaire, Sint Eustatius and Saba",535,2142,0x085e
+"Bonaire, Sint Eustatius and Saba",535,2143,0x085f
+Bosnia and Herzegovina,70,280,0x0118
+Bosnia and Herzegovina,70,281,0x0119
+Bosnia and Herzegovina,70,282,0x011a
+Bosnia and Herzegovina,70,283,0x011b
+Botswana,72,288,0x0120
+Botswana,72,289,0x0121
+Botswana,72,290,0x0122
+Botswana,72,291,0x0123
+Bouvet Island,74,296,0x0128
+Bouvet Island,74,297,0x0129
+Bouvet Island,74,298,0x012a
+Bouvet Island,74,299,0x012b
+Brazil,76,304,0x0130
+Brazil,76,305,0x0131
+Brazil,76,306,0x0132
+Brazil,76,307,0x0133
+British Indian Ocean Territory,86,344,0x0158
+British Indian Ocean Territory,86,345,0x0159
+British Indian Ocean Territory,86,346,0x015a
+British Indian Ocean Territory,86,347,0x015b
+Brunei Darussalam,96,384,0x0180
+Brunei Darussalam,96,385,0x0181
+Brunei Darussalam,96,386,0x0182
+Brunei Darussalam,96,387,0x0183
+Bulgaria,100,400,0x0190
+Bulgaria,100,401,0x0191
+Bulgaria,100,402,0x0192
+Bulgaria,100,403,0x0193
+Burkina Faso,854,3416,0x0d58
+Burkina Faso,854,3417,0x0d59
+Burkina Faso,854,3418,0x0d5a
+Burkina Faso,854,3419,0x0d5b
+Burundi,108,432,0x01b0
+Burundi,108,433,0x01b1
+Burundi,108,434,0x01b2
+Burundi,108,435,0x01b3
+Cabo Verde,132,528,0x0210
+Cabo Verde,132,529,0x0211
+Cabo Verde,132,530,0x0212
+Cabo Verde,132,531,0x0213
+Cambodia,116,464,0x01d0
+Cambodia,116,465,0x01d1
+Cambodia,116,466,0x01d2
+Cambodia,116,467,0x01d3
+Cameroon,120,480,0x01e0
+Cameroon,120,481,0x01e1
+Cameroon,120,482,0x01e2
+Cameroon,120,483,0x01e3
+Canada,124,496,0x01f0
+Canada,124,497,0x01f1
+Canada,124,498,0x01f2
+Canada,124,499,0x01f3
+Cayman Islands,136,544,0x0220
+Cayman Islands,136,545,0x0221
+Cayman Islands,136,546,0x0222
+Cayman Islands,136,547,0x0223
+Central African Republic,140,560,0x0230
+Central African Republic,140,561,0x0231
+Central African Republic,140,562,0x0232
+Central African Republic,140,563,0x0233
+Chad,148,592,0x0250
+Chad,148,593,0x0251
+Chad,148,594,0x0252
+Chad,148,595,0x0253
+Chile,152,608,0x0260
+Chile,152,609,0x0261
+Chile,152,610,0x0262
+Chile,152,611,0x0263
+China,156,624,0x0270
+China,156,625,0x0271
+China,156,626,0x0272
+China,156,627,0x0273
+Christmas Island,162,648,0x0288
+Christmas Island,162,649,0x0289
+Christmas Island,162,650,0x028a
+Christmas Island,162,651,0x028b
+Cocos (Keeling) Islands,166,664,0x0298
+Cocos (Keeling) Islands,166,665,0x0299
+Cocos (Keeling) Islands,166,666,0x029a
+Cocos (Keeling) Islands,166,667,0x029b
+Colombia,170,680,0x02a8
+Colombia,170,681,0x02a9
+Colombia,170,682,0x02aa
+Colombia,170,683,0x02ab
+Comoros,174,696,0x02b8
+Comoros,174,697,0x02b9
+Comoros,174,698,0x02ba
+Comoros,174,699,0x02bb
+Congo,178,712,0x02c8
+Congo,178,713,0x02c9
+Congo,178,714,0x02ca
+Congo,178,715,0x02cb
+"Congo, Democratic Republic of the",180,720,0x02d0
+"Congo, Democratic Republic of the",180,721,0x02d1
+"Congo, Democratic Republic of the",180,722,0x02d2
+"Congo, Democratic Republic of the",180,723,0x02d3
+Cook Islands,184,736,0x02e0
+Cook Islands,184,737,0x02e1
+Cook Islands,184,738,0x02e2
+Cook Islands,184,739,0x02e3
+Costa Rica,188,752,0x02f0
+Costa Rica,188,753,0x02f1
+Costa Rica,188,754,0x02f2
+Costa Rica,188,755,0x02f3
+Côte d'Ivoire,384,1536,0x0600
+Côte d'Ivoire,384,1537,0x0601
+Côte d'Ivoire,384,1538,0x0602
+Côte d'Ivoire,384,1539,0x0603
+Croatia,191,764,0x02fc
+Croatia,191,765,0x02fd
+Croatia,191,766,0x02fe
+Croatia,191,767,0x02ff
+Cuba,192,768,0x0300
+Cuba,192,769,0x0301
+Cuba,192,770,0x0302
+Cuba,192,771,0x0303
+Curaçao,531,2124,0x084c
+Curaçao,531,2125,0x084d
+Curaçao,531,2126,0x084e
+Curaçao,531,2127,0x084f
+Cyprus,196,784,0x0310
+Cyprus,196,785,0x0311
+Cyprus,196,786,0x0312
+Cyprus,196,787,0x0313
+Czechia,203,812,0x032c
+Czechia,203,813,0x032d
+Czechia,203,814,0x032e
+Czechia,203,815,0x032f
+Denmark,208,832,0x0340
+Denmark,208,833,0x0341
+Denmark,208,834,0x0342
+Denmark,208,835,0x0343
+Djibouti,262,1048,0x0418
+Djibouti,262,1049,0x0419
+Djibouti,262,1050,0x041a
+Djibouti,262,1051,0x041b
+Dominica,212,848,0x0350
+Dominica,212,849,0x0351
+Dominica,212,850,0x0352
+Dominica,212,851,0x0353
+Dominican Republic,214,856,0x0358
+Dominican Republic,214,857,0x0359
+Dominican Republic,214,858,0x035a
+Dominican Republic,214,859,0x035b
+Ecuador,218,872,0x0368
+Ecuador,218,873,0x0369
+Ecuador,218,874,0x036a
+Ecuador,218,875,0x036b
+Egypt,818,3272,0x0cc8
+Egypt,818,3273,0x0cc9
+Egypt,818,3274,0x0cca
+Egypt,818,3275,0x0ccb
+El Salvador,222,888,0x0378
+El Salvador,222,889,0x0379
+El Salvador,222,890,0x037a
+El Salvador,222,891,0x037b
+Equatorial Guinea,226,904,0x0388
+Equatorial Guinea,226,905,0x0389
+Equatorial Guinea,226,906,0x038a
+Equatorial Guinea,226,907,0x038b
+Eritrea,232,928,0x03a0
+Eritrea,232,929,0x03a1
+Eritrea,232,930,0x03a2
+Eritrea,232,931,0x03a3
+Estonia,233,932,0x03a4
+Estonia,233,933,0x03a5
+Estonia,233,934,0x03a6
+Estonia,233,935,0x03a7
+Eswatini,748,2992,0x0bb0
+Eswatini,748,2993,0x0bb1
+Eswatini,748,2994,0x0bb2
+Eswatini,748,2995,0x0bb3
+Ethiopia,231,924,0x039c
+Ethiopia,231,925,0x039d
+Ethiopia,231,926,0x039e
+Ethiopia,231,927,0x039f
+Falkland Islands (Malvinas),238,952,0x03b8
+Falkland Islands (Malvinas),238,953,0x03b9
+Falkland Islands (Malvinas),238,954,0x03ba
+Falkland Islands (Malvinas),238,955,0x03bb
+Faroe Islands,234,936,0x03a8
+Faroe Islands,234,937,0x03a9
+Faroe Islands,234,938,0x03aa
+Faroe Islands,234,939,0x03ab
+Fiji,242,968,0x03c8
+Fiji,242,969,0x03c9
+Fiji,242,970,0x03ca
+Fiji,242,971,0x03cb
+Finland,246,984,0x03d8
+Finland,246,985,0x03d9
+Finland,246,986,0x03da
+Finland,246,987,0x03db
+France,250,1000,0x03e8
+France,250,1001,0x03e9
+France,250,1002,0x03ea
+France,250,1003,0x03eb
+French Guiana,254,1016,0x03f8
+French Guiana,254,1017,0x03f9
+French Guiana,254,1018,0x03fa
+French Guiana,254,1019,0x03fb
+French Polynesia,258,1032,0x0408
+French Polynesia,258,1033,0x0409
+French Polynesia,258,1034,0x040a
+French Polynesia,258,1035,0x040b
+French Southern Territories,260,1040,0x0410
+French Southern Territories,260,1041,0x0411
+French Southern Territories,260,1042,0x0412
+French Southern Territories,260,1043,0x0413
+Gabon,266,1064,0x0428
+Gabon,266,1065,0x0429
+Gabon,266,1066,0x042a
+Gabon,266,1067,0x042b
+Gambia,270,1080,0x0438
+Gambia,270,1081,0x0439
+Gambia,270,1082,0x043a
+Gambia,270,1083,0x043b
+Georgia,268,1072,0x0430
+Georgia,268,1073,0x0431
+Georgia,268,1074,0x0432
+Georgia,268,1075,0x0433
+Germany,276,1104,0x0450
+Germany,276,1105,0x0451
+Germany,276,1106,0x0452
+Germany,276,1107,0x0453
+Ghana,288,1152,0x0480
+Ghana,288,1153,0x0481
+Ghana,288,1154,0x0482
+Ghana,288,1155,0x0483
+Gibraltar,292,1168,0x0490
+Gibraltar,292,1169,0x0491
+Gibraltar,292,1170,0x0492
+Gibraltar,292,1171,0x0493
+Greece,300,1200,0x04b0
+Greece,300,1201,0x04b1
+Greece,300,1202,0x04b2
+Greece,300,1203,0x04b3
+Greenland,304,1216,0x04c0
+Greenland,304,1217,0x04c1
+Greenland,304,1218,0x04c2
+Greenland,304,1219,0x04c3
+Grenada,308,1232,0x04d0
+Grenada,308,1233,0x04d1
+Grenada,308,1234,0x04d2
+Grenada,308,1235,0x04d3
+Guadeloupe,312,1248,0x04e0
+Guadeloupe,312,1249,0x04e1
+Guadeloupe,312,1250,0x04e2
+Guadeloupe,312,1251,0x04e3
+Guam,316,1264,0x04f0
+Guam,316,1265,0x04f1
+Guam,316,1266,0x04f2
+Guam,316,1267,0x04f3
+Guatemala,320,1280,0x0500
+Guatemala,320,1281,0x0501
+Guatemala,320,1282,0x0502
+Guatemala,320,1283,0x0503
+Guernsey,831,3324,0x0cfc
+Guernsey,831,3325,0x0cfd
+Guernsey,831,3326,0x0cfe
+Guernsey,831,3327,0x0cff
+Guinea,324,1296,0x0510
+Guinea,324,1297,0x0511
+Guinea,324,1298,0x0512
+Guinea,324,1299,0x0513
+Guinea-Bissau,624,2496,0x09c0
+Guinea-Bissau,624,2497,0x09c1
+Guinea-Bissau,624,2498,0x09c2
+Guinea-Bissau,624,2499,0x09c3
+Guyana,328,1312,0x0520
+Guyana,328,1313,0x0521
+Guyana,328,1314,0x0522
+Guyana,328,1315,0x0523
+Haiti,332,1328,0x0530
+Haiti,332,1329,0x0531
+Haiti,332,1330,0x0532
+Haiti,332,1331,0x0533
+Heard Island and McDonald Islands,334,1336,0x0538
+Heard Island and McDonald Islands,334,1337,0x0539
+Heard Island and McDonald Islands,334,1338,0x053a
+Heard Island and McDonald Islands,334,1339,0x053b
+Holy See,336,1344,0x0540
+Holy See,336,1345,0x0541
+Holy See,336,1346,0x0542
+Holy See,336,1347,0x0543
+Honduras,340,1360,0x0550
+Honduras,340,1361,0x0551
+Honduras,340,1362,0x0552
+Honduras,340,1363,0x0553
+Hong Kong,344,1376,0x0560
+Hong Kong,344,1377,0x0561
+Hong Kong,344,1378,0x0562
+Hong Kong,344,1379,0x0563
+Hungary,348,1392,0x0570
+Hungary,348,1393,0x0571
+Hungary,348,1394,0x0572
+Hungary,348,1395,0x0573
+Iceland,352,1408,0x0580
+Iceland,352,1409,0x0581
+Iceland,352,1410,0x0582
+Iceland,352,1411,0x0583
+India,356,1424,0x0590
+India,356,1425,0x0591
+India,356,1426,0x0592
+India,356,1427,0x0593
+Indonesia,360,1440,0x05a0
+Indonesia,360,1441,0x05a1
+Indonesia,360,1442,0x05a2
+Indonesia,360,1443,0x05a3
+Iran (Islamic Republic of),364,1456,0x05b0
+Iran (Islamic Republic of),364,1457,0x05b1
+Iran (Islamic Republic of),364,1458,0x05b2
+Iran (Islamic Republic of),364,1459,0x05b3
+Iraq,368,1472,0x05c0
+Iraq,368,1473,0x05c1
+Iraq,368,1474,0x05c2
+Iraq,368,1475,0x05c3
+Ireland,372,1488,0x05d0
+Ireland,372,1489,0x05d1
+Ireland,372,1490,0x05d2
+Ireland,372,1491,0x05d3
+Isle of Man,833,3332,0x0d04
+Isle of Man,833,3333,0x0d05
+Isle of Man,833,3334,0x0d06
+Isle of Man,833,3335,0x0d07
+Israel,376,1504,0x05e0
+Israel,376,1505,0x05e1
+Israel,376,1506,0x05e2
+Israel,376,1507,0x05e3
+Italy,380,1520,0x05f0
+Italy,380,1521,0x05f1
+Italy,380,1522,0x05f2
+Italy,380,1523,0x05f3
+Jamaica,388,1552,0x0610
+Jamaica,388,1553,0x0611
+Jamaica,388,1554,0x0612
+Jamaica,388,1555,0x0613
+Japan,392,1568,0x0620
+Japan,392,1569,0x0621
+Japan,392,1570,0x0622
+Japan,392,1571,0x0623
+Jersey,832,3328,0x0d00
+Jersey,832,3329,0x0d01
+Jersey,832,3330,0x0d02
+Jersey,832,3331,0x0d03
+Jordan,400,1600,0x0640
+Jordan,400,1601,0x0641
+Jordan,400,1602,0x0642
+Jordan,400,1603,0x0643
+Kazakhstan,398,1592,0x0638
+Kazakhstan,398,1593,0x0639
+Kazakhstan,398,1594,0x063a
+Kazakhstan,398,1595,0x063b
+Kenya,404,1616,0x0650
+Kenya,404,1617,0x0651
+Kenya,404,1618,0x0652
+Kenya,404,1619,0x0653
+Kiribati,296,1184,0x04a0
+Kiribati,296,1185,0x04a1
+Kiribati,296,1186,0x04a2
+Kiribati,296,1187,0x04a3
+Korea (Democratic People's Republic of),408,1632,0x0660
+Korea (Democratic People's Republic of),408,1633,0x0661
+Korea (Democratic People's Republic of),408,1634,0x0662
+Korea (Democratic People's Republic of),408,1635,0x0663
+"Korea, Republic of",410,1640,0x0668
+"Korea, Republic of",410,1641,0x0669
+"Korea, Republic of",410,1642,0x066a
+"Korea, Republic of",410,1643,0x066b
+Kuwait,414,1656,0x0678
+Kuwait,414,1657,0x0679
+Kuwait,414,1658,0x067a
+Kuwait,414,1659,0x067b
+Kyrgyzstan,417,1668,0x0684
+Kyrgyzstan,417,1669,0x0685
+Kyrgyzstan,417,1670,0x0686
+Kyrgyzstan,417,1671,0x0687
+Lao People's Democratic Republic,418,1672,0x0688
+Lao People's Democratic Republic,418,1673,0x0689
+Lao People's Democratic Republic,418,1674,0x068a
+Lao People's Democratic Republic,418,1675,0x068b
+Latvia,428,1712,0x06b0
+Latvia,428,1713,0x06b1
+Latvia,428,1714,0x06b2
+Latvia,428,1715,0x06b3
+Lebanon,422,1688,0x0698
+Lebanon,422,1689,0x0699
+Lebanon,422,1690,0x069a
+Lebanon,422,1691,0x069b
+Lesotho,426,1704,0x06a8
+Lesotho,426,1705,0x06a9
+Lesotho,426,1706,0x06aa
+Lesotho,426,1707,0x06ab
+Liberia,430,1720,0x06b8
+Liberia,430,1721,0x06b9
+Liberia,430,1722,0x06ba
+Liberia,430,1723,0x06bb
+Libya,434,1736,0x06c8
+Libya,434,1737,0x06c9
+Libya,434,1738,0x06ca
+Libya,434,1739,0x06cb
+Liechtenstein,438,1752,0x06d8
+Liechtenstein,438,1753,0x06d9
+Liechtenstein,438,1754,0x06da
+Liechtenstein,438,1755,0x06db
+Lithuania,440,1760,0x06e0
+Lithuania,440,1761,0x06e1
+Lithuania,440,1762,0x06e2
+Lithuania,440,1763,0x06e3
+Luxembourg,442,1768,0x06e8
+Luxembourg,442,1769,0x06e9
+Luxembourg,442,1770,0x06ea
+Luxembourg,442,1771,0x06eb
+Macao,446,1784,0x06f8
+Macao,446,1785,0x06f9
+Macao,446,1786,0x06fa
+Macao,446,1787,0x06fb
+Madagascar,450,1800,0x0708
+Madagascar,450,1801,0x0709
+Madagascar,450,1802,0x070a
+Madagascar,450,1803,0x070b
+Malawi,454,1816,0x0718
+Malawi,454,1817,0x0719
+Malawi,454,1818,0x071a
+Malawi,454,1819,0x071b
+Malaysia,458,1832,0x0728
+Malaysia,458,1833,0x0729
+Malaysia,458,1834,0x072a
+Malaysia,458,1835,0x072b
+Maldives,462,1848,0x0738
+Maldives,462,1849,0x0739
+Maldives,462,1850,0x073a
+Maldives,462,1851,0x073b
+Mali,466,1864,0x0748
+Mali,466,1865,0x0749
+Mali,466,1866,0x074a
+Mali,466,1867,0x074b
+Malta,470,1880,0x0758
+Malta,470,1881,0x0759
+Malta,470,1882,0x075a
+Malta,470,1883,0x075b
+Marshall Islands,584,2336,0x0920
+Marshall Islands,584,2337,0x0921
+Marshall Islands,584,2338,0x0922
+Marshall Islands,584,2339,0x0923
+Martinique,474,1896,0x0768
+Martinique,474,1897,0x0769
+Martinique,474,1898,0x076a
+Martinique,474,1899,0x076b
+Mauritania,478,1912,0x0778
+Mauritania,478,1913,0x0779
+Mauritania,478,1914,0x077a
+Mauritania,478,1915,0x077b
+Mauritius,480,1920,0x0780
+Mauritius,480,1921,0x0781
+Mauritius,480,1922,0x0782
+Mauritius,480,1923,0x0783
+Mayotte,175,700,0x02bc
+Mayotte,175,701,0x02bd
+Mayotte,175,702,0x02be
+Mayotte,175,703,0x02bf
+Mexico,484,1936,0x0790
+Mexico,484,1937,0x0791
+Mexico,484,1938,0x0792
+Mexico,484,1939,0x0793
+Micronesia (Federated States of),583,2332,0x091c
+Micronesia (Federated States of),583,2333,0x091d
+Micronesia (Federated States of),583,2334,0x091e
+Micronesia (Federated States of),583,2335,0x091f
+"Moldova, Republic of",498,1992,0x07c8
+"Moldova, Republic of",498,1993,0x07c9
+"Moldova, Republic of",498,1994,0x07ca
+"Moldova, Republic of",498,1995,0x07cb
+Monaco,492,1968,0x07b0
+Monaco,492,1969,0x07b1
+Monaco,492,1970,0x07b2
+Monaco,492,1971,0x07b3
+Mongolia,496,1984,0x07c0
+Mongolia,496,1985,0x07c1
+Mongolia,496,1986,0x07c2
+Mongolia,496,1987,0x07c3
+Montenegro,499,1996,0x07cc
+Montenegro,499,1997,0x07cd
+Montenegro,499,1998,0x07ce
+Montenegro,499,1999,0x07cf
+Montserrat,500,2000,0x07d0
+Montserrat,500,2001,0x07d1
+Montserrat,500,2002,0x07d2
+Montserrat,500,2003,0x07d3
+Morocco,504,2016,0x07e0
+Morocco,504,2017,0x07e1
+Morocco,504,2018,0x07e2
+Morocco,504,2019,0x07e3
+Mozambique,508,2032,0x07f0
+Mozambique,508,2033,0x07f1
+Mozambique,508,2034,0x07f2
+Mozambique,508,2035,0x07f3
+Myanmar,104,416,0x01a0
+Myanmar,104,417,0x01a1
+Myanmar,104,418,0x01a2
+Myanmar,104,419,0x01a3
+Namibia,516,2064,0x0810
+Namibia,516,2065,0x0811
+Namibia,516,2066,0x0812
+Namibia,516,2067,0x0813
+Nauru,520,2080,0x0820
+Nauru,520,2081,0x0821
+Nauru,520,2082,0x0822
+Nauru,520,2083,0x0823
+Nepal,524,2096,0x0830
+Nepal,524,2097,0x0831
+Nepal,524,2098,0x0832
+Nepal,524,2099,0x0833
+Netherlands,528,2112,0x0840
+Netherlands,528,2113,0x0841
+Netherlands,528,2114,0x0842
+Netherlands,528,2115,0x0843
+New Caledonia,540,2160,0x0870
+New Caledonia,540,2161,0x0871
+New Caledonia,540,2162,0x0872
+New Caledonia,540,2163,0x0873
+New Zealand,554,2216,0x08a8
+New Zealand,554,2217,0x08a9
+New Zealand,554,2218,0x08aa
+New Zealand,554,2219,0x08ab
+Nicaragua,558,2232,0x08b8
+Nicaragua,558,2233,0x08b9
+Nicaragua,558,2234,0x08ba
+Nicaragua,558,2235,0x08bb
+Niger,562,2248,0x08c8
+Niger,562,2249,0x08c9
+Niger,562,2250,0x08ca
+Niger,562,2251,0x08cb
+Nigeria,566,2264,0x08d8
+Nigeria,566,2265,0x08d9
+Nigeria,566,2266,0x08da
+Nigeria,566,2267,0x08db
+Niue,570,2280,0x08e8
+Niue,570,2281,0x08e9
+Niue,570,2282,0x08ea
+Niue,570,2283,0x08eb
+Norfolk Island,574,2296,0x08f8
+Norfolk Island,574,2297,0x08f9
+Norfolk Island,574,2298,0x08fa
+Norfolk Island,574,2299,0x08fb
+North Macedonia,807,3228,0x0c9c
+North Macedonia,807,3229,0x0c9d
+North Macedonia,807,3230,0x0c9e
+North Macedonia,807,3231,0x0c9f
+Northern Mariana Islands,580,2320,0x0910
+Northern Mariana Islands,580,2321,0x0911
+Northern Mariana Islands,580,2322,0x0912
+Northern Mariana Islands,580,2323,0x0913
+Norway,578,2312,0x0908
+Norway,578,2313,0x0909
+Norway,578,2314,0x090a
+Norway,578,2315,0x090b
+Oman,512,2048,0x0800
+Oman,512,2049,0x0801
+Oman,512,2050,0x0802
+Oman,512,2051,0x0803
+Pakistan,586,2344,0x0928
+Pakistan,586,2345,0x0929
+Pakistan,586,2346,0x092a
+Pakistan,586,2347,0x092b
+Palau,585,2340,0x0924
+Palau,585,2341,0x0925
+Palau,585,2342,0x0926
+Palau,585,2343,0x0927
+"Palestine, State of",275,1100,0x044c
+"Palestine, State of",275,1101,0x044d
+"Palestine, State of",275,1102,0x044e
+"Palestine, State of",275,1103,0x044f
+Panama,591,2364,0x093c
+Panama,591,2365,0x093d
+Panama,591,2366,0x093e
+Panama,591,2367,0x093f
+Papua New Guinea,598,2392,0x0958
+Papua New Guinea,598,2393,0x0959
+Papua New Guinea,598,2394,0x095a
+Papua New Guinea,598,2395,0x095b
+Paraguay,600,2400,0x0960
+Paraguay,600,2401,0x0961
+Paraguay,600,2402,0x0962
+Paraguay,600,2403,0x0963
+Peru,604,2416,0x0970
+Peru,604,2417,0x0971
+Peru,604,2418,0x0972
+Peru,604,2419,0x0973
+Philippines,608,2432,0x0980
+Philippines,608,2433,0x0981
+Philippines,608,2434,0x0982
+Philippines,608,2435,0x0983
+Pitcairn,612,2448,0x0990
+Pitcairn,612,2449,0x0991
+Pitcairn,612,2450,0x0992
+Pitcairn,612,2451,0x0993
+Poland,616,2464,0x09a0
+Poland,616,2465,0x09a1
+Poland,616,2466,0x09a2
+Poland,616,2467,0x09a3
+Portugal,620,2480,0x09b0
+Portugal,620,2481,0x09b1
+Portugal,620,2482,0x09b2
+Portugal,620,2483,0x09b3
+Puerto Rico,630,2520,0x09d8
+Puerto Rico,630,2521,0x09d9
+Puerto Rico,630,2522,0x09da
+Puerto Rico,630,2523,0x09db
+Qatar,634,2536,0x09e8
+Qatar,634,2537,0x09e9
+Qatar,634,2538,0x09ea
+Qatar,634,2539,0x09eb
+Réunion,638,2552,0x09f8
+Réunion,638,2553,0x09f9
+Réunion,638,2554,0x09fa
+Réunion,638,2555,0x09fb
+Romania,642,2568,0x0a08
+Romania,642,2569,0x0a09
+Romania,642,2570,0x0a0a
+Romania,642,2571,0x0a0b
+Russian Federation,643,2572,0x0a0c
+Russian Federation,643,2573,0x0a0d
+Russian Federation,643,2574,0x0a0e
+Russian Federation,643,2575,0x0a0f
+Rwanda,646,2584,0x0a18
+Rwanda,646,2585,0x0a19
+Rwanda,646,2586,0x0a1a
+Rwanda,646,2587,0x0a1b
+Saint Barthélemy,652,2608,0x0a30
+Saint Barthélemy,652,2609,0x0a31
+Saint Barthélemy,652,2610,0x0a32
+Saint Barthélemy,652,2611,0x0a33
+"Saint Helena, Ascension and Tristan da Cunha",654,2616,0x0a38
+"Saint Helena, Ascension and Tristan da Cunha",654,2617,0x0a39
+"Saint Helena, Ascension and Tristan da Cunha",654,2618,0x0a3a
+"Saint Helena, Ascension and Tristan da Cunha",654,2619,0x0a3b
+Saint Kitts and Nevis,659,2636,0x0a4c
+Saint Kitts and Nevis,659,2637,0x0a4d
+Saint Kitts and Nevis,659,2638,0x0a4e
+Saint Kitts and Nevis,659,2639,0x0a4f
+Saint Lucia,662,2648,0x0a58
+Saint Lucia,662,2649,0x0a59
+Saint Lucia,662,2650,0x0a5a
+Saint Lucia,662,2651,0x0a5b
+Saint Martin (French part),663,2652,0x0a5c
+Saint Martin (French part),663,2653,0x0a5d
+Saint Martin (French part),663,2654,0x0a5e
+Saint Martin (French part),663,2655,0x0a5f
+Saint Pierre and Miquelon,666,2664,0x0a68
+Saint Pierre and Miquelon,666,2665,0x0a69
+Saint Pierre and Miquelon,666,2666,0x0a6a
+Saint Pierre and Miquelon,666,2667,0x0a6b
+Saint Vincent and the Grenadines,670,2680,0x0a78
+Saint Vincent and the Grenadines,670,2681,0x0a79
+Saint Vincent and the Grenadines,670,2682,0x0a7a
+Saint Vincent and the Grenadines,670,2683,0x0a7b
+Samoa,882,3528,0x0dc8
+Samoa,882,3529,0x0dc9
+Samoa,882,3530,0x0dca
+Samoa,882,3531,0x0dcb
+San Marino,674,2696,0x0a88
+San Marino,674,2697,0x0a89
+San Marino,674,2698,0x0a8a
+San Marino,674,2699,0x0a8b
+Sao Tome and Principe,678,2712,0x0a98
+Sao Tome and Principe,678,2713,0x0a99
+Sao Tome and Principe,678,2714,0x0a9a
+Sao Tome and Principe,678,2715,0x0a9b
+Saudi Arabia,682,2728,0x0aa8
+Saudi Arabia,682,2729,0x0aa9
+Saudi Arabia,682,2730,0x0aaa
+Saudi Arabia,682,2731,0x0aab
+Senegal,686,2744,0x0ab8
+Senegal,686,2745,0x0ab9
+Senegal,686,2746,0x0aba
+Senegal,686,2747,0x0abb
+Serbia,688,2752,0x0ac0
+Serbia,688,2753,0x0ac1
+Serbia,688,2754,0x0ac2
+Serbia,688,2755,0x0ac3
+Seychelles,690,2760,0x0ac8
+Seychelles,690,2761,0x0ac9
+Seychelles,690,2762,0x0aca
+Seychelles,690,2763,0x0acb
+Sierra Leone,694,2776,0x0ad8
+Sierra Leone,694,2777,0x0ad9
+Sierra Leone,694,2778,0x0ada
+Sierra Leone,694,2779,0x0adb
+Singapore,702,2808,0x0af8
+Singapore,702,2809,0x0af9
+Singapore,702,2810,0x0afa
+Singapore,702,2811,0x0afb
+Sint Maarten (Dutch part),534,2136,0x0858
+Sint Maarten (Dutch part),534,2137,0x0859
+Sint Maarten (Dutch part),534,2138,0x085a
+Sint Maarten (Dutch part),534,2139,0x085b
+Slovakia,703,2812,0x0afc
+Slovakia,703,2813,0x0afd
+Slovakia,703,2814,0x0afe
+Slovakia,703,2815,0x0aff
+Slovenia,705,2820,0x0b04
+Slovenia,705,2821,0x0b05
+Slovenia,705,2822,0x0b06
+Slovenia,705,2823,0x0b07
+Solomon Islands,90,360,0x0168
+Solomon Islands,90,361,0x0169
+Solomon Islands,90,362,0x016a
+Solomon Islands,90,363,0x016b
+Somalia,706,2824,0x0b08
+Somalia,706,2825,0x0b09
+Somalia,706,2826,0x0b0a
+Somalia,706,2827,0x0b0b
+South Africa,710,2840,0x0b18
+South Africa,710,2841,0x0b19
+South Africa,710,2842,0x0b1a
+South Africa,710,2843,0x0b1b
+South Georgia and the South Sandwich Islands,239,956,0x03bc
+South Georgia and the South Sandwich Islands,239,957,0x03bd
+South Georgia and the South Sandwich Islands,239,958,0x03be
+South Georgia and the South Sandwich Islands,239,959,0x03bf
+South Sudan,728,2912,0x0b60
+South Sudan,728,2913,0x0b61
+South Sudan,728,2914,0x0b62
+South Sudan,728,2915,0x0b63
+Spain,724,2896,0x0b50
+Spain,724,2897,0x0b51
+Spain,724,2898,0x0b52
+Spain,724,2899,0x0b53
+Sri Lanka,144,576,0x0240
+Sri Lanka,144,577,0x0241
+Sri Lanka,144,578,0x0242
+Sri Lanka,144,579,0x0243
+Sudan,729,2916,0x0b64
+Sudan,729,2917,0x0b65
+Sudan,729,2918,0x0b66
+Sudan,729,2919,0x0b67
+Suriname,740,2960,0x0b90
+Suriname,740,2961,0x0b91
+Suriname,740,2962,0x0b92
+Suriname,740,2963,0x0b93
+Svalbard and Jan Mayen,744,2976,0x0ba0
+Svalbard and Jan Mayen,744,2977,0x0ba1
+Svalbard and Jan Mayen,744,2978,0x0ba2
+Svalbard and Jan Mayen,744,2979,0x0ba3
+Sweden,752,3008,0x0bc0
+Sweden,752,3009,0x0bc1
+Sweden,752,3010,0x0bc2
+Sweden,752,3011,0x0bc3
+Switzerland,756,3024,0x0bd0
+Switzerland,756,3025,0x0bd1
+Switzerland,756,3026,0x0bd2
+Switzerland,756,3027,0x0bd3
+Syrian Arab Republic,760,3040,0x0be0
+Syrian Arab Republic,760,3041,0x0be1
+Syrian Arab Republic,760,3042,0x0be2
+Syrian Arab Republic,760,3043,0x0be3
+"Taiwan, Province of China",158,632,0x0278
+"Taiwan, Province of China",158,633,0x0279
+"Taiwan, Province of China",158,634,0x027a
+"Taiwan, Province of China",158,635,0x027b
+Tajikistan,762,3048,0x0be8
+Tajikistan,762,3049,0x0be9
+Tajikistan,762,3050,0x0bea
+Tajikistan,762,3051,0x0beb
+"Tanzania, United Republic of",834,3336,0x0d08
+"Tanzania, United Republic of",834,3337,0x0d09
+"Tanzania, United Republic of",834,3338,0x0d0a
+"Tanzania, United Republic of",834,3339,0x0d0b
+Thailand,764,3056,0x0bf0
+Thailand,764,3057,0x0bf1
+Thailand,764,3058,0x0bf2
+Thailand,764,3059,0x0bf3
+Timor-Leste,626,2504,0x09c8
+Timor-Leste,626,2505,0x09c9
+Timor-Leste,626,2506,0x09ca
+Timor-Leste,626,2507,0x09cb
+Togo,768,3072,0x0c00
+Togo,768,3073,0x0c01
+Togo,768,3074,0x0c02
+Togo,768,3075,0x0c03
+Tokelau,772,3088,0x0c10
+Tokelau,772,3089,0x0c11
+Tokelau,772,3090,0x0c12
+Tokelau,772,3091,0x0c13
+Tonga,776,3104,0x0c20
+Tonga,776,3105,0x0c21
+Tonga,776,3106,0x0c22
+Tonga,776,3107,0x0c23
+Trinidad and Tobago,780,3120,0x0c30
+Trinidad and Tobago,780,3121,0x0c31
+Trinidad and Tobago,780,3122,0x0c32
+Trinidad and Tobago,780,3123,0x0c33
+Tunisia,788,3152,0x0c50
+Tunisia,788,3153,0x0c51
+Tunisia,788,3154,0x0c52
+Tunisia,788,3155,0x0c53
+Turkey,792,3168,0x0c60
+Turkey,792,3169,0x0c61
+Turkey,792,3170,0x0c62
+Turkey,792,3171,0x0c63
+Turkmenistan,795,3180,0x0c6c
+Turkmenistan,795,3181,0x0c6d
+Turkmenistan,795,3182,0x0c6e
+Turkmenistan,795,3183,0x0c6f
+Turks and Caicos Islands,796,3184,0x0c70
+Turks and Caicos Islands,796,3185,0x0c71
+Turks and Caicos Islands,796,3186,0x0c72
+Turks and Caicos Islands,796,3187,0x0c73
+Tuvalu,798,3192,0x0c78
+Tuvalu,798,3193,0x0c79
+Tuvalu,798,3194,0x0c7a
+Tuvalu,798,3195,0x0c7b
+Uganda,800,3200,0x0c80
+Uganda,800,3201,0x0c81
+Uganda,800,3202,0x0c82
+Uganda,800,3203,0x0c83
+Ukraine,804,3216,0x0c90
+Ukraine,804,3217,0x0c91
+Ukraine,804,3218,0x0c92
+Ukraine,804,3219,0x0c93
+United Arab Emirates,784,3136,0x0c40
+United Arab Emirates,784,3137,0x0c41
+United Arab Emirates,784,3138,0x0c42
+United Arab Emirates,784,3139,0x0c43
+United Kingdom of Great Britain and Northern Ireland,826,3304,0x0ce8
+United Kingdom of Great Britain and Northern Ireland,826,3305,0x0ce9
+United Kingdom of Great Britain and Northern Ireland,826,3306,0x0cea
+United Kingdom of Great Britain and Northern Ireland,826,3307,0x0ceb
+United States of America,840,3360,0x0d20
+United States of America,840,3361,0x0d21
+United States of America,840,3362,0x0d22
+United States of America,840,3363,0x0d23
+United States Minor Outlying Islands,581,2324,0x0914
+United States Minor Outlying Islands,581,2325,0x0915
+United States Minor Outlying Islands,581,2326,0x0916
+United States Minor Outlying Islands,581,2327,0x0917
+Uruguay,858,3432,0x0d68
+Uruguay,858,3433,0x0d69
+Uruguay,858,3434,0x0d6a
+Uruguay,858,3435,0x0d6b
+Uzbekistan,860,3440,0x0d70
+Uzbekistan,860,3441,0x0d71
+Uzbekistan,860,3442,0x0d72
+Uzbekistan,860,3443,0x0d73
+Vanuatu,548,2192,0x0890
+Vanuatu,548,2193,0x0891
+Vanuatu,548,2194,0x0892
+Vanuatu,548,2195,0x0893
+Venezuela (Bolivarian Republic of),862,3448,0x0d78
+Venezuela (Bolivarian Republic of),862,3449,0x0d79
+Venezuela (Bolivarian Republic of),862,3450,0x0d7a
+Venezuela (Bolivarian Republic of),862,3451,0x0d7b
+Viet Nam,704,2816,0x0b00
+Viet Nam,704,2817,0x0b01
+Viet Nam,704,2818,0x0b02
+Viet Nam,704,2819,0x0b03
+Virgin Islands (British),92,368,0x0170
+Virgin Islands (British),92,369,0x0171
+Virgin Islands (British),92,370,0x0172
+Virgin Islands (British),92,371,0x0173
+Virgin Islands (U.S.),850,3400,0x0d48
+Virgin Islands (U.S.),850,3401,0x0d49
+Virgin Islands (U.S.),850,3402,0x0d4a
+Virgin Islands (U.S.),850,3403,0x0d4b
+Wallis and Futuna,876,3504,0x0db0
+Wallis and Futuna,876,3505,0x0db1
+Wallis and Futuna,876,3506,0x0db2
+Wallis and Futuna,876,3507,0x0db3
+Western Sahara,732,2928,0x0b70
+Western Sahara,732,2929,0x0b71
+Western Sahara,732,2930,0x0b72
+Western Sahara,732,2931,0x0b73
+Yemen,887,3548,0x0ddc
+Yemen,887,3549,0x0ddd
+Yemen,887,3550,0x0dde
+Yemen,887,3551,0x0ddf
+Zambia,894,3576,0x0df8
+Zambia,894,3577,0x0df9
+Zambia,894,3578,0x0dfa
+Zambia,894,3579,0x0dfb
+Zimbabwe,716,2864,0x0b30
+Zimbabwe,716,2865,0x0b31
+Zimbabwe,716,2866,0x0b32
+Zimbabwe,716,2867,0x0b33
