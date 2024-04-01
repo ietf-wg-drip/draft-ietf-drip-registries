@@ -560,6 +560,8 @@ For full examples of X.509 Certificates and the process to use them see {{drip-d
 
 The CBOR Encoded X.509 Certificates (C509 Certificates) {{cbor-cert}} provides a standards-based approach to reduce the size of X.509 certificates both on-the-wire and in storage. The PKI-Lite RAA certificate example in Appendix B.2 is 331 bytes. The matching C509 certificate is 183 bytes. This sort of difference may have significant impact both on UAS storage requirements and over-the-air transmission impact.
 
+<!-- TODO: where is B.2 example?? -->
+
 C509 provides two approaches for encoding X.509:
 
 1. An invertible CBOR re-encoding of DER encoded X.509 certificates {{RFC5280}}, which can be reversed to obtain the original DER encoded X.509 certificate.
