@@ -302,17 +302,21 @@ Certain information stored within the RDDS, due to policy, may be considered PII
 
 The interface between a DIA and an RDDS is out of scope for this document.
 
-# Registration Process
+# DET Registration Process
 
-The general process for a registering party is as follows:
+The general process for a registering DET is as follows:
 
-1. Verify inputs (such as Endorsement(s)) from registering party
+1. Verify inputs (such as Endorsement(s)) from registering client
 2. DPA checks for collision of DET and HI
 3. Populate Registry/Name Server with resource record(s)
 4. Populate RDDS via DIA with PII and other info
 5. Generate and return Endorsement(s)
 
-In the following subsections an abbreviated form of {{dime-arch}} seen below in {{process-example}} uses co-located components to describe the flow of information. Each section gives specific example details for the components, interfaces and data elements. Each section has an associated appendix ({{dns-examples}}) containing DNS examples.
+Generically a DET can be used as an identifier for any client in UTM and SHOULD be registered to a DIME. For example a CAA may choose to use DETs for its Operators. A data model (such as what is specified in {{det-reg-model}}) would be required to define all the information for registration for a given classification of client.
+
+Such specification beyond using DETs as a Session ID and/or Key ID ({{det-auth-reg}}, {{det-id-reg}} and {{det-id-auth-reg}}) is out of scope for this document.
+
+In the following subsections an abbreviated form of {{dime-arch-fig}} seen below in {{process-example}} uses co-located components to describe the flow of information. Each section gives specific example details for the components, interfaces and data elements. Each section has an associated appendix ({{dns-examples}}) containing DNS examples.
 
 ~~~~
     +----------+
@@ -338,7 +342,7 @@ In the following subsections an abbreviated form of {{dime-arch}} seen below in 
 *                                       *
 *****************************************
 ~~~~
-{:fig #process-example title="Example Registration Architecture & Process"}
+{:fig #process-example title="Example Registration Process"}
 
 ## DET Registration Data Model {#det-reg-model}
 
@@ -415,6 +419,8 @@ For Authentication use of a DET, registration requires the following additional 
 For the registration of a DET as a Session ID the client is typically the UAS. The mechanisms of how the UAS generates a DET are out of scope for this document.
 
 For Session ID use of a DET, registration requires the following additional data elements: `self_endorsement`. Both {{uas-id-handling}} and {{se-handling}} MUST be followed.
+
+Optionally a binding between a DET and a UTM Session ID can be made by providing the information of the UTM side using `utm_id` and `utm_source`. The support of this is based on CAA policy and is out of scope for this document.
 
 ## DET Session ID & Authentication {#det-id-auth-reg}
 
