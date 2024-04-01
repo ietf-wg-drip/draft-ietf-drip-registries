@@ -141,27 +141,31 @@ When talking about a DIME in documents it should be referred to as the role it i
 
 # DIME Roles {#dime-roles}
 
-{{RFC9434}} defines the DRIP Identity Management Entity (DIME) as an entity that vets Claims and/or Evidence from a registrant and delivers, to successful registrations, Endorsements and/or Certificates in response. The DIME encompasses various logical components and can be classified to serve a number of different roles, which are detailed in the following subsections. The general hierarchy of these initial roles (some highly specialized and predetermined for the UAS use case) are illustrated in {{reg-class-fig}}.
+{{RFC9434}} defines the DRIP Identity Management Entity (DIME) as an entity that vets Claims and/or Evidence from a registrant and delivers, to successful registrations, Endorsements and/or Certificates in response.
+
+{{RFC9374}} defines the Hierarchical Host Identity Tag (HHIT) and further specifies an instance of them used for UAS RID called DETs.
+
+As a review, HHITs are comprised of four major components: a Prefix, a Hierarchy ID (HID), a HHIT Suite ID (fixed 8-bits) and an ORCHID Hash. DETs use a 28-bit prefix and 64-bit hash leaving 28-bits for the HID. For UAS RID this HID is further divided into two fields: RAA and HDA, each 14-bits in length. {{hhit-fig}} shows this breakdown.
 
 {:fig: artwork-align="center"}
 ~~~~
-                +----------+
-                |   Apex   o
-                +-o------o-+
-                  |      |
-******************|******|*****************************
-                  |      |
-            +-----o-+  +-o-----+
-RAAs        |  RAA  |  |  INN  |
-            +---o---+  +-------+
-                |
-****************|**************************************
-                |
-            +---o---+
-HDAs        |  HDA  |
-            +-------+
++-------------+--------------+---------------+-------------+
+| IPv6 Prefix | Hierarchy ID | HHIT Suite ID | ORCHID Hash |
+| (28-bits)   | (28-bits)    | (8-bits)      | (64-bits)   |
++-------------+--------------+---------------+-------------+
+             /                \
+            /                  \
+           /                    \-----------------------------\
+          /                                                    \
+         /                                                      \
+        +--------------------------------+-----------------------+
+        | Registered Assigning Authority | HHIT Domain Authority |
+        | (14-bits)                      | (14-bits)             |
+        +--------------------------------+-----------------------+
 ~~~~
-{:fig #reg-class-fig title="DIME Roles and Hierarchy"}
+{:fig #hhit-fig title="DIME Roles and Hierarchy"}
+
+The DIME encompasses various logical components ({{dime-arch}}) and can be classified to serve a number of different roles, which are detailed in the following subsections.
 
 ## Apex
 
