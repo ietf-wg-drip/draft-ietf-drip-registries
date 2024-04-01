@@ -175,7 +175,7 @@ The Apex is the owner of the IPv6 prefix portion of the DET associated with it w
 
 For UAS RID the Apex manages the IPv6 prefix of `2001:30/28`. Allocations of RAAs in this prefix SHOULD be done in contiguous groups of 4. This is to support the nibble reversing of the DET to be placed in DNS ({{det-dns}}). See {{iana-apex}} for the RAA allocations.
 
-Values 0 (0x0000) through 3 (0x0003) MUST be reserved for the UAS RID Apex and SHOULD be used to endorse RAA delegations in Endorsements ({{endorsement}}). While the individual Apexes can be designated for different purposes they share the same pool of RAAs to be allocated. Such operation would require policy by the administrator of the Apex to avoid simultaneous allocation and is out of scope for this document.
+Values 0 (0x0000) through 3 (0x0003) MUST be reserved for the UAS RID Apex and SHOULD be used to endorse RAA delegations in Endorsements ({{endorsements}}). While the individual Apexes can be designated for different purposes they share the same pool of RAAs to be allocated. Such operation would require policy by the administrator of the Apex to avoid simultaneous allocation and is out of scope for this document.
 
 ## Registered Assigning Authority (RAA) {#raa}
 
@@ -471,9 +471,9 @@ DRIP Endorsements are defined in a CDDL {{RFC8610}} structure ({{endorsement-cdd
 
 The CDDL was derived from the more specific structure developed for {{drip-auth}}. As such the structures found in {{drip-auth}}, such as the UA Signed Evidence and the contents of DRIP Link (known as a Broadcast Endorsement), are a subset of the below definition in a strict binary form.
 
-{{drip-endorsements}} specifies specific Endorsement structures for the UAS RID use-case.
+{{drip-endorsements}} specifies Endorsement structures for the UAS RID use-case.
 
-> Note: this section uses the term HHIT instead of DET as the Endorsements are designed to be generic and re-useable for other HHIT use-cases. Specific use-cases SHOULD add new keys for each section (if required) and define the valid keys and encoding forms for their use-case.
+> Note: this section uses the term HHIT instead of DET as the Endorsements are designed to be generic and re-useable for other HHIT use-cases.
 
 ## Endorsement Structure
 
@@ -489,24 +489,15 @@ $$endorser //= (hhit, eddsa25519-hi,)
 $$endorser //= (eddsa25519-hi,)
 hhit = #6.54(bstr .size(16))
 eddsa25519-hi = bstr .size(32)
-; TODO: other HHIT Suite IDs
 
 $$signature = (eddsa25519-sig,)
 eddsa25519-sig = bstr .size(64)
-; TODO: other HHIT Suite IDs
 ~~~~
 {:fig #endorsement-cddl title="Endorsement CDDL"}
 
 ### Endorsement Type {#e-type}
 
-The `e-type` is a 16-bit value used to hint at the content of the `evidence` section. Four special values (1 through 4) map to the SAM Type of the Authentication framing in {{drip-auth}}, allowing the 16-bit value to be excluded from the Endorsement structure.
-
-For an `e-type` the following MUST be specified:
-
-- Any additions to `scope` using `$$scope-ext`
-- Specific contents of `$$evidence`
-- Specific contents of `$$endorser`
-- Specific contents of `$$signature`
+The `e-type` is a 16-bit value used to hint at the content of the `evidence` section. Four special values (1 through 4) map to the SAM Type of the Authentication framing in {{drip-auth}}, allowing the 16-bit value to be excluded from the Endorsement structure. See {{iana-e-types}} for more details.
 
 ### Scope {#e-scope}
 
@@ -520,11 +511,11 @@ The `$$evidence` section contains a group of claims. This is specified explicitl
 
 ### Endorser {#e-endorser}
 
-The `$$endorser` section is where the main identity information of the signer of the Endorsement is found. The identity can take many forms such as a handle to the identity (e.g. an HHIT), or can include more explicit data such as the public key (e.g. an HI). Other forms can be specified as part of an `e-type`.
+The `$$endorser` section is where the main identity information of the signer of the Endorsement is found. The identity can take many forms such as a handle to the identity (e.g. an HHIT), or can include more explicit data such as the public key (e.g. an HI). This is specified explicitly for each `e-type`.
 
 ### Signature {#e-signature}
 
-The `$$signature` section contain the signature data for the Endorsement. Other forms or data elements could also be present in the `signature` section if specified using `e-type`. Signatures MUST be generated using the preceding sections (except for `e-type`) in their binary forms (i.e. as a concatenated bytestring of values).
+The `$$signature` section contain the signature data for the Endorsement. The length and content is specified explicitly for each `e-type`. Signatures MUST be generated using the preceding sections (except for `e-type`) in their binary forms (i.e. as a concatenated bytestring of values) rather than their CBOR encoding.
 
 # X.509 Certificates {#x509}
 
@@ -603,6 +594,8 @@ RAA Allocations:
 | 4 - 3999      | Allocated | ISO 3166-1 Countries       | This RFC ({{iso3166}})          |
 | 4000 - 16375  | Reserved  | N/A                        | N/A                             |
 | 16375 - 16383 | Allocated | DRIP WG (Experimental Use) | This RFC ({{experimental-raa}}) |
+
+The mapping between ISO 3166-1 Numeric Numbers and RAAs can be found as a CSV file here: TODO.
 
 <!-- TODO: text on Expert Review process -->
 
