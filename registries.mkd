@@ -329,7 +329,7 @@ In the following subsections an abbreviated form of {{dime-arch}} seen below in 
 *      |   |                            *
 *      v   |             +----------+   *
 *   +--o---o--+          |          |   *
-*   |   DPA   o--------->o          |   *
+*   | DPA (2) o--------->o          |   *
 *   +----o----+   (4)    |          |   *
 *        |               |          |   *
 *        | (3)           | DIA/RDDS |   *
