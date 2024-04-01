@@ -363,23 +363,23 @@ utm_binding = (
 )
 ~~~~
 
-UAS ID Type (`uas_id_type`) and UAS ID (`uas_id`):
+UAS ID Type and UAS ID:
 
 : defined per ASTM {{F3411}}. See {{uas-id-handling}} for handling specific instructions during registration.
 
-UAS Serial Number (`serial_number`):
+UAS Serial Number:
 
 : defined per {{CTA2063A}}. Other UAS Serial Number formats (considered legacy) are out of scope for this document.
 
-UTM Assigned ID (`utm_id`):
+UTM Assigned ID:
 
 : also known as an Operational Intent, defined per ADD-UTM-REF and ASTM {{F3411}} as a UUIDv4.
 
-Self Endorsement (`self_endorsement`):
+Self Endorsement:
 
 : defined per {{endorsements}} and {{se}}. See {{se-handling}} for handling specific instructions during registration.
 
-It is RECOMMENDED that the information above is signed over in some way to ensure integrity of the registration data. A recommended way to do this is with a JWT ({{RFC7519}}) or CWT ({{RFC8392}}) using the clients key.
+It is RECOMMENDED that the information above is signed over in some way to ensure integrity of the registration data. A recommended way to do this is with a JWT{{RFC7519}} or CWT {{RFC8392}} using the clients key.
 
 Other data elements MAY be added to this model. A DIME MUST have a public API detailing additional elements expected for their implementations. These elements and reference is out of scope for this document.
 
@@ -404,8 +404,8 @@ This tuple encodes the services that the specific registration is being used. A 
 | Service                         | UAS ID            | UAS ID Type | UAS Serial Number | Key ID | UTM Assigned ID |
 | ------------------------------- | ----------------- | ----------- | ----------------- | ------ | --------------- |
 | DET Authentication              | TEST3ABC          | 0x1         | TEST3ABC          | DET    | -               |
-| DET Session ID                  | 0x1 + DET         | 0x4         | TEST3ABC          | -      | -               |
-| DET Session ID + Authentication | 0x1 + DET         | 0x4         | TEST3ABC          | DET    | -               |
+| DET Session ID                  | 0x01 + DET        | 0x4         | TEST3ABC          | -      | -               |
+| DET Session ID + Authentication | 0x01 + DET        | 0x4         | TEST3ABC          | DET    | -               |
 
 As this document focuses on DETs exclusively the use of the Key ID using other cryptographic identifiers and how to distinguish between them (such as how UAS ID and UAS ID Type is used) is out of scope of this document.
 
