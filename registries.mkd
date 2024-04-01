@@ -562,10 +562,10 @@ Using the invertible CBOR encoding is achieved through in-line libraries that co
 A discussion between the authors of this document, DRIP AD and IANA was held during IETF 118. Those present were:
 
 - Eric Vyncke (AD of DRIP WG)
-- Bob Moskowitz ()
+- Bob Moskowitz
 - Jim Ried (Author of this RFC)
 - Adam Wiethuechter (Editor of this RFC)
-- Kim Davia (IANA)
+- Kim Davies (IANA)
 
 IANA agreed that they would be willing to manage the Apex for DRIP until the desired Apex manager, International Civil Aviation Organization (ICAO), is ready. This is expected to be in the next 5 years due to ICAO process. The hand-over to ICAO is TBD at that time but various options are available.
 
