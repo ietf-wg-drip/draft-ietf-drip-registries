@@ -511,7 +511,7 @@ This field is the binary encoded Broadcast Endorsement ({{be}}) of the DET. This
 
 # Endorsements
 
-DRIP Endorsements are defined in a CDDL {{RFC8610}} structure ({{endorsement-cddl}}) that can be encoded to CBOR, JSON or have their CDDL keys removed and be sent as a binary blob. When the latter is used very specific forms are defined with naming conventions to know the data fields and their lengths for parsing and constrained environments. CBOR is the preferred encoding format.
+DRIP Endorsements are defined in a CDDL {{RFC8610}} structure ({{endorsement-cddl}}) that can be encoded to CBOR, JSON or as a binary blob by concatenating values. CBOR is the preferred encoding format.
 
 The CDDL was derived from the more specific structure developed for {{drip-auth}}. As such the structures found in {{drip-auth}}, such as the UA Signed Evidence and the contents of DRIP Link (known as a Broadcast Endorsement), are a subset of the below definition in a strict binary form.
 
@@ -522,32 +522,35 @@ The CDDL was derived from the more specific structure developed for {{drip-auth}
 ## Endorsement Structure
 
 ~~~~
-endorsement = {
-    e_type: number,
-    scope: {
-        vnb: number,
-        vna: number,
-        * tstr => any
-    },
-    evidence: bstr,
-    endorser: {
-        ipv6: bstr .size 16,  ; RFC9164?
-        ? hi: bstr,
-        * tstr => any
-    },
-    signature: {
-        sig: bstr,
-        * tstr => any
-    }
-}
+endorsement = 6.xxx(endorsement-data: array)
+endorsement-data = [e-type, scope, ? $$evidence, $$endorser, $$signature]
+
+e-type = uint .size(2)
+scope = (vnb: time, vna: time, ? $$scope-ext)
+
+$$endorser //= (hhit,)
+$$endorser //= (hhit, eddsa25519-hi,)
+$$endorser //= (eddsa25519-hi,)
+hhit = #6.54(bstr .size(16))
+eddsa25519-hi = bstr .size(32)
+; TODO: other HHIT Suite IDs
+
+$$signature = (eddsa25519-sig,)
+eddsa25519-sig = bstr .size(64)
+; TODO: other HHIT Suite IDs
 ~~~~
 {:fig #endorsement-cddl title="Endorsement CDDL"}
 
-> Author Note: under review - perhaps we use arrays instead of maps for inner structs? An `e_type` MUST then hard specify elements of the array in order for each section an array is present. That or we fully simplify this structure to be 5 array elements in the following order: number (for `e_type`), bstr for scope, bstr for evidence, bstr for endorser and bstr for signature.
-
 ### Endorsement Type {#e-type}
 
-The `e_type` is a 16-bit value used to hint at the content of the `evidence` section. Four special values (1 through 4) map to the SAM Type of the Authentication framing in {{drip-auth}}, allowing the 16-bit value to be excluded from the Endorsement structure.
+The `e-type` is a 16-bit value used to hint at the content of the `evidence` section. Four special values (1 through 4) map to the SAM Type of the Authentication framing in {{drip-auth}}, allowing the 16-bit value to be excluded from the Endorsement structure.
+
+For an `e-type` the following MUST be specified:
+
+- Any additions to `scope` using `$$scope-ext`
+- Specific contents of `$$evidence`
+- Specific contents of `$$endorser`
+- Specific contents of `$$signature`
 
 ### Scope {#e-scope}
 
@@ -557,17 +560,15 @@ Other forms of the scope could for example be a 4-dimensional volume definition.
 
 ### Evidence {#e-evidence}
 
-The `evidence` section contain a byte string of evidence. Specific content of evidence (such as subfields, length and ordering) is defined in specific Endorsement structures.
+The `$$evidence` section contains a group of claims. This is specified explicitly for each `e-type`.
 
 ### Endorser {#e-endorser}
 
-The `endorser` section is where the main identity information of the signer of the Endorsement is found. The identity can take many forms such as a handle to the identity (e.g. an HHIT), or can include more explicit data such as the public key (e.g. an HI). Other keys, for different identifiers, can be provided and MUST be defined in their specific Endorsement.
-
-The length of the `hi` can be determined when using `ipv6` by decoding the provided IPv6 address. The prefix will inform of the ORCHID construction being used, which informs the locations of the OGA ID in the address. The OGA ID will then inform the user of the key algorithm selected which has the key length defined. When using the `ipv6` key {{RFC9164}} MUST be followed encoding into CBOR.
+The `$$endorser` section is where the main identity information of the signer of the Endorsement is found. The identity can take many forms such as a handle to the identity (e.g. an HHIT), or can include more explicit data such as the public key (e.g. an HI). Other forms can be specified as part of an `e-type`.
 
 ### Signature {#e-signature}
 
-The `signature` section contain the signature data for the Endorsement. The signature itself MUST be provided under the `sig` key. Other forms or data elements could also be present in the `signature` section if specified in a specific Endorsement. Signatures MUST be generated using the preceding sections in their binary forms (i.e. as a bytestring with no keys).
+The `$$signature` section contain the signature data for the Endorsement. Other forms or data elements could also be present in the `signature` section if specified using `e-type`. Signatures MUST be generated using the preceding sections (except for `e-type`) in their binary forms (i.e. as a concatenated bytestring of values).
 
 # X.509 Certificates {#x509}
 
@@ -653,31 +654,17 @@ This document requests a new registry for Endorsement Type under the [DRIP regis
 
 Endorsement Type:
 
-: A 16-bit value to provide hinting of the content of the `evidence` section of an Endorsement. Future additions to this registry are to be made through Specification Required (Section 4.3 of {{RFC8126}}) for values 0x0000 to 0xEFFF and First Come First Served (Section 4.4 of {{RFC8126}}) for the values 0xF000 to 0xFFFF. The following values are defined:
+: A 16-bit value to provide hinting of the contents of other sections of an Endorsement. Future additions to this registry are to be made through Specification Required (Section 4.3 of {{RFC8126}}) for values 0x0000 to 0xEFFF and First Come First Served (Section 4.4 of {{RFC8126}}) for the values 0xF000 to 0xFFFF. The following values are defined:
 
 | Value | Endorsement Type         | Reference                |
 | ----- | ------------------------ | ------------------------ |
-| 0     | Self-Endorsement         | This RFC                 |
-| 1     | Broadcast Endorsement    | {{drip-auth}}            |
-| 2     | Wrapper                  | {{drip-auth}}            |
-| 3     | Manifest                 | {{drip-auth}}            |
-| 4     | Frame                    | {{drip-auth}}            |
+| 0     | Self-Endorsement         | This RFC ({{se}})        |
+| 1     | Broadcast Endorsement    | This RFC ({{be}})        |
+| 2     | Wrapper                  | This RFC ({{we}})        |
+| 3     | Manifest                 | This RFC ({{me}})        |
+| 4     | Frame                    | This RFC ({{fe}})        |
 
-### Endorsement Fields {#endorsement-fields}
-
-This document requests a new registry for Endorsement fields under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
-
-Endorsement Fields:
-
-: list of field keys to be used in an Endorsement and what section(s) they can be used in. Future additions to this registry are to be made through First Come First Served (Section 4.4 of {{RFC8126}}). The following values are defined:
-
-| Field Name | Type   | Useable Sections | Description                          | Reference                  |
-|----------- | ------ | ---------------- | ------------------------------------ | -------------------------- |
-| vna        | number | scope            | Valid Not After, UTC Unix Timestamp  | This RFC ({{e-scope}})     |
-| vnb        | number | scope            | Valid Not Before, UTC Unix Timestamp | This RFC ({{e-scope}})     |
-| ipv6       | bstr   | identity         | IPv6 Address as octets               | This RFC ({{e-endorser}})  |
-| hi         | bstr   | identity         | Host Identity (HI)                   | This RFC ({{e-endorser}})  |
-| sig        | bstr   | signature        | Signature                            | This RFC ({{e-signature}}) |
+<!-- TODO: text on Expert Review process -->
 
 ### DET Type {#iana-det-type}
 
@@ -787,30 +774,19 @@ FQDN: c4651542a33fdc26.05.0014.000a.2001003.example.com
 
 # DRIP Endorsements for UAS {#drip-endorsements}
 
+This appendix is normative.
+
 ## Self Endorsement {#se}
 
 ~~~~
-self_endorsement = {
-    e_type: number = 0
-    scope: {
-
-        vnb: number,
-        vna: number
-    },
-    evidence: bstr,
-    endorser: {
-        identity: {
-            hhit: bstr .size 16
-        },
-        signature: {
-            sig: bstr
-        }
-    }
-}
+; e-type=0, Self Endorsement
+\$$evidence //= (eddsa25519-hi,)
+\$$endorser //= (hhit,)
+\$$signature = (eddsa25519-sig,)
 ~~~~
 {:fig #se-cddl title="Self Endorsement CDDL"}
 
-Used during registration process as an input. `evidence` is filled with the corresponding HI of the `hhit`.
+Used during registration process as an input. `$$evidence` contains the HI of the endorser. `$$endorser` contains the HHIT of the endorser. `$$signature` contains the EdDSA25519 signature.
 
 ~~~~
 0                   1                   2                   3
@@ -862,28 +838,18 @@ TODO
 ## Broadcast Endorsement {#be}
 
 ~~~~
-broadcast_endorsement = {
-    e_type: number = 4
-    scope: {
-        vnb: number,
-        vna: number
-    },
-    evidence: bstr,
-    endorser: {
-        identity: {
-            hhit: bstr .size 16
-        },
-        signature: {
-            sig: bstr
-        }
-    }
-}
+; e-type=1, SAM Type=1, Broadcast Endorsement
+\$$evidence //= (hhit, eddsa25519-hi,)
+\$$endorser //= (hhit,)
+\$$signature = (eddsa25519-sig,)
 ~~~~
 {:fig #be-cddl title="Broadcast Endorsement CDDL"}
 
-Defined by {{drip-auth}} in a binary format to support Authentication over ASTM {{F3411}} constrained links. Used in the DRIP Link format. A required output of registration to a DIME at any level. `evidence` is a binary string of the concatenation of a child entities (e.g. a UA) DET/HHIT and its associated HI. `hhit` is of the parent entity (e.g. a DIME).
+Defined by {{drip-auth}} in a binary format to support Authentication over ASTM {{F3411}} constrained links. Used in the DRIP Link format. A required output of registration to a DIME at any level.
 
-Note that the Endorsement Type (`e_type`) field is the same value as the SAM Type allocated to DRIP (i.e. the value 1). As such for DRIP Authentication the `e_type` field is not encoded into the binary form and is instead handled by the SAM Type of the Authentication framing.
+`$$evidence` are the child entities (e.g. a UA) DET/HHIT and its associated HI. `$$endorser` contains the HHIT of the parent entity (e.g. DIME) as the endorser. `$$signature` contains the EdDSA25519 signature.
+
+Note that the Endorsement Type (`e-type`) field is the same value as the SAM Type allocated to DRIP (i.e. the value 1). As such for DRIP Authentication the `e-type` field is not encoded into the binary form and is instead handled by the SAM Type of the Authentication framing.
 
 ~~~~
  0                   1                   2                   3
@@ -936,6 +902,70 @@ Note that the Endorsement Type (`e_type`) field is the same value as the SAM Typ
 TODO
 ~~~~
 {:fig #be-cbor title="Broadcast Endorsement CBOR"}
+
+## Wrapper Endorsement {#we}
+
+~~~~
+; e-type=2, SAM Type=2, Wrapper Endorsement
+\$$evidence //= (*4 astm-message,)
+\$$endorser //= (hhit,)
+\$$signature = (eddsa25519-sig,)
+astm-message = bstr .size(25)
+~~~~
+{:fig #we-cddl title="Wrapper Endorsement CDDL"}
+
+~~~~
+TODO
+~~~~
+{:fig #we-cbor title="Wrapper Endorsement CBOR"}
+
+~~~~
+TODO
+~~~~
+{:fig #we-binary title="Wrapper Endorsement Binary"}
+
+## Manifest Endorsement {#me}
+
+~~~~
+; e-type=3, SAM Type=3, Manifest Endorsement
+\$$evidence //= (3*11 manifest-hash,)
+\$$endorser //= (hhit,)
+\$$signature = (eddsa25519-sig,)
+manifest-hash = bstr .size(8)
+~~~~
+{:fig #me-cddl title="Manifest Endorsement CDDL"}
+
+~~~~
+TODO
+~~~~
+{:fig #me-cbor title="Manifest Endorsement CBOR"}
+
+~~~~
+TODO
+~~~~
+{:fig #me-binary title="Manifest Endorsement Binary"}
+
+## Frame Endorsement {#fe}
+
+~~~~
+; e-type=4, SAM Type=4, Frame Endorsement
+\$$evidence //= (frame-type, frame-data,)
+\$$endorser //= (hhit,)
+\$$signature = (eddsa25519-sig,)
+frame-type = uint .size(1)
+frame-data = bstr .size(1..111)
+~~~~
+{:fig #fe-cddl title="Frame Endorsement CDDL"}
+
+~~~~
+TODO
+~~~~
+{:fig #fe-cbor title="Frame Endorsement CBOR"}
+
+~~~~
+TODO
+~~~~
+{:fig #fe-binary title="Frame Endorsement Binary"}
 
 # DNS Examples
 
