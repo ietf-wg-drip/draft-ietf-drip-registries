@@ -488,11 +488,11 @@ eddsa25519-sig = bstr .size(64)
 ~~~~
 {:fig #endorsement-cddl title="Endorsement CDDL"}
 
-Endorsement Type (e-type):
+Endorsement Type:
 
 : a 16-bit value used to hint at the content of the `$$evidence` group. Four special values (1 through 4) map to the SAM Type of the Authentication framing in {{drip-auth}}, allowing the 16-bit value to be excluded from the Endorsement structure. See {{iana-e-types}} for more details.
 
-Scope & Scope Extensions (scope / scope-ext):
+Scope & Scope Extensions:
 
 : The `scope` section is more formally "the scope of validity of the endorsement". The scope can come in various forms but MUST always have a "valid not before" (`vnb`) and "valid not after" (`vna`) timestamps. Other forms of the scope could for example be a 4-dimensional volume definition. This could be in raw latitude, longitude, altitude pairs or may be a URI pointing to scope information. Additional scope fields are out of scope for this document and should be defined for specific Endorsement structures if they are desired using the `$$scope-ext` socket group.
 
