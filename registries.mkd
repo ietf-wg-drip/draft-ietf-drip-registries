@@ -622,6 +622,13 @@ Endorsement Type:
 | 3     | Manifest                 | This RFC ({{me}})        |
 | 4     | Frame                    | This RFC ({{fe}})        |
 
+To register an `e-type` the following MUST be provided in CDDL for review:
+
+- Additions to `scope` group using `$$scope-ext`
+- Specific group contents of `$$evidence`
+- Specific group contents of `$$endorser`
+- Specific group contents of `$$signature`
+
 <!-- TODO: text on Expert Review process -->
 
 ### HHIT Type {#iana-hhit-type}
@@ -800,9 +807,9 @@ This appendix is normative.
 
 ~~~~
 ; e-type=0, Self Endorsement
-\$$evidence //= (eddsa25519-hi,)
-\$$endorser //= (hhit,)
-\$$signature = (eddsa25519-sig,)
+$$evidence //= (eddsa25519-hi,)
+$$endorser //= (hhit,)
+$$signature = (eddsa25519-sig,)
 ~~~~
 {:fig #se-cddl title="Self Endorsement CDDL"}
 
@@ -859,9 +866,9 @@ TODO
 
 ~~~~
 ; e-type=1, SAM Type=1, Broadcast Endorsement
-\$$evidence //= (hhit, eddsa25519-hi,)
-\$$endorser //= (hhit,)
-\$$signature = (eddsa25519-sig,)
+$$evidence //= (hhit, eddsa25519-hi,)
+$$endorser //= (hhit,)
+$$signature = (eddsa25519-sig,)
 ~~~~
 {:fig #be-cddl title="Broadcast Endorsement CDDL"}
 
@@ -927,9 +934,9 @@ TODO
 
 ~~~~
 ; e-type=2, SAM Type=2, Wrapper Endorsement
-\$$evidence //= (*4 astm-message,)
-\$$endorser //= (hhit,)
-\$$signature = (eddsa25519-sig,)
+$$evidence //= (*4 astm-message,)
+$$endorser //= (hhit,)
+$$signature = (eddsa25519-sig,)
 astm-message = bstr .size(25)
 ~~~~
 {:fig #we-cddl title="Wrapper Endorsement CDDL"}
@@ -948,9 +955,9 @@ TODO
 
 ~~~~
 ; e-type=3, SAM Type=3, Manifest Endorsement
-\$$evidence //= (3*11 manifest-hash,)
-\$$endorser //= (hhit,)
-\$$signature = (eddsa25519-sig,)
+$$evidence //= (3*11 manifest-hash,)
+$$endorser //= (hhit,)
+$$signature = (eddsa25519-sig,)
 manifest-hash = bstr .size(8)
 ~~~~
 {:fig #me-cddl title="Manifest Endorsement CDDL"}
@@ -969,9 +976,9 @@ TODO
 
 ~~~~
 ; e-type=4, SAM Type=4, Frame Endorsement
-\$$evidence //= (frame-type, frame-data,)
-\$$endorser //= (hhit,)
-\$$signature = (eddsa25519-sig,)
+$$evidence //= (frame-type, frame-data,)
+$$endorser //= (hhit,)
+$$signature = (eddsa25519-sig,)
 frame-type = uint .size(1)
 frame-data = bstr .size(1..111)
 ~~~~
