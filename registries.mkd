@@ -3,7 +3,7 @@ coding: utf-8
 
 title: DRIP Entity Tag (DET) Identity Management Architecture
 abbrev: DETIM Architecture
-docname: draft-ietf-drip-registries-15
+docname: draft-ietf-drip-registries-16
 category: std
 
 ipr: trust200902
@@ -84,7 +84,7 @@ informative:
 
 --- abstract
 
-This document describes the high level architecture for the registration and discovery of DRIP Entity Tags (DETs) using DNS. Discovery of DETs and their artifacts is performed via DRIP specific DNS structures and standard DNS methods. A general overview of the interfaces required between involved components is described in this document with future supporting documents giving technical specifications.
+This document describes the high level architecture for the registration and discovery of DRIP Entity Tags (DETs) using DNS. Discovery of DETs and related metadata is performed via DRIP specific DNS structures and standard DNS methods. A general overview of the interfaces required between involved components is described in this document with future supporting documents giving technical specifications.
 
 --- middle
 
@@ -106,11 +106,11 @@ This document uses the Concise Data Definition Language (CDDL) {{RFC8610}} for d
 
 # General Concept {#intro-concept}
 
-DETs when generated are only "proposed" and MUST be registered within the hierarchy to become legitimate. DIME's are the points in the hierarchy that enforce requirements on registration and information access. This document standardizes the basic interactions and methods for registration and lookup to support interoperability based around DETs. Other identifiers and their methods are out of scope for this document.
+DETs MUST be registered within the hierarchy to become legitimate. DIME's are the points in the hierarchy that enforce requirements on registration and information access. This document standardizes the basic interactions and methods for registration and lookup to support interoperability based around DETs. Other identifiers and their methods are out of scope for this document.
 
-This document selects the Domain Name System (DNS) as the Public Information Registry for both storing and retrieving public information, such as the public key of DETs and pointers to Private Information Registries. Personally Identifiable Information (PII) is stored in Private Information Registries and MUST be protected through AAA.
+This document selects the Domain Name System (DNS) as the Public Information Registry for both storing and retrieving public information, such as the public key of DETs and pointers to Private Information Registries. Personally Identifiable Information (PII) is stored in Private Information Registries and MUST be protected through AAA. AAA mechanisms to protect PII is out of scope for this document.
 
-For UAS, a DIME can provide the following congruent registration and lookup services:
+For UAS, a DIME can provide the following registration and lookup services:
 
 1. personal information (e.g. for pilots and operators)
 2. UAS Serial Number and aircraft physical characteristics
@@ -118,11 +118,11 @@ For UAS, a DIME can provide the following congruent registration and lookup serv
 4. DETs as a pseudo-anonymous UAS Specific Session ID (UAS ID Type 4)
 5. binding of UAS ID to UTM Operational Intent
 
-A DIME's services are determined by their intended role ({{dime-roles}}) and policies (both internally and from cognizant authorities). For example, services 1 and 2 can be restricted to non-public access controlled lookups with mandatory registration and 5 to publicly available but access controlled lookups.
+A DIME's services are determined by their intended role ({{dime-roles}}) and policies (both internally and from appropriate authorities). For example, services 1 and 2 can be restricted to non-public access controlled lookups with mandatory registration and 5 to publicly available but access controlled lookups.
 
 For this document only services 3 and 4, as they directly relate to DETs, are detailed. Services 1 and 5 will be talked about conceptually while service 2 is out of scope.
 
-Requirements on the elements of information in registration and lookup (beyond the scope basic interoperability) is out of scope for this document. It is left to cognizant authorities to determine these details along with policy for access. For the UAS use-case this is Civil Aviation Authorities (CAAs).
+Requirements on the elements of information in registration and lookup (beyond the scope basic interoperability) is out of scope for this document. It is left to appropriate authorities to determine these details along with policy for access. For the UAS use-case this would be the national Civil Aviation Authorities (CAAs).
 
 # Terminology {#terminology}
 
@@ -140,7 +140,7 @@ When talking about a DIME in documents it should be referred to as the role it i
 
 # DIME Roles {#dime-roles}
 
-{{RFC9374}} defines the Hierarchical Host Identity Tag (HHIT) and further specifies an instance of them used for UAS RID called DETs.
+{{RFC9374}} defines the Hierarchical Host Identity Tag (HHIT) and further specifies an instance of them used for UAS RID called DETs. The HHIT is a 128-bit value that can be represented as an IPv6 address.
 
 As a review, HHITs are comprised of four major components: a Prefix, a Hierarchy ID (HID), a HHIT Suite ID (fixed 8-bits) and an ORCHID Hash. DETs use a 28-bit prefix and 64-bit hash leaving 28-bits for the HID. For UAS RID this HID is further divided into two fields: RAA and HDA, each 14-bits in length. {{hhit-fig}} shows this breakdown.
 
@@ -166,25 +166,26 @@ As a review, HHITs are comprised of four major components: a Prefix, a Hierarchy
 
 ## Apex
 
-The Apex is the owner of the IPv6 prefix portion of the DET associated with it which is assigned by IANA from the special IPv6 address space for ORCHIDs. It serves as the branch point from the larger DNS system in which DETs are defined. The Apex manages all delegations and allocations of RAAs to various parties. The Apex MUST reserve an allocation for itself that it MAY use.
+The Apex is the IPv6 prefix portion of the DET associated with it which is assigned by IANA from the special IPv6 address space for ORCHIDs. It serves as the branch point from the larger DNS system in which DETs are defined. The Apex manages all delegations and allocations of RAAs to various parties. The Apex MUST reserve an allocation for itself that it MAY use.
 
 ### DRIP Apex for UAS RID {#drip-apex}
 
-For UAS RID the Apex manages the IPv6 prefix of `2001:30/28`. Allocations of RAAs in this prefix SHOULD be done in contiguous groups of 4. This is to support the nibble reversing of the DET to be placed in DNS ({{det-dns}}). See {{iana-apex}} for the RAA allocations.
+For UAS RID the Apex uses IPv6 prefix of `2001:30/28` per {{RFC9374}}. Allocations of RAAs in this prefix SHOULD be done in contiguous groups of 4. This is to support the nibble reversing of the DET to be placed in DNS ({{det-dns}}). See {{iana-apex}} for the RAA allocations.
 
 Values 0 (0x0000) through 3 (0x0003) MUST be reserved for the UAS RID Apex and SHOULD be used to endorse RAA delegations in Endorsements ({{endorsements}}). While the individual Apexes can be designated for different purposes they share the same pool of RAAs to be allocated. Such operation would require policy by the administrator of the Apex to avoid simultaneous allocation and is out of scope for this document.
 
 ## Registered Assigning Authority (RAA) {#raa}
 
-An RAA is a business or organization that runs a DIME to register HDAs ({{hda}}). Most are contemplated to be CAAs (using {{iso3166}}), such as the Federal Aviation Authority (FAA), that then delegate HDAs to manage their National Air Space (NAS). This is does not preclude other entities to operate an RAA if the Apex allows it.
+An RAA is a business or organization that runs a DIME to register HDAs ({{hda}}). Most are expected to be CAAs (using {{iso3166}}), such as the Federal Aviation Authority (FAA), that then delegate HDAs for use in their National Air Space (NAS). This is does not preclude other entities to operate an RAA if the Apex allows it.
 
 An RAA:
 
 - MUST provide a set of services to allocate HDAs to organizations
 - MUST have a public policy on what is necessary to obtain an HDA
+- SHOULD provide service level guarantees for DNS operation and registry service
 - SHOULD maintain a DNS zone minimally for discovering HIP RVS servers
   
-All RAA's MUST have a single reserved HDA value: 0 (0x0000) for itself to support various functions or services. Other HDA values SHOULD be allocated or reserved per RAA policy.
+All RAA's MUST use the single reserved HDA value 0 (0x0000) for itself to support various functions or services. Other HDA values SHOULD be allocated or reserved per RAA policy.
 
 ### ISO 3166-1 Numeric Nations (INN) {#iso3166}
 
@@ -192,15 +193,19 @@ The RAA range of 4 (0x0004) to 3999 (0x0F9F) are reserved for CAAs using the ISO
 
 As an example the United States has an ISO 3166-1 Numeric Code of 840. This derives the following RAAs: 3360, 3361, 3362 and 3363.
 
-It should be noted that the range of codes from 900 to 999 are defined (by ISO 3166-1) as "user assigned code elements" and do not have specific claimants predefined in the RAA space. Withdrawn and other special codes also do not have predetermined claimants.
+It should be noted that the range of codes from 900 to 999 are defined (by ISO 3166-1) as "user assigned code elements" and do not have specific claimants predefined in the RAA space. Withdrawn and other special codes also do not have predetermined claimants. These values MUST NOT be used for an RAA.
 
 How a CAA handles their allocated values are out of scope of this document. Control of these values are expected to be claimed by their respective owner. How a claim is vetted and validated is out of scope of this document. Protection against fraudulent claims of one of these values is out of scope for this document.
+
+> Author Note: get ISO reference for document and for reserved/special allocations. Reference/steal from ENUM document text on delegation procedure. How country code delegations are done through ICAO.
 
 > Informational Note: A single entity may control more than one NAS (for example LU and BE being covered by Skeyes.be) and would manage two allocation spaces. How this is claimed and handled is out of scope for this document.
 
 ### Experimental {#experimental-raa}
 
-The RAA range of 16376 (0x3FF8) to 16383 (0x3FFF), eight (8) RAAs, is allocated to the DRIP working group itself as an experimental range. RAA 16376 is already "in use" with `driptesting.org`. The rest of the range (16377 to 16383) are reserved to be allocated by the DRIP experts to agencies or organizations that wish to test for a period of time.
+The RAA range of 16376 (0x3FF8) to 16383 (0x3FFF), eight (8) RAAs, is allocated to the DRIP working group itself as an experimental range. RAA 16376 is already "in use" with `driptesting.org`. The rest of the range (16377 to 16383) are reserved to be allocated by a designated expert to agencies or organizations that wish to test for a period of time.
+
+> Author Note: ietf leadership has to choose DE
 
 ## Hierarchial HIT Domain Authority (HDA) {#hda}
 
@@ -212,7 +217,7 @@ For UAS RID, HDAs can provide any of the following services:
 - registration and access controlled lookup of DETs as a pseudo-anonymous UAS Session ID
 - registration of UAS ID and UTM Operational Intent to bind them together (if allowed by cognizant authority)
 
-An HDA SHOULD maintain a set of RVS servers for UAS clients that may use HIP.  How this is done and scales to the potentially millions of customers are outside the scope of this document. This service MUST be discoverable through the DNS zone maintained by the HDA's RAA.
+An HDA SHOULD maintain a set of RVS servers for UAS clients that may use HIP. This service MUST be discoverable through the DNS zone maintained by the HDA's RAA.
 
 An RAA may assign a block of values to an individual organization. This is completely up to the individual RAA's published policy for delegation. Such policy is out of scope for this document.
 
@@ -220,7 +225,7 @@ An RAA may assign a block of values to an individual organization. This is compl
 
 The DIME, in any of its roles ({{dime-roles}}), is comprised of a number of logical components that are depicted in {{dime-arch-fig}}. Any of these components could be delegated to other entities as a service both co-located or remote.
 
-Interfaces with a specific transport requirement (such as HTTPS) are labeled accordingly. Interfaces not labeled can be implementation specific or proprietary due to co-location of components. For example the interface between the DPA and Registry/Name Server, when delegated, might be Extensional Provisioning Protocol (EPP) {{RFC5730}} (due to Registry/Name Server requirements) while implementations co-locating these components might use an internal code library. These non-labeled interfaces are out of scope for this document.
+Interfaces with a specific transport requirement (such as HTTPS) are labeled accordingly. Interfaces not labeled can be implementation specific or proprietary due to co-location of components. For example the interface between the DPA and a Registrar, when delegated, might be Extensional Provisioning Protocol (EPP) {{RFC5730}} while implementations co-locating these components might use an internal code library. These non-labeled interfaces are out of scope for this document.
 
 ~~~~
 +--------------------+
@@ -230,65 +235,66 @@ Interfaces with a specific transport requirement (such as HTTPS) are labeled acc
           | HTTPS
           |
 **********|*********************************************************
-*         |       DRIP Identity Management Entity (DIME)           *
 *         |                                                        *
-*  +------o-------+         +-------------+      +--------------+  *
-*  | DRIP         |         |             |      |              |  *
-*  | Provisioning o---------o             |      |              |  *
-*  | Agent (DPA)  |         |             |      |              |  *
-*  +-------o------+         |             |      |              |  *
-*          |                |             |      |              |  *
-*          |                | DRIP        |      | Registration |  *
-*          |                | Information o------o Data         |  *
-*          |                | Agent (DIA) |      | Directory    |  *
-*          |                |             |      | Service      |  *
-*  +-------o----------+     |             |      | (RDDS)       |  *
-*  |     Registry     |     |             |      |              |  *
-*  |        /         |     |             |      |              |  *
-*  | Name Server (NS) |     |             |      |              |  *
-*  +------o-----------+     +-----o-------+      +--------------+  *
-*         |                       |                                * 
-*         |                       |                                *
-**********|***********************|*********************************
-          |                       |
-          | TCP/UDP               | RDAP
-          |                       |
-          |               +-------o-------+
-          '---------------o Lookup Client |
-                          +---------------+
+*         |      DRIP Identity Management Entity (DIME)            *
+*         |                                                        *
+*   ######|#####################################################   *
+*   #     |                                                    #   *
+*   #  +--o-----------------+                                  #   *
+*   #  | DIME               |                                  #   *
+*   #  | Provisioning Agent |         Registrar Functions      #   *
+*   #  | (DPA)              |                                  #   *
+*   #  +--------------------+                                  #   *
+*   #                                                          #   *
+*   ##############################o#############################   *
+*                                 |                                *
+*                                 | EPP                            *
+*                                 |                                *
+*   ##############################o#############################   *
+*   #                                                          #   *
+*   #  +--------------------+                                  #   *
+*   #  | DIME               |                                  #   *
+*   #  | Information Agent  |         Registry Functions       #   *
+*   #  | (DIA)              |                                  #   *
+*   #  +--------------------+                                  #   *
+*   #                                                          #   *
+*   ######o#########################################o###########   *
+*         |                                         |              *
+*         |                                         |              *
+**********|*****************************************|***************
+          |                                         |
+          | Registrant Information Service          |
+          | (e.g. WHOIS, RDAP, etc.)                | DNS
+          |              +---------------+          |
+          '--------------o Lookup Client o----------'
+                         +---------------+
 ~~~~
 {:fig #dime-arch-fig title="DIME Logical Components"}
 
-## DRIP Provisioning Agent (DPA) {#dpa}
+## DIME Provisioning Agent (DPA) {#dpa}
 
-The DPA performs the important task of vetting information coming from clients wishing to register and then delegates (internally or externally) various items to other components in the DIME. This is the primary component that handles all DRIP related cryptographic operations for incoming registrations to the DIME.
+The DPA performs the task of vetting information coming from clients wishing to register and then delegates (internally or externally) various items to other components in the DIME. This is the primary component that handles all DRIP related cryptographic operations for incoming registrations to the DIME.
 
 The DPA:
 
 - MUST have a publicly accessible and discoverable HTTPS interface for clients to register through
-- MUST use a provided interface from a DRIP Information Agent ({{dia}})
-- MUST use a provided interface from a Registry/Name Server ({{nameserver}})
+- MUST use a provided interface from a Registrar ({{nameserver}})
 
 Specific details of the public HTTPS interface (such as advertisement) is out of scope for this document.
 
-## Registry & Name Server (NS) {#nameserver}
+A DPA can be considered an additional specific function to an existing DNS Registrar for DRIP. It MAY be a separate service or entity that interfaces with a DNS Registrar.
 
-The Registry & Name Server component handles all the required DNS based requirements of the DIME to function. This includes the registration and maintenance of various DNS Resource Records used in public lookups.
+## Registrar & Registry {#nameserver}
 
-The Registry:
+The Registrar and Registry and pre-existing components used in DNS. These components interface the DIME into the DNS hierarchy and thus operation SHOULD follow best common practices, specifically in security (such as running DNSSEC) as appropriate.
 
-- MUST provide an interface (for example EPP) for management of DNS functions
-- MUST provide a standard DNS query interface
-
-The detailed specification of either interface is out of scope for this document.
-
-The Registry is the component that interfaces the DIME into the DNS hierarchy and thus operation SHOULD follow best common practices, specifically in security (such as running DNSSEC) as appropriate. Specific instruction for operating a Registry & Name Server is out of scope for this document. However the following references are presented as pointers to material that might be useful: TODO: add list of useful RFCs?
+Existing functions and interface/protocol specifications for Registrars and Registries are out of scope for this document. However the following references are presented as pointers to material that might be useful: TODO: add list of useful RFCs?
 
 > Author Note: This may be very important here as we should not preclude a USS from running his own Name Server but they are not DNS experts and will need guidance or at least pointers to it to not mess it up. Such as SOA and NS formats to allow delegation if acting as an RAA.
 
-## DRIP Information Agent (DIA) & Registration Data Directory Service (RDDS) {#dia}
+## DIME Information Agent (DIA) {#dia}
 
-The DIA is the main component handling information ingress (via registration) and egress (via lookup) of the RDDS.
+The DIA is the main component handling information egress (via lookup) of the Registry.
 
 The DIA:
 
@@ -298,9 +304,9 @@ The DIA:
   - if this interface is publicly available it MUST use Registration Data Access Protocol (RDAP) ({{RFC7480}}, {{RFC9082}} and {{RFC9083}})
   - if this interface is not publicly available its specification is out of scope for this document
 
-Certain information stored within the RDDS, due to policy, may be considered PII and MUST be protected from access using AAA (for example using XACML). See {{dap}} for more information.
+Certain information stored, due to policy, may be considered PII and MUST be protected from access using AAA (for example using XACML). See {{dap}} for more information.
 
-The interface between a DIA and an RDDS is out of scope for this document.
+A DIA can be considered an additional function to an existing DNS Registry for DRIP. It MAY be a separate service or entity that interfaces with a DNS Registry.
 
 # DET Registration Process
 
@@ -316,34 +322,6 @@ Generically a DET can be used as an identifier for any client in UTM and SHOULD 
 
 Such specification beyond using DETs as a Session ID and/or Key ID ({{det-auth-reg}}, {{det-id-reg}} and {{det-id-auth-reg}}) is out of scope for this document.
 
-In the following subsections an abbreviated form of {{dime-arch-fig}} seen below in {{process-example}} uses co-located components to describe the flow of information. Each section gives specific example details for the components, interfaces and data elements. Each section has an associated appendix ({{dns-examples}}) containing DNS examples.
-
-~~~~
-    +----------+
-    |  Client  |
-    +--o---o---+
-       |   ^
- (1,2) |   | (5)
-       |   |
-*******|***|*****************************
-*      |   |      DIME                  *
-*      |   |                            *
-*      v   |             +----------+   *
-*   +--o---o--+          |          |   *
-*   | DPA (2) o--------->o          |   *
-*   +----o----+   (4)    |          |   *
-*        |               |          |   *
-*        | (3)           | DIA/RDDS |   *
-*        v               |          |   *
-*   +----o--------+      |          |   *
-*   | Registry/NS |      |          |   *
-*   +-------------+      |          |   *
-*                        +----------+   *
-*                                       *
-*****************************************
-~~~~
-{:fig #process-example title="Example Registration Process"}
-
 ## DET Registration Data Model {#det-reg-model}
 
 The following is the general data model for DET registration data to be sent to the DPA from a client. This model is defined for and used by {{det-auth-reg}}, {{det-id-reg}} and {{det-id-auth-reg}}.
@@ -353,14 +331,18 @@ det_registration_info = {
     serial_number: tstr .size 20,  ; ANSI CTA2063-A UAS Serial Number
     uas_id: bstr .size 20,  ; UAS ID per ASTM F3411-22a Basic ID Message
     uas_id_type: 0..15,  ; UAS ID Type per ASTM F3411-22a
-    ? key_id: bstr,
     ? self_endorsement: bstr .size 120,
+    ? key_binding,
     ? utm_binding,
     * tstr => any
 }
 utm_binding = (
     utm_id: bstr .size 16,  ; Operational Intent (UUIDv4)
     utm_source: tstr  ; URI to USS with Operational Intent
+)
+key_binding = (
+    key_id: bstr,
+    key: bstr
 )
 ~~~~
 
@@ -374,13 +356,17 @@ UAS Serial Number:
 
 UTM Assigned ID:
 
-: also known as an Operational Intent, defined per ADD-UTM-REF and ASTM {{F3411}} as a UUIDv4.
+: also known as an Operational Intent, defined per ADD-UTM-REF and ASTM {{F3411}} as a UUIDv4. Part of the UTM Binding group which also includes the source URI of the Operational Intent.
+
+Key ID:
+
+: part of the Key Binding group which also includes a raw key value.
 
 Self Endorsement:
 
 : defined per {{endorsements}} and {{se}}. See {{se-handling}} for handling specific instructions during registration.
 
-It is RECOMMENDED that the information above is signed over in some way to ensure integrity of the registration data. A recommended way to do this is with a JWT{{RFC7519}} or CWT {{RFC8392}} using the clients key.
+It is RECOMMENDED that the information above is signed over in some way to ensure integrity of the registration data. The recommended way to do this is with a Endorsement ({{endorsements}}). Another way is with a JWT{{RFC7519}} or CWT {{RFC8392}} using the clients key.
 
 Other data elements MAY be added to this model. A DIME MUST have a public API detailing additional elements expected for their implementations. These elements and reference is out of scope for this document.
 
@@ -398,7 +384,7 @@ The value is verified by the DPA and its contents used to generate a Broadcast E
 
 ### Service Tuple
 
-Five critical pieces of information are required to provide the services listed in {{intro-concept}} that make a tuple. These are: UAS ID, UAS ID Type, UAS Serial Number, Key ID and UTM Assigned ID. The UAS ID, UAS ID Type and UAS Serial Number fields are mandatory and MUST NOT be null for entry as defined .
+Five critical pieces of information are required to provide the services listed in {{intro-concept}} that make a tuple. These are: UAS ID, UAS ID Type, UAS Serial Number, Key ID and UTM Assigned ID. The UAS ID, UAS ID Type and UAS Serial Number fields are mandatory and MUST NOT be null for entry as defined.
 
 This tuple encodes the services that the specific registration is being used. A few examples can be seen in the table below.
 
@@ -733,11 +719,12 @@ type = uint .size(2)
 status = uint .size(1)
 abbreviation = tstr .size(15)
 endorsements = [1* endorsement]  ; MUST be in e-type order
+uris = [* #6.32]
 ~~~~
 {:fig #rr-wire-cddl title="Resource Record Wire CDDL"}
 
 ~~~~
-<domain> HHIT IN ( HHIT TYPE STATUS ABBREV [Endorsement(s)] )
+<domain> HHIT IN ( HHIT TYPE STATUS ABBREV [Endorsement(s)] [URI(s)])
 ~~~~
 {:fig #rr-text-cddl title="Resource Record Text CDDL"}
 
@@ -756,6 +743,10 @@ Abbreviation:
 Endorsements:
 
 : This field is a list of CBOR encoded Endorsements in `e-type` order. It MUST included at least one Broadcast Endorsement ({{be}}). A special case for the Apex is that the Broadcast Endorsement is filled with its own DET and HI as evidence (i.e. a self-signed Broadcast Endorsement).
+
+URIs:
+
+: This field is a list of URIs that can be used for the given HHIT to obtain information. URIs are encoded in the CBOR.
 
 # HID Abbreviation Recommendation {#hid-abbreviation}
 
