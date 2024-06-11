@@ -3,7 +3,7 @@ coding: utf-8
 
 title: DRIP Entity Tag (DET) Identity Management Architecture
 abbrev: DETIM Architecture
-docname: draft-ietf-drip-registries-16
+docname: draft-ietf-drip-registries-17
 category: std
 
 ipr: trust200902
@@ -108,7 +108,58 @@ This document uses the Concise Data Definition Language (CDDL) {{RFC8610}} for d
 
 DETs MUST be registered within the hierarchy to become legitimate. DIME's are the points in the hierarchy that enforce requirements on registration and information access. This document standardizes the basic interactions and methods for registration and lookup to support interoperability based around DETs. Other identifiers and their methods are out of scope for this document.
 
-This document selects the Domain Name System (DNS) as the Public Information Registry for both storing and retrieving public information, such as the public key of DETs and pointers to Private Information Registries. Personally Identifiable Information (PII) is stored in Private Information Registries and MUST be protected through AAA. AAA mechanisms to protect PII is out of scope for this document.
+Authoritative Name Servers of the Domain Name System (DNS) provide the Public Information resource for both storing and retrieving public information, such as the public key of DETs and pointers to Private Information resources. Personally Identifiable Information (PII) SHOULD be stored in Private Information Registries and MUST be protected through AAA. AAA mechanisms to protect PII are out of scope for this document.
+
+> Author Note(Jim TODO): The DNS Registrar/Registry model identifies roles, does not imply strict adherence to current DNS practices. For example Registry/Registrar roles could be combined, may not be operated by conventional DNS Registries or Registrars. These will ultimately be determined by the CAA.
+
+{{dns-map}} is intended to show this mapping of DRIP Information Registry functions and existing DNS concepts. This figure is not meant to be exhaustive or explain how the DNS functions. It only show where DRIP overlays with the DNS.
+
+~~~~
++--------------------------+
+| DNS: Registrant          |
++--------------------------+
+| DRIP: UAS Operators & UA |
++-------o------------------+
+        |
+        | Domain/DET 
+        | Registration Request
+        |
++-------o-----------------------------+
+| DNS: Registrar                      |
++-------------------------------------+
+| DRIP: DIME Provisioning Agent (DPA) |
++-------o-----------------------------+
+        |
+        | Updates to 
+        | Registry Database
+        |
++-------o----------------------------+
+| DNS: Registry Operator             |
++------------------------------------+
+| DRIP: DIME Information Agent (DIA) |
++-------o-------------------------o--+
+        |                         |
+        | Zone File               | Domain/DET
+        | Update(s)               | Details
+        |                         |
++-------o---------------+    +----o------------------+ 
+| DNS: Authoritative    |    | DNS/DRIP: Private     |
+|      Name Server (NS) |    |           Information |
++-----------------------+    |           Registry    |
+| DRIP: Public          |    +--o--------------------+
+|       Information     |       |
+|       Registry        |       | Registrant
++--------------------o--+       | Information Service 
+                     |          | (e.g. WHOIS, RDAP, etc.)
+                     | DNS      |
+                     |          |
+                  +--o----------o--+
+                  | DNS: Resolver  |
+                  +----------------+
+                  | DRIP: Observer |
+                  +----------------+
+~~~~
+{:fig #dns-map title="DNS & DRIP Terminology/Role Mapping"}
 
 For UAS, a DIME can provide the following registration and lookup services:
 
@@ -223,9 +274,11 @@ An RAA may assign a block of values to an individual organization. This is compl
 
 # DIME Architecture {#dime-arch}
 
-The DIME, in any of its roles ({{dime-roles}}), is comprised of a number of logical components that are depicted in {{dime-arch-fig}}. Any of these components could be delegated to other entities as a service both co-located or remote.
+The DIME, in any of its roles ({{dime-roles}}), is comprised of a number of logical components that are depicted in {{dime-arch-fig}}. Any of these components could be merged or delegated to other entities as a service.
 
-Interfaces with a specific transport requirement (such as HTTPS) are labeled accordingly. Interfaces not labeled can be implementation specific or proprietary due to co-location of components. For example the interface between the DPA and a Registrar, when delegated, might be Extensional Provisioning Protocol (EPP) {{RFC5730}} while implementations co-locating these components might use an internal code library. These non-labeled interfaces are out of scope for this document.
+Interfaces with a specific transport requirement (such as HTTPS) are labeled accordingly. Interfaces not labeled can be implementation specific or proprietary due to co-location of components. For example the interface between the DPA and a Registrar, when delegated, might be Extensional Provisioning Protocol (EPP) {{RFC5730}} while implementations combining these components might use an internal and possibly proprietary code library. These non-labeled interfaces are out of scope for this document.
+
+> Author Note: ensure below diagram aligns with General Concept diagram
 
 ~~~~
 +--------------------+
@@ -263,8 +316,9 @@ Interfaces with a specific transport requirement (such as HTTPS) are labeled acc
 *         |                                         |              *
 **********|*****************************************|***************
           |                                         |
-          | Registrant Information Service          |
-          | (e.g. WHOIS, RDAP, etc.)                | DNS
+          | Registrant Information Service          | DNS
+          | (e.g. WHOIS, RDAP, etc.)                | 
+          |                                         |
           |              +---------------+          |
           '--------------o Lookup Client o----------'
                          +---------------+
@@ -273,40 +327,44 @@ Interfaces with a specific transport requirement (such as HTTPS) are labeled acc
 
 ## DIME Provisioning Agent (DPA) {#dpa}
 
-The DPA performs the task of vetting information coming from clients wishing to register and then delegates (internally or externally) various items to other components in the DIME. This is the primary component that handles all DRIP related cryptographic operations for incoming registrations to the DIME.
+The DPA performs the task of vetting information coming from clients wishing to register. It then delegates (internally or externally) various items to other components in the DIME. This is the primary component that handles all DRIP related cryptographic operations for incoming registrations to the DIME.
 
 The DPA:
 
-- MUST have a publicly accessible and discoverable HTTPS interface for clients to register through
-- MUST use a provided interface from a Registrar ({{nameserver}})
+- SHOULD have a publicly accessible and discoverable interface for clients to register
+- MAY use a provided interface from a DNS provider ({{nameserver}})
 
-Specific details of the public HTTPS interface (such as advertisement) is out of scope for this document.
+Specific details of the above interfaces (such as advertisement) is out of scope for this document.
 
-A DPA can be considered an additional specific function to an existing DNS Registrar for DRIP. It MAY be a separate service or entity that interfaces with a DNS Registrar.
+A DPA can be considered an additional specific function to an existing DNS Registrar for DRIP. It MAY be a separate service or entity that interfaces with a DNS provider.
 
 ## Registrar & Registry {#nameserver}
 
-The Registrar and Registry and pre-existing components used in DNS. These components interface the DIME into the DNS hierarchy and thus operation SHOULD follow best common practices, specifically in security (such as running DNSSEC) as appropriate.
+The Registrar and Registry are commonly used concepts in the DNS. These components interface the DIME into the DNS hierarchy and thus operation SHOULD follow best common practices, specifically in security (such as running DNSSEC) as appropriate. The following RFCs may be of use:
 
-Existing functions and interface/protocol specifications for Registrars and Registries are out of scope for this document. However the following references are presented as pointers to material that might be useful: TODO: add list of useful RFCs?
+> Author Note(Jim TODO): BCPs for DNS operation
 
-> Author Note: This may be very important here as we should not preclude a USS from running his own Name Server but they are not DNS experts and will need guidance or at least pointers to it to not mess it up. Such as SOA and NS formats to allow delegation if acting as an RAA.
+Existing functions and interface/protocol specifications for Registrars and Registries are out of scope for this document. However the following references are presented as pointers to material that might be useful:
+
+> Author Note(Jim TODO): useful RFCs for EPP/RDAP/etc. Core protocol specifications.
+
+> Author Note(Jim TODO): mention might have an EPP extension in future for DRIP contents. HHIT RR as EPP scheme?
 
 ## DIME Information Agent (DIA) {#dia}
 
-The DIA is the main component handling information egress (via lookup) of the Registry.
+The DIA is the main component handling information egress (via lookup) of the DIME. Public information SHOULD be in Authoritative Name Servers and MAY be mirrored into the Private Information Registry. Related metadata and/or PII MUST be stored in a Private Information Registry and MAY be available via RDAP or equivalent.
 
 The DIA:
 
-- MUST have an access controlled interface for add/delete/update of information that MAY be publicly available
-  - this interface definition is out of scope for this document
-- MUST have an access controlled interface to query for information that MAY be publicly available
-  - if this interface is publicly available it MUST use Registration Data Access Protocol (RDAP) ({{RFC7480}}, {{RFC9082}} and {{RFC9083}})
+- MUST have an access controlled interface for add/delete/update of information; this interface MAY be publicly available
+  - this interface definition, for example an EPP schema, is out of scope for this document
+- SHOULD have an access controlled interface to query for information; this interface MAY be publicly available
+  - if this interface is publicly available it MAY use RDAP or equivalent protocols
   - if this interface is not publicly available its specification is out of scope for this document
 
-Certain information stored, due to policy, may be considered PII and MUST be protected from access using AAA (for example using XACML). See {{dap}} for more information.
+Certain information may be considered PII. This is a National Matter, subject to prevailing national laws and regulations. Such data MUST be protected from access using AAA (for example using XACML). These decisions should be determined by the CAA. See {{dap}} for more information.
 
-A DIA can be considered an additional function to an existing DNS Registry for DRIP. It MAY be a separate service or entity that interfaces with a DNS Registry.
+A DIA can be considered an additional function to an existing DNS Registry Operator for DRIP. It MAY be a separate service or entity that interfaces with a DNS provider.
 
 # DET Registration Process
 
