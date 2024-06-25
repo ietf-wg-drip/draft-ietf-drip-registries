@@ -1,0 +1,23 @@
+endorsement = #6.TBD([
+    e-type, 
+    scope, 
+    ? $$evidence, 
+    $$endorser, 
+    $$signature
+])
+
+e-type = uint .size(2)
+scope = {
+    vnb: time, 
+    vna: time, 
+    * tstr => any
+}
+
+$$endorser //= (hhit,)
+$$endorser //= (hhit, eddsa25519-hi,)
+$$endorser //= (eddsa25519-hi,)
+$$signature //= (eddsa25519-sig,)
+
+hhit = #6.54(bstr .size(16))
+eddsa25519-hi = bstr .size(32)
+eddsa25519-sig = bstr .size(64)

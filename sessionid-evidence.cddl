@@ -1,0 +1,9 @@
+$$evidence //= ({
+    serial_number: bstr .size(20),
+    uas_id_type: 0..15,
+    uas_id: bstr .size(20),
+    dki: dki-grp
+},)
+dki-grp = {
+    hi: bstr .size(32)
+}
