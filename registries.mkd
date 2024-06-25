@@ -110,7 +110,7 @@ DETs MUST be registered within the hierarchy to become legitimate. DIME's are th
 
 Authoritative Name Servers of the Domain Name System (DNS) provide the Public Information resource for both storing and retrieving public information, such as the public key of DETs and pointers to Private Information resources. Personally Identifiable Information (PII) SHOULD be stored in Private Information Registries and MUST be protected through AAA. AAA mechanisms to protect PII are out of scope for this document.
 
-> Author Note(Jim TODO): The DNS Registrar/Registry model identifies roles, does not imply strict adherence to current DNS practices. For example Registry/Registrar roles could be combined, may not be operated by conventional DNS Registries or Registrars. These will ultimately be determined by the CAA.
+> TODO(Jim): The DNS Registrar/Registry model identifies roles, does not imply strict adherence to current DNS practices. For example Registry/Registrar roles could be combined, may not be operated by conventional DNS Registries or Registrars. These will ultimately be determined by the CAA.
 
 {{dns-map}} is intended to show this mapping of DRIP Information Registry functions and existing DNS concepts. This figure is not meant to be exhaustive or explain how the DNS functions. It only show where DRIP overlays with the DNS.
 
@@ -250,7 +250,7 @@ It should be noted that the range of codes from 900 to 999 are defined (by ISO 3
 
 How a CAA handles their allocated values is out of scope of this document. Control of these values are expected to be claimed by their respective owner. How they are vetted and validated is out of scope of this document. Protection against fraudulent claims of one of these values is out of scope for this document.
 
-> Author Note: get ISO reference for document and for reserved/special allocations. Reference/steal from ENUM document text on delegation procedure. How country code delegations are done through ICAO.
+> TODO: get ISO reference for document and for reserved/special allocations. Reference/steal from ENUM document text on delegation procedure. How country code delegations are done through ICAO.
 
 > Informational Note: A single entity may control more than one NAS (for example LU and BE being covered by Skeyes.be) and would manage two allocation spaces. How this is claimed and handled is out of scope for this document.
 
@@ -258,7 +258,7 @@ How a CAA handles their allocated values is out of scope of this document. Contr
 
 The RAA range of 16376 (0x3FF8) to 16383 (0x3FFF), eight (8) RAAs, is allocated to the DRIP working group itself as an experimental range. RAA 16376 is already "in use" with `driptesting.org`. The rest of the range (16377 to 16383) are reserved to be allocated by a designated expert to agencies or organizations that wish to test for a period of time.
 
-> Author Note: ietf leadership has to choose DE
+> TODO: ietf leadership has to choose DE
 
 ## Hierarchial HIT Domain Authority (HDA) {#hda}
 
@@ -280,7 +280,7 @@ The DIME, in any of its roles ({{dime-roles}}), is comprised of a number of logi
 
 Interfaces with a specific transport requirement (such as HTTPS) are labeled accordingly. Interfaces not labeled can be implementation specific or proprietary due to co-location of components. For example the interface between the DPA and a Registrar, when delegated, might be Extensible Provisioning Protocol (EPP) {{RFC5730}} while implementations combining these components might use an internal and possibly proprietary code library. These non-labeled interfaces are out of scope for this document.
 
-> Author Note: ensure below diagram aligns with General Concept diagram
+> TODO: ensure below diagram aligns with General Concept diagram
 
 ~~~~
 +--------------------+
@@ -336,7 +336,7 @@ The DPA:
 - SHOULD have a publicly accessible and discoverable interface for clients to register
 - MAY use a provided interface from a DNS provider ({{nameserver}})
 
-> Author Note: MAY clause is clumsy unclear meaning (SWC); Jim to take another look.
+> TODO: MAY clause is clumsy unclear meaning (SWC); Jim to take another look.
 
 Specific details of the above interfaces (such as advertisement) are out of scope for this document.
 
@@ -346,13 +346,13 @@ A DPA can be considered an additional specific function to an existing DNS Regis
 
 The Registrar and Registry are commonly used concepts in the DNS. These components interface the DIME into the DNS hierarchy and thus operation SHOULD follow best common practices, specifically in security (such as running DNSSEC) as appropriate. The following RFCs may be of use:
 
-> Author Note(Jim TODO): BCPs for DNS operation
+> TODO(Jim): BCPs for DNS operation
 
 Existing functions and interface/protocol specifications for Registrars and Registries are out of scope for this document. However the following references are presented as pointers to material that might be useful:
 
-> Author Note(Jim TODO): useful RFCs for EPP/RDAP/etc. Core protocol specifications.
+> TODO(Jim): useful RFCs for EPP/RDAP/etc. Core protocol specifications.
 
-> Author Note(Jim TODO): mention might have an EPP extension in future for DRIP contents. HHIT RR as EPP scheme?
+> TODO(Jim): mention might have an EPP extension in future for DRIP contents. HHIT RR as EPP scheme?
 
 ## DIME Information Agent (DIA) {#dia}
 
@@ -479,7 +479,7 @@ DNSSEC is strongly RECOMMENDED (especially for RAA-level and higher zones). When
 
 Static UAS specific information that is publicly available MAY also be stored in DNS but is out of scope for this document. This specific information in REF-TODO-SN-UAS-DNS.
 
-> Author Note: proposal for a UAS RR that is a CBOR map of static UAS data elements (UAS ID, UAS Type, Self Description, etc.) -- DO AS INFO APPENX
+> TODO(ATW): proposal for a UAS RR that is a CBOR map of static UAS data elements (UAS ID, UAS Type, Self Description, etc.) -- DO AS INFO APPENX
 
 For DRIP, IANA has agreed to act as the Apex at least initially (see {{iana-apex}} for more details). The delegation of civil aviation authorities to RAAs is already done per {{iso3166}} using their ISO 3166-1 Numeric Codes. Since these are public, any entity can stand up an RAA with that value. The Apex SHOULD be the root of trust in a Endorsement or certificate chain that provides validation of any of these specific RAAs, in the ISO RAA range, thus protecting against bad actors standing up fraudulent RAAs.
 
@@ -709,7 +709,7 @@ This attribute could also allow for a single DIME to be "federated" across multi
 
 ## DET Generation {#det-gen-concern}
 
-> Author Note: is this section valid anymore? Perhaps we hard specify that devices ONLY generate on their own hardware instead of "out-sourcing" as this section implies.
+> TODO(ATW): is this section valid anymore? Perhaps we hard specify that devices ONLY generate on their own hardware instead of "out-sourcing" as this section implies.
 
 Under the FAA {{FAA-RID-NPRM}}, it is expecting that Session IDs for UAS are assigned by the UTM and are one-time use. The methods for this however are unspecified leaving two options.
 
