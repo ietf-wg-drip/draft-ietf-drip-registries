@@ -84,29 +84,29 @@ informative:
 
 --- abstract
 
-This document describes the high level architecture for the registration and discovery of DRIP Entity Tags (DETs) using DNS. Discovery of DETs and related metadata is performed via DRIP specific DNS structures and standard DNS methods. A general overview of the interfaces required between involved components is described in this document with future supporting documents giving technical specifications.
+This document describes the high level architecture for the registration and discovery of DRIP Entity Tags (DETs) using DNS. Discovery of DETs and related metadata is performed via DRIP specific DNS structures and standard DNS methods. A general overview of the interfaces required between involved components is provided in this document with future supporting documents to provide technical specifications.
 
 --- middle
 
 # Introduction
 
-Registries are fundamental to Unmanned Aircraft System (UAS) Remote ID (RID). Only very limited operational information can be sent via Broadcast RID, but extended information is sometimes needed. The most essential element of information is the UAS ID, the unique key for lookup of extended information in relevant registries (see Figure 4 of {{RFC9434}}).
+Registries are fundamental to Unmanned Aircraft System (UAS) Remote Identification (RID). Only very limited operational information can be sent via Broadcast RID, but extended information is sometimes needed. The most essential element of information is the UAS ID, the unique key for lookup of extended information in relevant registries (see Figure 4 of {{RFC9434}}).
 
-Such extended information is retrieved from the UAS ID via the use of a DRIP Entity Tag (DET) {{RFC9374}} which is managed by the DRIP Identity Management Entity (DIME). In this document we assume the DIME belongs to the UAS Service Suppliers (USS) (Appendix A.2 of {{RFC9434}}) but a DIME can be independent or handled by another entity as well.
+Such extended information is retrieved from the UAS ID via the use of a DRIP Entity Tag (DET) {{RFC9374}} which is managed by the DRIP Identity Management Entity (DIME). In this document we assume the DIME is a function of UAS Service Suppliers (USS) (Appendix A.2 of {{RFC9434}}) but a DIME can be independent or handled by another entity as well.
 
 While most data to be sent via Broadcast RID (Section 1.2.1 of {{RFC9434}}) or Network RID (Section 1.2.2 of {{RFC9434}}) is public, much of the extended information will be private. As discussed in Section 7 of {{RFC9434}}, Authentication, Attestation, Authorization, Access Control, Accounting, Attribution, and Audit (typically known as AAA) is essential, not just to ensure that access is granted only to strongly authenticated, duly authorized parties, but also to support subsequent attribution of any leaks, audit of who accessed information when and for what purpose. As specific AAA requirements will vary by jurisdictional regulation, provider choices, customer demand, etc., they are left to specification in policies which are out of scope for this document.
 
 The intent of the access control requirements is to ensure that no member of the public would be hindered from accessing public information, while only duly authorized parties would be enabled to access private information.
 
-Registration is necessary to guarantee the uniqueness of the DET and thus to ensure the extended information is bound to the UAS ID.
+Registration is necessary to guarantee the uniqueness of the DET and thus to ensure the extended information is bound to the UAS ID and that the required public/private information has been submitted , approved and recorded.
 
-This document creates the DRIP registration and discovery architecture focusing on the DET for UAS at its surrounding ecosystem. Clients in the architecture that can use a DET include Unmanned Aircraft (UA), Registered Assigning Authority (RAA), Hierarchical HIT Domain Authority (HDA), Ground Control Station (GCS), and USS.
+This document refines the DRIP registration and discovery architecture focusing on the DET for UAS and its surrounding ecosystem. Clients in the architecture that can use a DET include Unmanned Aircraft (UA), Ground Control Station (GCS), Hierarchical HIT Domain Authority (HDA), Registered Assigning Authority (RAA) and USS.
 
 This document uses the Concise Data Definition Language (CDDL) {{RFC8610}} for describing the registration data.
 
 # General Concept {#intro-concept}
 
-DETs MUST be registered within the hierarchy to become legitimate. DIME's are the points in the hierarchy that enforce requirements on registration and information access. This document standardizes the basic interactions and methods for registration and lookup to support interoperability based around DETs. Other identifiers and their methods are out of scope for this document.
+DETs MUST be registered within the hierarchy to become legitimate. DIME's are the points in the hierarchy that enforce requirements on registration and information access. This document standardizes the basic interactions and methods for registration and lookup to support interoperability of DETs. Other identifiers and their methods are out of scope for this document.
 
 Authoritative Name Servers of the Domain Name System (DNS) provide the Public Information resource for both storing and retrieving public information, such as the public key of DETs and pointers to Private Information resources. Personally Identifiable Information (PII) SHOULD be stored in Private Information Registries and MUST be protected through AAA. AAA mechanisms to protect PII are out of scope for this document.
 
@@ -131,7 +131,7 @@ Authoritative Name Servers of the Domain Name System (DNS) provide the Public In
 +-------o-----------------------------+
         |
         | Updates to 
-        | Registry Database
+        | Registry Database (e.g. EPP)
         |
 +-------o----------------------------+
 | DNS: Registry Operator             |
@@ -139,8 +139,8 @@ Authoritative Name Servers of the Domain Name System (DNS) provide the Public In
 | DRIP: DIME Information Agent (DIA) |
 +-------o-------------------------o--+
         |                         |
-        | Zone File               | Domain/DET
-        | Update(s)               | Details
+        | Zone File               | Domain
+        | Update(s)               | Metadata
         |                         |
 +-------o---------------+    +----o------------------+ 
 | DNS: Authoritative    |    | DNS/DRIP: Private     |
@@ -161,19 +161,21 @@ Authoritative Name Servers of the Domain Name System (DNS) provide the Public In
 ~~~~
 {:fig #dns-map title="DNS & DRIP Terminology/Role Mapping"}
 
+## UAS DIME Services
+
 For UAS, a DIME can provide the following registration and lookup services:
 
 1. personal information (e.g. for pilots and operators)
 2. UAS Serial Number and aircraft physical characteristics
-3. DETs as a Key ID for UAS RID Authentication ({{drip-auth}})
-4. DETs as a pseudo-anonymous UAS Specific Session ID (UAS ID Type 4)
+3. a Key ID for UAS RID Authentication (for example {{drip-auth}})
+4. a pseudo-anonymous UAS Specific Session ID (for example {{RFC9374}})
 5. binding of UAS ID to UTM Operational Intent
 
 A DIME's services are determined by their intended role ({{dime-roles}}) and policies (both internally and from appropriate authorities). For example, services 1 and 2 can be restricted to non-public access controlled lookups with mandatory registration and 5 to publicly available but access controlled lookups.
 
-For this document only services 3 and 4, as they directly relate to DETs, are detailed. Services 1 and 5 will be talked about conceptually while service 2 is out of scope.
+For this document only services 3 and 4, when their identifier is selected as the DET, are detailed. Services 1 and 5 will be talked about conceptually while service 2 is out of scope.
 
-Requirements on the elements of information in registration and lookup (beyond the scope basic interoperability) is out of scope for this document. It is left to appropriate authorities to determine these details along with policy for access. For the UAS use-case this would be the national Civil Aviation Authorities (CAAs).
+Requirements on the elements of information in registration and lookup (beyond the scope of basic interoperability) is out of scope for this document. It is left to appropriate authorities to determine these details along with policy for access. For the UAS use-case this would be the national Civil Aviation Authorities (CAAs).
 
 # Terminology {#terminology}
 
@@ -191,7 +193,7 @@ When talking about a DIME in documents it should be referred to as the role it i
 
 # DIME Roles {#dime-roles}
 
-{{RFC9374}} defines the Hierarchical Host Identity Tag (HHIT) and further specifies an instance of them used for UAS RID called DETs. The HHIT is a 128-bit value that can be represented as an IPv6 address.
+{{RFC9374}} defines the Hierarchical Host Identity Tag (HHIT) and further specifies an instance of them used for UAS RID called DETs. The HHIT is a 128-bit value that is as an IPv6 address intended primarily as an identifier rather than locator.
 
 As a review, HHITs are comprised of four major components: a Prefix, a Hierarchy ID (HID), a HHIT Suite ID (fixed 8-bits) and an ORCHID Hash. DETs use a 28-bit prefix and 64-bit hash leaving 28-bits for the HID. For UAS RID this HID is further divided into two fields: RAA and HDA, each 14-bits in length. {{hhit-fig}} shows this breakdown.
 
@@ -223,20 +225,20 @@ The Apex is the IPv6 prefix portion of the DET associated with it which is assig
 
 For UAS RID the Apex uses IPv6 prefix of `2001:30/28` per {{RFC9374}}. Allocations of RAAs in this prefix SHOULD be done in contiguous groups of 4. This is to support the nibble reversing of the DET to be placed in DNS ({{det-dns}}). See {{iana-apex}} for the RAA allocations.
 
-Values 0 (0x0000) through 3 (0x0003) MUST be reserved for the UAS RID Apex and SHOULD be used to endorse RAA delegations in Endorsements ({{endorsements}}). While the individual Apexes can be designated for different purposes they share the same pool of RAAs to be allocated. Such operation would require policy by the administrator of the Apex to avoid simultaneous allocation and is out of scope for this document.
+RAA values 0 (0x0000) through 3 (0x0003) MUST be reserved for the UAS RID Apex and SHOULD be used to endorse RAA delegations in Endorsements ({{endorsements}}). While the individual Apexes can be designated for different purposes they share the same pool of RAAs to be allocated. Such operation would require policy by the administrator of the Apex to avoid simultaneous conflicting allocation and is out of scope for this document.
 
 ## Registered Assigning Authority (RAA) {#raa}
 
-An RAA is a business or organization that runs a DIME to register HDAs ({{hda}}). Most are expected to be CAAs (using {{iso3166}}), such as the Federal Aviation Authority (FAA), that then delegate HDAs for use in their National Air Space (NAS). This is does not preclude other entities to operate an RAA if the Apex allows it.
+An RAA is a government agency, business or other organization that runs a DIME to register HDAs ({{hda}}).For UAS RID and related aviation uses most are expected to be CAAs (using {{iso3166}}), such as the Federal Aviation Authority (FAA), that then delegate HDAs for use in their National Air Space (NAS). This is does not preclude other entities to operate an RAA if the Apex allows it.
 
 An RAA:
 
 - MUST provide a set of services to allocate HDAs to organizations
 - MUST have a public policy on what is necessary to obtain an HDA
 - SHOULD provide service level guarantees for DNS operation and registry service
-- SHOULD maintain a DNS zone minimally for discovering HIP RVS servers
+- SHOULD maintain a DNS zone minimally for discovering HIP Rendezvous (RVS) servers
   
-All RAA's MUST use the single reserved HDA value 0 (0x0000) for itself to support various functions or services. Other HDA values SHOULD be allocated or reserved per RAA policy.
+Each RAA MUST use the single reserved HDA value 0 (0x0000) for itself to support various functions or services. Other HDA values SHOULD be allocated or reserved per RAA policy.
 
 ### ISO 3166-1 Numeric Nations (INN) {#iso3166}
 
@@ -246,7 +248,7 @@ As an example the United States has an ISO 3166-1 Numeric Code of 840. This deri
 
 It should be noted that the range of codes from 900 to 999 are defined (by ISO 3166-1) as "user assigned code elements" and do not have specific claimants predefined in the RAA space. Withdrawn and other special codes also do not have predetermined claimants. These values MUST NOT be used for an RAA.
 
-How a CAA handles their allocated values are out of scope of this document. Control of these values are expected to be claimed by their respective owner. How a claim is vetted and validated is out of scope of this document. Protection against fraudulent claims of one of these values is out of scope for this document.
+How a CAA handles their allocated values is out of scope of this document. Control of these values are expected to be claimed by their respective owner. How they are vetted and validated is out of scope of this document. Protection against fraudulent claims of one of these values is out of scope for this document.
 
 > Author Note: get ISO reference for document and for reserved/special allocations. Reference/steal from ENUM document text on delegation procedure. How country code delegations are done through ICAO.
 
@@ -260,12 +262,12 @@ The RAA range of 16376 (0x3FF8) to 16383 (0x3FFF), eight (8) RAAs, is allocated 
 
 ## Hierarchial HIT Domain Authority (HDA) {#hda}
 
-An HDA may be an USS, ISP, or any third party that takes on the business to register client entities that need DETs. This includes, but is not limited to UA, GCS, UAS Operators and UAS/UTM infrastructure (such as Supplemental Data Service Providers). It SHOULD also provide needed UAS services including those required for HIP-enabled devices (e.g. RVS).
+An HDA may be an USS, ISP, or any third party that takes on the business to register client entities that need DETs. Client entities include, but is not limited to UA, GCS, UAS Operators and UAS/UTM infrastructure (such as Supplemental Data Service Providers). An HDA SHOULD also provide needed UAS services including those required for HIP-enabled devices (e.g. RVS).
 
 For UAS RID, HDAs can provide any of the following services:
 
 - registration and public lookup of DETs as a Key ID for Authentication as defined in {{drip-auth}}
-- registration and access controlled lookup of DETs as a pseudo-anonymous UAS Session ID
+- registration and access controlled lookup of DETs as a pseudonymous UAS Session ID
 - registration of UAS ID and UTM Operational Intent to bind them together (if allowed by cognizant authority)
 
 An HDA SHOULD maintain a set of RVS servers for UAS clients that may use HIP. This service MUST be discoverable through the DNS zone maintained by the HDA's RAA.
@@ -276,7 +278,7 @@ An RAA may assign a block of values to an individual organization. This is compl
 
 The DIME, in any of its roles ({{dime-roles}}), is comprised of a number of logical components that are depicted in {{dime-arch-fig}}. Any of these components could be merged or delegated to other entities as a service.
 
-Interfaces with a specific transport requirement (such as HTTPS) are labeled accordingly. Interfaces not labeled can be implementation specific or proprietary due to co-location of components. For example the interface between the DPA and a Registrar, when delegated, might be Extensional Provisioning Protocol (EPP) {{RFC5730}} while implementations combining these components might use an internal and possibly proprietary code library. These non-labeled interfaces are out of scope for this document.
+Interfaces with a specific transport requirement (such as HTTPS) are labeled accordingly. Interfaces not labeled can be implementation specific or proprietary due to co-location of components. For example the interface between the DPA and a Registrar, when delegated, might be Extensible Provisioning Protocol (EPP) {{RFC5730}} while implementations combining these components might use an internal and possibly proprietary code library. These non-labeled interfaces are out of scope for this document.
 
 > Author Note: ensure below diagram aligns with General Concept diagram
 
@@ -334,7 +336,9 @@ The DPA:
 - SHOULD have a publicly accessible and discoverable interface for clients to register
 - MAY use a provided interface from a DNS provider ({{nameserver}})
 
-Specific details of the above interfaces (such as advertisement) is out of scope for this document.
+> Author Note: MAY clause is clumsy unclear meaning (SWC); Jim to take another look.
+
+Specific details of the above interfaces (such as advertisement) are out of scope for this document.
 
 A DPA can be considered an additional specific function to an existing DNS Registrar for DRIP. It MAY be a separate service or entity that interfaces with a DNS provider.
 
@@ -352,13 +356,13 @@ Existing functions and interface/protocol specifications for Registrars and Regi
 
 ## DIME Information Agent (DIA) {#dia}
 
-The DIA is the main component handling information egress (via lookup) of the DIME. Public information SHOULD be in Authoritative Name Servers and MAY be mirrored into the Private Information Registry. Related metadata and/or PII MUST be stored in a Private Information Registry and MAY be available via RDAP or equivalent.
+The DIA is the main component handling information egress (via lookup) of the DIME. Public information SHOULD be in Authoritative Name Servers and MAY be mirrored into the Private Information Registry. Related PII MUST be stored in a Private Information Registry and MAY be available via RDAP or equivalent.
 
 The DIA:
 
 - MUST have an access controlled interface for add/delete/update of information; this interface MAY be publicly available
   - this interface definition, for example an EPP schema, is out of scope for this document
-- SHOULD have an access controlled interface to query for information; this interface MAY be publicly available
+- SHOULD have an access controlled interface to query for private information; this interface MAY be publicly available
   - if this interface is publicly available it MAY use RDAP or equivalent protocols
   - if this interface is not publicly available its specification is out of scope for this document
 
@@ -366,111 +370,86 @@ Certain information may be considered PII. This is a National Matter, subject to
 
 A DIA can be considered an additional function to an existing DNS Registry Operator for DRIP. It MAY be a separate service or entity that interfaces with a DNS provider.
 
-# DET Registration Process
+# Service Registration Process
 
-The general process for a registering DET is as follows:
+This document details the registration process for the following services using DETs:
 
-1. Verify inputs (such as Endorsement(s)) from registering client
-2. DPA checks for collision of DET and HI
-3. Populate Registry/Name Server with resource record(s)
-4. Populate RDDS via DIA with PII and other info
-5. Generate and return Endorsement(s)
+- UAS RID Authentication
+- UAS Specific Session ID
 
-Generically a DET can be used as an identifier for any client in UTM and SHOULD be registered to a DIME. For example a CAA may choose to use DETs for its Operators. A data model (such as what is specified in {{det-reg-model}}) would be required to define all the information for registration for a given classification of client.
+Specification beyond these services is out of scope for this document.
 
-Such specification beyond using DETs as a Session ID and/or Key ID ({{det-auth-reg}}, {{det-id-reg}} and {{det-id-auth-reg}}) is out of scope for this document.
+The Constrained Application Protocol (CoAP) REF-TODO is the RECOMMENDED interface method for machine to machine communication. This is due to the inherent support of HTTPS and UDP variants, thus giving great flexibility for UAS products that share properties of IoT devices. The specifics of a CoAP implementation for DIME services is out of scope for this document.
 
-## DET Registration Data Model {#det-reg-model}
+## Generic DET Registration
 
-The following is the general data model for DET registration data to be sent to the DPA from a client. This model is defined for and used by {{det-auth-reg}}, {{det-id-reg}} and {{det-id-auth-reg}}.
+Generically a DET can be used as an identifier for any node in UTM and SHOULD be registered to a DIME. For example a CAA may choose to use DETs as an identifier for its Operators. A data model would be required to define all the information for registration for a given type of client. Such data models are out of scope for this document.
+
+The general process for a registering DET is shown in {{registration-timeline}} and the accompanying text.
 
 ~~~~
-det_registration_info = {
-    serial_number: tstr .size 20,  ; ANSI CTA2063-A UAS Serial Number
-    uas_id: bstr .size 20,  ; UAS ID per ASTM F3411-22a Basic ID Message
-    uas_id_type: 0..15,  ; UAS ID Type per ASTM F3411-22a
-    ? self_endorsement: bstr .size 120,
-    ? key_binding,
-    ? utm_binding,
-    * tstr => any
-}
-utm_binding = (
-    utm_id: bstr .size 16,  ; Operational Intent (UUIDv4)
-    utm_source: tstr  ; URI to USS with Operational Intent
-)
-key_binding = (
-    key_id: bstr,
-    key: bstr
-)
+            registrant             dime
+                |                   |
+(1) GEN_DET/HI  |                   |
+                |----(2) INPUT----->|
+                |                   | (3) VALID_INPUT?
+                |<-------FAIL-------|
+                |                   | (4) DUPE_HI?
+                |<-------FAIL-------|
+                |                   | (5) DUPE_DET?
+                |<-------FAIL-------|
+                |                   | (6) GEN_BE
+                |                   | (7) UPDATE_DATABASE
+                |                   | (8) UPDATE_NS
+                |<----(9) OUTPUT----|
 ~~~~
+{:fig #registration-timeline title="DET Registration Timeline"}
 
-UAS ID Type and UAS ID:
+(1) GEN_DET/HI:
 
-: defined per ASTM {{F3411}}. See {{uas-id-handling}} for handling specific instructions during registration.
+: The registrant that plans to use the identity and its cryptographic properties MUST generate the asymmetric key-pair of their choosing and protect the private key with best common practices. The registrant SHOULD derive the corresponding DET. How the registrant obtains the desired HID for DET generation is out of scope for this document.
 
-UAS Serial Number:
+(2) INPUT:
 
-: defined per {{CTA2063A}}. Other UAS Serial Number formats (considered legacy) are out of scope for this document.
+: The registrant MUST format and send the required information for a given service registration as specified by the DIME. Specific service data models and methods, other than those proposed by this document (see {{service3-4}}), are out of scope.
 
-UTM Assigned ID:
+(3) VALID_INPUT?:
 
-: also known as an Operational Intent, defined per ADD-UTM-REF and ASTM {{F3411}} as a UUIDv4. Part of the UTM Binding group which also includes the source URI of the Operational Intent.
+: The DIME, upon receipt of service registration inputs, MUST validate the input data. This may be simply performing syntax checks to ensure the data is properly formatted all the way to full semantic validation. Signed data, such as Endorsements, MUST have their signatures verified before further processing. Failure of input validation SHOULD return errors to the registrant.
 
-Key ID:
+(4) DUPE_HI?:
 
-: part of the Key Binding group which also includes a raw key value.
+: The DIME MUST check that the proposed HI is not a duplicate already in use. The registrant SHOULD be notified with an error if duplication is detected.
 
-Self Endorsement:
+(5) DUPE_DET?:
 
-: defined per {{endorsements}} and {{se}}. See {{se-handling}} for handling specific instructions during registration.
+: The DIME MUST check that the proposed DET, derived from the HI, is not a duplicate already in use. If the registrant proposed a DET with HID outside that of the DIME, it MUST be rejected. If the registrant only provided the HI, the DIME MUST generate the DET using its HID. The registrant SHOULD be notified with an error if duplication is detected.
 
-It is RECOMMENDED that the information above is signed over in some way to ensure integrity of the registration data. The recommended way to do this is with a Endorsement ({{endorsements}}). Another way is with a JWT{{RFC7519}} or CWT {{RFC8392}} using the clients key.
+(6) GEN_BE:
 
-Other data elements MAY be added to this model. A DIME MUST have a public API detailing additional elements expected for their implementations. These elements and reference is out of scope for this document.
+: The DIME, after all the above validation, MUST generate a Broadcast Endorsement using the provided HI and DET from the registrant as the evidence. This Endorsement signifies the DIME accepts the DET/HI pairing from the registrant.
 
-### UAS ID Handling {#uas-id-handling}
+(7) UPDATE_DATABASE:
 
-The `uas_id_type` field MUST be set to same UAS ID Type in the ASTM {{F3411}} Basic ID Message to ensure proper decoding of the `uas_id` field.
+: The DIME MUST update the Private Information Registry with any PII that was part of the registration. It MAY include additional metadata or public information. How the Private Information Registry is updated is out of scope for this document.
+example a CAA may choose to use DETs as an identifier for its Operators. A data model would be required to define all the information
+(8) UPDATE_NS:
 
-The `uas_id` field MUST be set with the octets found in the ASTM {{F3411}} Basic ID Message UAS ID field. By using identical contents of the Basic ID Message the Specific Session ID Type octet (the first octet in the UAS ID when using UAS ID Type is `0x4`) is preserved. When a DET is used a Session ID, the value of this first octet MUST be `0x01`.
+: The DIME MUST update the Authoritative Name Server with any public information that was part of the registration. This information MUST be stored as described in {{dns}}.
 
-### Self Endorsement {#se-handling}
+(9) OUTPUT:
 
-The `self_endorsement` is included when a DET is used either as a Session ID (in `uas_id`) or for Authentication (in `key_id`).
+: The DIME, upon successful updates of the Private Information Registry and Name Server, transmits to the registrant the list of Broadcast Endorsements that make up the trust chain for use in {{drip-auth}}.
 
-The value is verified by the DPA and its contents used to generate a Broadcast Endorsement for use in {{drip-auth}} and put into DNS.
+## Session ID & Authentication Services {#service3-4}
 
-### Service Tuple
+Both UAS RID Authentication and UAS Specific Session ID services when using DETs share a common data model for registration. Endorsements ({{endorsements}}) are the RECOMMENDED way to securely transfer information for registration.
 
-Five critical pieces of information are required to provide the services listed in {{intro-concept}} that make a tuple. These are: UAS ID, UAS ID Type, UAS Serial Number, Key ID and UTM Assigned ID. The UAS ID, UAS ID Type and UAS Serial Number fields are mandatory and MUST NOT be null for entry as defined.
-
-This tuple encodes the services that the specific registration is being used. A few examples can be seen in the table below.
-
-| Service                         | UAS ID            | UAS ID Type | UAS Serial Number | Key ID | UTM Assigned ID |
-| ------------------------------- | ----------------- | ----------- | ----------------- | ------ | --------------- |
-| DET Authentication              | TEST3ABC          | 0x1         | TEST3ABC          | DET    | -               |
-| DET Session ID                  | 0x01 + DET        | 0x4         | TEST3ABC          | -      | -               |
-| DET Session ID + Authentication | 0x01 + DET        | 0x4         | TEST3ABC          | DET    | -               |
-
-As this document focuses on DETs exclusively the use of the Key ID using other cryptographic identifiers and how to distinguish between them (such as how UAS ID and UAS ID Type is used) is out of scope of this document.
-
-## DET Authentication {#det-auth-reg}
-
-For Authentication use of a DET, registration requires the following additional data elements: `key_id`, `self_endorsement`. {{se-handling}} MUST be followed.
-
-## DET Session ID {#det-id-reg}
-
-For the registration of a DET as a Session ID the client is typically the UAS. The mechanisms of how the UAS generates a DET are out of scope for this document.
-
-For Session ID use of a DET, registration requires the following additional data elements: `self_endorsement`. Both {{uas-id-handling}} and {{se-handling}} MUST be followed.
-
-Optionally a binding between a DET and a UTM Session ID can be made by providing the information of the UTM side using `utm_id` and `utm_source`. The support of this is based on CAA policy and is out of scope for this document.
-
-## DET Session ID & Authentication {#det-id-auth-reg}
-
-For Session ID & Authentication use of a DET, registration requires the following additional data elements: `key_id`, `self_endorsement`. Both {{uas-id-handling}} and {{se-handling}} MUST be followed.
+{{service-models}} contains the general data model as well as the specific variants for Session ID & Authentication services.
 
 # Differentiated Access Process {#dap}
+
+> TODO(JIM/ATW): review this text with opsdir review in mind: https://github.com/ietf-wg-drip/draft-ietf-drip-registries/issues/31
 
 Per {{RFC9434}} all information classified as private is stored in a datastore protected using some form of differentiated access (i.e. AAA) to satisfy REG-2 from {{RFC9153}}.
 
@@ -486,6 +465,8 @@ A zero-trust model would be the most appropriate for a DAP; being highly flexibl
 
 DRIP has no intention to develop a new "art" of key management, instead hoping to leverage existing systems and be flexible enough to adapt as new ones become popular.
 
+> TODO: RDAP is preferred but may not scale. distributed controls for access and credentials
+
 # DRIP in the Domain Name System {#dns}
 
 Per {{RFC9434}} all information classified as public is stored in the DNS to satisfy REG-1 from {{RFC9153}}.
@@ -496,9 +477,9 @@ DIMEs SHOULD specify the technical and administrative criteria for the provision
 
 DNSSEC is strongly RECOMMENDED (especially for RAA-level and higher zones). When a DIME decides to use DNSSEC they SHOULD define a framework for cryptographic algorithms and key management {{RFC6841}}. This may be influenced by frequency of updates, size of the zone, and policies.
 
-Static UAS specific information that is publicly available MAY also be stored in DNS but is out of scope for this document.
+Static UAS specific information that is publicly available MAY also be stored in DNS but is out of scope for this document. This specific information in REF-TODO-SN-UAS-DNS.
 
-> Author Note: proposal for a UAS RR that is a CBOR map of static UAS data elements (UAS ID, UAS Type, Self Description, etc.)
+> Author Note: proposal for a UAS RR that is a CBOR map of static UAS data elements (UAS ID, UAS Type, Self Description, etc.) -- DO AS INFO APPENX
 
 For DRIP, IANA has agreed to act as the Apex at least initially (see {{iana-apex}} for more details). The delegation of civil aviation authorities to RAAs is already done per {{iso3166}} using their ISO 3166-1 Numeric Codes. Since these are public, any entity can stand up an RAA with that value. The Apex SHOULD be the root of trust in a Endorsement or certificate chain that provides validation of any of these specific RAAs, in the ISO RAA range, thus protecting against bad actors standing up fraudulent RAAs.
 
@@ -521,42 +502,31 @@ The CDDL was derived from the more specific structure developed for {{drip-auth}
 > Note: this section uses the term HHIT instead of DET as the Endorsements are designed to be generic and re-useable for other HHIT use-cases.
 
 ~~~~
-endorsement = 6.xxx(e-data: array)
-e-data = [e-type, scope, ? $$evidence, $$endorser, $$signature]
-
-e-type = uint .size(2)
-scope = (vnb: time, vna: time, ? $$scope-ext)
-
-$$endorser //= (hhit,)
-$$endorser //= (hhit, eddsa25519-hi,)
-$$endorser //= (eddsa25519-hi,)
-hhit = #6.54(bstr .size(16))
-eddsa25519-hi = bstr .size(32)
-
-$$signature = (eddsa25519-sig,)
-eddsa25519-sig = bstr .size(64)
+{::include endorsement.cddl}
 ~~~~
-{:fig #endorsement-cddl title="Endorsement CDDL"}
+{: #endorsement-cddl title="Endorsement CDDL"}
+
+An Endorsement is made from a CBOR array with 4-5 elements in a specific order as defined below.
 
 Endorsement Type:
 
-: a 16-bit value used to hint at the content of the `$$evidence` group. Four special values (1 through 4) map to the SAM Type of the Authentication framing in {{drip-auth}}, allowing the 16-bit value to be excluded from the Endorsement structure. See {{iana-e-types}} for more details.
+: a 16-bit value used to hint at the content of the various groups. Four special values (1 through 4) map to the SAM Type of the Authentication framing in {{drip-auth}}, allowing the 16-bit value to be excluded from the Endorsement structure. See {{iana-e-types}} for more details.
 
-Scope & Scope Extensions:
+Scope:
 
-: The `scope` section is more formally "the scope of validity of the endorsement". The scope can come in various forms but MUST always have a "valid not before" (`vnb`) and "valid not after" (`vna`) timestamps. Other forms of the scope could for example be a 4-dimensional volume definition. This could be in raw latitude, longitude, altitude pairs or may be a URI pointing to scope information. Additional scope fields are out of scope for this document and should be defined for specific Endorsement structures if they are desired using the `$$scope-ext` socket group.
+: This section is more formally known as "the scope of validity of the endorsement". The scope can come in various forms but MUST always contain a "valid not before" (`vnb`) and "valid not after" (`vna`) timestamps. Other forms of the scope could for example be a 4-dimensional volume definition. This could be in raw latitude, longitude, altitude tuples or may be a URI pointing to scope information. Additional scope fields are out of scope for this document and should be defined for specific Endorsement structures if they are desired and assigned an `e-type`.
 
 Evidence:
 
-: socket group containing a set claims. The content and order of claims is specified explicitly for each `e-type`.
+: socket group containing a set claims, usually CBOR encoded. The content and order of claims is specified explicitly for each `e-type`.
 
 Endorser:
 
-: socket group where the main identity information of the signer of the Endorsement is found. The identity can take many forms such as a handle to the identity (e.g. an HHIT), or can include more explicit data such as the public key (e.g. an HI). The content and ordering is specified explicitly for each `e-type`.
+: socket group where the main identity information of the signer of the Endorsement is found. The identity can take many forms such as a handle to the identity (e.g. an HHIT), or can include more explicit data such as the public key (e.g. an HI). The content and ordering is specified explicitly for each `e-type`. This document defines three different options for this group, using combinations of a DET and its HI.
 
 Signature:
 
-: socket group containing the signature data for the Endorsement. The content and ordering is specified explicitly for each `e-type`. Signatures MUST be generated using the preceding sections (except for `e-type`) in their binary forms (i.e. as a concatenated bytestring of values) rather than their CBOR encoding.
+: socket group containing the signature data for the Endorsement. The content and ordering is specified explicitly for each `e-type`. Signatures MUST be generated using the preceding sections (except for `e-type`) in their binary forms (i.e. as a concatenated octet-string of values) rather than their CBOR encoding. This document defines a single group option sized to an EdDSA25519 signature.
 
 {{drip-endorsements}} specifies Endorsement structures for the UAS RID use-case.
 
@@ -621,6 +591,8 @@ IANA agreed that they would be willing to manage the Apex for DRIP until the des
 
 Further discussion of the SLA required to RAAs by IANA is and other requirements to IANA are TBD.
 
+> TODO(Jim): boot strap, instructions and the like. IANA will process and verify requests of RAA values with the CAA blahhh....
+
 ## IANA DRIP Registry
 
 ### DRIP RAA Allocations {#iana-raa}
@@ -638,9 +610,9 @@ RAA Allocations:
 | 4000 - 16375  | Reserved  | N/A                        | N/A                             |
 | 16375 - 16383 | Allocated | DRIP WG (Experimental Use) | This RFC ({{experimental-raa}}) |
 
-The mapping between ISO 3166-1 Numeric Numbers and RAAs can be found as a CSV file here: TODO.
+The mapping between ISO 3166-1 Numeric Numbers and RAAs can be found as a CSV file here: TODO-REF.
 
-<!-- TODO: text on Expert Review process -->
+> TODO(Jim): text on Expert Review process
 
 ### Endorsement Types {#iana-e-types}
 
@@ -660,12 +632,10 @@ Endorsement Type:
 
 To register an `e-type` the following MUST be provided in CDDL for review:
 
-- Additions to `scope` group using `$$scope-ext`
+- Additions to `scope` map (optional)
 - Specific group contents of `$$evidence`
 - Specific group contents of `$$endorser`
 - Specific group contents of `$$signature`
-
-<!-- TODO: text on Expert Review process -->
 
 ### HHIT Type {#iana-hhit-type}
 
@@ -725,7 +695,11 @@ HHIT Status:
 
 # Security Considerations
 
+> TODO(Jim): any considerations for DNS operation?
+
 ## Key Rollover & Federation
+
+> TODO(ATW): not DNSSEC, DET key rollover make clear
 
 During key rollover the DIME MUST inform all children and parents of the change - using best standard practices of a key rollover.
 
@@ -737,7 +711,7 @@ This attribute could also allow for a single DIME to be "federated" across multi
 
 > Author Note: is this section valid anymore? Perhaps we hard specify that devices ONLY generate on their own hardware instead of "out-sourcing" as this section implies.
 
-Under the FAA {{FAA-RID-NPRM}}, it is expecting that IDs for UAS are assigned by the UTM and are generally one-time use. The methods for this however are unspecified leaving two options.
+Under the FAA {{FAA-RID-NPRM}}, it is expecting that Session IDs for UAS are assigned by the UTM and are one-time use. The methods for this however are unspecified leaving two options.
 
 Option 1:
 
@@ -755,7 +729,7 @@ DETs are built upon asymmetric keypairs. As such the public key must be revealed
 
 While unlikely the forging of a corresponding private key is possible if given enough time (and computational power). As such it is RECOMMENDED that the public key for any DET not be exposed in DNS (using the HIP RR) until it is required.
 
-Optimally this requires the UAS somehow signal the DIME that a flight using a Specific Session ID is underway or complete. It may also be facilitated under UTM if the USS (which may or may not be a DIME) signals when a given operation using a Session ID goes active.
+Optimally this requires the UAS somehow signal the DIME that a flight using a Specific Session ID will soon be underway or complete. It may also be facilitated under UTM if the USS (which may or may not be a DIME) signals when a given operation using a Session ID goes active.
 
 # Contributors
 
@@ -765,18 +739,20 @@ Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LL
 
 # HHIT Resource Record {#hhit-rr}
 
+> TODO(ATW): show example of CBOR and TXT views.
+
 This appendix is normative.
 
-The HHIT Resource Record is a metadata record for various bits of HHIT specific information that isn't available in the pre-existing HIP RR Type. It is encoded as a CBOR array.
+The HHIT Resource Record is a metadata record for various bits of HHIT specific information that isn't available in the pre-existing HIP RR Type. It is encoded as a CBOR array with a TBD CBOR Tag.
 
 ~~~~
-rr = 6.xxx(rr_data: array)
-rr_data= [hhit, type, status, abbreviation, endorsements]
+rr = #6.TBD(rr_data: array)
+rr_data = [hhit, type, status, abbreviation, endorsements]
 hhit = #6.54(bstr .size(16))
 type = uint .size(2)
 status = uint .size(1)
 abbreviation = tstr .size(15)
-endorsements = [1* endorsement]  ; MUST be in e-type order
+endorsements = [1* #6.TBD]  ; MUST be in e-type order
 uris = [* #6.32]
 ~~~~
 {:fig #rr-wire-cddl title="Resource Record Wire CDDL"}
@@ -792,7 +768,7 @@ Type:
 
 Status:
 
-: This field is a single byte with values defined in {{iana-hhit-status}}. A HHIT can go through various states during its life-cycle in the ecosystem. It is helpful for a querant to understand the current status as a further requirement for verification.
+: This field is a single byte with values defined in {{iana-hhit-status}}. A HHIT can go through various states during its life-cycle in the ecosystem. For example: TODO(ATW).
 
 Abbreviation:
 
@@ -804,7 +780,7 @@ Endorsements:
 
 URIs:
 
-: This field is a list of URIs that can be used for the given HHIT to obtain information. URIs are encoded in the CBOR.
+: This field is a list of URIs that can be used for the given HHIT to obtain information.
 
 # HID Abbreviation Recommendation {#hid-abbreviation}
 
@@ -820,25 +796,58 @@ For RAAs allocated in the ISO range {{iso3166}}, the RAA abbreviation should be 
 
 If a DIME does not have an abbreviation or it can not be looked up then the receiver must use the uppercase 4-character hexadecimal encoding of the field it is missing when using this form.
 
-# DETs as Fully Qualified Domain Names {#det-fqdn}
+# DET Services Registration Models {#service-models}
 
-This appendix is informative.
-
-> {hash}.{oga_id}.{hda}.{raa}.{prefix}.{apex}.
-
-When building a DET FQDN it MUST must be built using the exploded (all padding present) form of the IPv6 address.
+This appendix is normative.
 
 ~~~~
-Apex: .example.com
-DET: 2001:0030:0280:1405:c465:1542:a33f:dc26
-ID: c4651542a33fdc26
-OGA: 05
-HID: 0028014
-HDA: 0014
-RAA: 000a
-Prefix: 2001003
-FQDN: c4651542a33fdc26.05.0014.000a.2001003.example.com
+{::include registration-evidence.cddl}
 ~~~~
+{: #registration-evidence title="DET Registration Evidence Model"}
+
+UAS ID Type and UAS ID:
+
+: defined per ASTM {{F3411}}. See {{uas-id-handling}} for handling specific instructions during registration.
+
+UAS Serial Number:
+
+: defined per {{CTA2063A}}. Other UAS Serial Number formats (considered legacy) are out of scope for this document.
+
+UTM Assigned ID:
+
+: also known as an Operational Intent, defined per ADD-UTM-REF and ASTM {{F3411}} as a UUIDv4. Part of the UTM Binding group which also includes the source URI of the Operational Intent.
+
+It is RECOMMENDED that the information above is signed over in some way to ensure integrity of the registration data. The recommended way to do this is with a Endorsement ({{endorsements}}). Another way, the specification of which is out of scope, is with a JWT {{RFC7519}} or CWT {{RFC8392}}.
+
+Other data elements MAY be added to this model. A DIME MUST have a public API detailing additional elements expected for their implementations. These elements and reference is out of scope for this document.
+
+The following table highlights the specific fields to be set for each service, distinguished using `e-type`.
+
+| DET Service Type            | e-type | uas_id_type == 4? | det present? | hi present? |
+| --------------------------- | ------ | ----------------- | ------------ | ----------- |
+| Session ID                  | TBD1   | MUST              | MUST NOT     | MUST        |
+| Authentication              | TBD2   | MUST NOT          | MAY          | MUST        |
+| Session ID & Authentication | TBD3   | MAY               | MUST         | MUST        |
+
+## UAS ID Handling {#uas-id-handling}
+
+The `uas_id_type` field MUST be set to same UAS ID Type in the ASTM {{F3411}} Basic ID Message to ensure proper decoding of the `uas_id` field.
+
+The `uas_id` field MUST be set with the octets found in the ASTM {{F3411}} Basic ID Message UAS ID field. By using identical contents of the Basic ID Message the Specific Session ID Type octet (the first octet in the UAS ID when using UAS ID Type is `0x4`) is preserved. It is RECOMMENDED to preserve the null padding.
+
+## Registration Model Examples
+
+The following are example CDDLs for registration models for the Session ID and Authentication & Session ID services.
+
+~~~~
+{::include sessionid-evidence.cddl}
+~~~~
+{: #sessionid-evidence title="DET Session ID Registration Evidence Model"}
+
+~~~~
+{::include sid-auth-evidence.cddl}
+~~~~
+{: #sid-auth-evidence title="DET Authentication & Session ID Registration Evidence Model"}
 
 # DRIP Endorsements for UAS {#drip-endorsements}
 
