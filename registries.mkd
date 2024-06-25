@@ -47,6 +47,7 @@ informative:
     dane-clients: I-D.ietf-dance-client-auth
     drip-dki: I-D.moskowitz-drip-dki
     cbor-cert: I-D.ietf-cose-cbor-encoded-cert
+    uas-sn-dns: I-D.wiethuechter-drip-uas-sn-dns
 
     RFC1886: # ipv6 lookup
     RFC5280:
@@ -478,7 +479,7 @@ DIMEs SHOULD specify the technical and administrative criteria for the provision
 
 DNSSEC is strongly RECOMMENDED (especially for RAA-level and higher zones). When a DIME decides to use DNSSEC they SHOULD define a framework for cryptographic algorithms and key management {{RFC6841}}. This may be influenced by frequency of updates, size of the zone, and policies.
 
-Static UAS specific information that is publicly available MAY also be stored in DNS but is out of scope for this document. This specific information in REF-TODO-SN-UAS-DNS.
+Static UAS specific information that is publicly available MAY also be stored in DNS but is out of scope for this document. This specific information in {{uas-sn-dns}}.
 
 > TODO(ATW): proposal for a UAS RR that is a CBOR map of static UAS data elements (UAS ID, UAS Type, Self Description, etc.) -- DO AS INFO APPENX
 
@@ -746,22 +747,21 @@ This appendix is normative.
 
 The HHIT Resource Record is a metadata record for various bits of HHIT specific information that isn't available in the pre-existing HIP RR Type. It is encoded as a CBOR array with a TBD CBOR Tag.
 
+## Wire Format {#hhit-rr-wire}
+
 ~~~~
-rr = #6.TBD(rr_data: array)
-rr_data = [hhit, type, status, abbreviation, endorsements]
-hhit = #6.54(bstr .size(16))
-type = uint .size(2)
-status = uint .size(1)
-abbreviation = tstr .size(15)
-endorsements = [1* #6.TBD]  ; MUST be in e-type order
-uris = [* #6.32]
+{::include cddl/hhit-rr.cddl}
 ~~~~
 {:fig #rr-wire-cddl title="Resource Record Wire CDDL"}
+
+## Presentation Format {#hhit-rr-presentation}
 
 ~~~~
 <domain> HHIT IN ( HHIT TYPE STATUS ABBREV [Endorsement(s)] [URI(s)])
 ~~~~
 {:fig #rr-text-cddl title="Resource Record Text CDDL"}
+
+## Field Descriptions {#hhit-rr-fields}
 
 Type:
 
@@ -782,6 +782,67 @@ Endorsements:
 URIs:
 
 : This field is a list of URIs that can be used for the given HHIT to obtain information.
+
+## Example {#hhit-rr-example}
+
+The following example was generated using the CDDL presented in {{hhit-rr-wire}} with the tool in Appendix F of {{RFC8610}}.
+
+CBOR Tag 55799 is used in this example.
+
+~~~~
+TODO
+~~~~
+
+# UAS Broadcast RID Resource Record {#bcast-rr}
+
+This appendix is informative.
+
+The UAS Broadcast RID Resource Record type (UASRID) is a format to hold public information typically sent of the UAS Broadcast RID that is static. It can act as a data source if information is not recieved over Broascast RID or for cross validation.
+
+## Wire Format {#bcast-rr-wire}
+
+~~~~
+{::include cddl/bcast-rr.cddl}
+~~~~
+{: title="UAS RID Wire Format CDDL"}
+
+## Presentation Format {#bcast-rr-presentation}
+
+~~~~
+<domain> IN UASRID ( TODO ) 
+~~~~
+{: title="UAS RID Presentation Format"}
+
+## Field Descriptions {#bcast-rr-fields}
+
+The field names and their general typing are borrowed from the ASTM {{F3411}} data dictionary. See that document for additional information on fields semantics and units.
+
+## Example {#bcast-rr-example}
+
+The following example was generated using the CDDL presented in {{bcast-rr-wire}} with the tool in Appendix F of {{RFC8610}}.
+
+CBOR Tag 55799 is used in this example.
+
+~~~~
+d9d9f7a5687561735f747970650c677561735f696473a100548c0ee64a4212babe59e8459b25e5e550b0b3ae856875615f636c617373076865755f636c617373006b65755f63617465676f727905
+~~~~
+{: title="UASRID RR Wire Format Example (CBOR Encoded)"}
+
+~~~~
+55799({
+  "uas_type": 12,
+  "uas_ids": {0: h'8C0EE64A4212BABE59E8459B25E5E550B0B3AE85'},
+  "ua_class": 7,
+  "eu_class": 0,
+  "eu_category": 5
+})
+~~~~
+{: title="UASRID RR Wire Format Example (CBOR Decoded)"}
+
+~~~~
+TODO
+~~~~
+{: title="UASRID RR Presentation Format Example"}
 
 # HID Abbreviation Recommendation {#hid-abbreviation}
 

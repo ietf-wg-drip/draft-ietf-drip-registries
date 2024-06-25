@@ -1,0 +1,37 @@
+bcasr-rr = #6.55799({
+    uas_type: nibble-field,
+    uas_ids: {+ &uas-id-types => uas-id},
+    ? auth-grp,
+    ? self-grp,
+    ? op_type: 0..3,
+    ? area-grp,
+    ? classification-grp,
+    ? operator-grp
+})
+uas-id = bstr .size(20)
+uas-id-types = (none: 0, serial: 1, caa: 2, utm: 3, session: 4)
+auth-grp = (
+    a_type: nibble-field,
+    a_data: bstr .size(1..255),
+    ? add_a_data: bstr .size(0..255)
+)
+area-grp = (
+    area_count: 1..255,
+    area_radius: float,
+    area_floor: float,
+    area_ceiling: float
+)
+classification-grp = (
+    ua_class: 0..8,
+    eu_class: nibble-field,
+    eu_category: nibble-field
+)
+self-grp = (
+    desc_type: nibble-field,
+    description: tstr .size(23)
+)
+operator-grp = (
+    operator_id_type: nibble-field,
+    operator_id: bstr .size(20)
+)
+nibble-field = 0..15
