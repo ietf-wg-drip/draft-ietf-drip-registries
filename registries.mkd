@@ -53,6 +53,7 @@ informative:
     RFC5730: # epp
     RFC6698: # dane/tlsa
     RFC6841: # dnssec policy
+    RFC7252: # CoAP
     RFC7480: # rdap-http-use
     RFC7519: # jwt
     RFC8126: # iana-guidelines
@@ -379,7 +380,7 @@ This document details the registration process for the following services using 
 
 Specification beyond these services is out of scope for this document.
 
-The Constrained Application Protocol (CoAP) REF-TODO is the RECOMMENDED interface method for machine to machine communication. This is due to the inherent support of HTTPS and UDP variants, thus giving great flexibility for UAS products that share properties of IoT devices. The specifics of a CoAP implementation for DIME services is out of scope for this document.
+The Constrained Application Protocol (CoAP) {{RFC7252}} is the RECOMMENDED interface method for machine to machine communication. This is due to the inherent support of HTTPS and UDP variants, thus giving great flexibility for UAS products that share properties of IoT devices. The specifics of a CoAP implementation for DIME services is out of scope for this document.
 
 ## Generic DET Registration
 
