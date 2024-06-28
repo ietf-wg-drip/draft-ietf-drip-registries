@@ -1,0 +1,31 @@
+endorsement = #6.55799([
+    scope, 
+    evidence, 
+    endorser, 
+    signature
+])
+
+scope = {
+    vnb: time, ; how add offset to be ASTM epoch?
+    vna: time, 
+    ; * tstr => any
+}
+evidence = (
+    e-type-0 //
+    e-type-1 //
+    e-type-2 //
+    e-type-3 //
+    e-type-4
+)
+endorser = hhit  ; (hhit / eddsa25519-hi / [hhit, eddsa25519-hi])
+signature = eddsa25519-sig
+
+e-type-0 = [0, eddsa25519-hi]
+e-type-1 = [1, hhit, eddsa25519-hi]
+e-type-2 = [2, (*4 bstr .size(25))]
+e-type-3 = [3, (3*11 bstr .size(8))]
+e-type-4 = [4, uint .size(1), bstr .size(1..111)]
+
+hhit = #6.54(bstr .size(16))
+eddsa25519-hi = bstr .size(32)
+eddsa25519-sig = bstr .size(64)

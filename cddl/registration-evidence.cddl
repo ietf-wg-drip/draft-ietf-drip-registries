@@ -2,15 +2,12 @@ $$evidence //= ({
     serial_number: bstr .size(20),
     uas_id_type: 0..15,
     uas_id: bstr .size(20),
-    ? dki: dki-grp,
-    ? utm: utm-grp,
+    dki: hi / [det, hi] / #6.TBD,
+    ? utm: [utm-id, utm-uri],
     * tstr => any
 },)
-dki-grp = {
-    ? det: #6.48(bstr .size(16)),
-    hi: bstr .size(32)
-}
-utm-grp = {
-    utm_id: bstr .size(16),  ; uuidv4
-    source: tstr             ; uri
-}
+
+det = #6.48(bstr .size(16))
+hi = bstr .size(32)
+utm-id = bstr .size(16),  ; uuidv4
+utm_uri = #6.32(tstr)     ; uri

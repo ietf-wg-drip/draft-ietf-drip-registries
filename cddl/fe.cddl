@@ -1,0 +1,6 @@
+e-type = 4  ; SAM Type=4, Frame Endorsement
+$$evidence //= (frame-type, frame-data,)
+$$endorser //= (hhit,)
+$$signature = (eddsa25519-sig,)
+frame-type = uint .size(1)
+frame-data = bstr .size(1..111)

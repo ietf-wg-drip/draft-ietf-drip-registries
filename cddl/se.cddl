@@ -1,0 +1,4 @@
+e-type = 0  ; Self Endorsement
+$$evidence //= (eddsa25519-hi,)
+$$endorser //= (hhit,)
+$$signature = (eddsa25519-sig,)

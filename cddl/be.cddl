@@ -1,0 +1,4 @@
+e-type = 1  ; SAM Type=1, Broadcast Endorsement
+$$evidence //= (hhit, eddsa25519-hi,)
+$$endorser //= (hhit,)
+$$signature = (eddsa25519-sig,)

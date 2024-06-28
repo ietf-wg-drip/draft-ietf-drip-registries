@@ -1,4 +1,4 @@
-bcasr-rr = #6.55799({
+uasrid-rr = #6.55799({
     uas_type: nibble-field,
     uas_ids: {+ &uas-id-types => uas-id},
     ? auth-grp,
