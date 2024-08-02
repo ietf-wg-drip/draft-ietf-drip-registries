@@ -3,3 +3,4 @@
 *.html
 *.xml
 metadata.min.js
+!examples/*

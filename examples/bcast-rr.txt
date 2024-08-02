@@ -1,0 +1,7 @@
+{
+  "uas_type": 12,
+  "uas_ids": {0: h'16487EXAMPLE'},
+  "ua_class": 7,
+  "eu_class": 0,
+  "eu_category": 5
+}
