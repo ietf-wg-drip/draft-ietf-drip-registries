@@ -1,9 +1,10 @@
-hhit-rr = #6.TBD([
-    hhit, type, status, abbreviation, endorsements, uris
-])
-hhit = #6.54(bstr .size(16))
-type = uint .size(2)
-status = uint .size(1)
-abbreviation = tstr .size(15)
-endorsements = [1* #6.TBD]  ; MUST be in e-type order
-uris = [* #6.32]
+;# import broadcast-endorsement from new-be
+;# import endorsement from new-endorsement
+hhit-rr = [
+    type: uint .size(2), 
+    status: uint .size(1), 
+    hhit: #6.54(bstr .size(16)), 
+    abbreviation: tstr .size(15), 
+    endorsements: [broadcast-endorsement, * endorsement], 
+    uris: [+ #6.32(tstr)]
+]

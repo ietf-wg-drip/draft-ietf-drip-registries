@@ -1,19 +1,21 @@
-uasrid-rr = #6.55799({
+bcast-rr = {
     uas_type: nibble-field,
-    uas_ids: {+ &uas-id-types => uas-id},
-    ? auth-grp,
+    uas_ids: [+ uas-id-grp],
+    ? auth: [+ auth-grp],
     ? self-grp,
     ? op_type: 0..3,
     ? area-grp,
     ? classification-grp,
     ? operator-grp
-})
-uas-id = bstr .size(20)
-uas-id-types = (none: 0, serial: 1, caa: 2, utm: 3, session: 4)
+}
+uas-id-grp = (
+    id_type: &uas-id-types, 
+    uas_id: bstr .size(20)
+)
+uas-id-types = (none: 0, serial: 1, caa_id: 2, utm_id: 3, session_id: 4)
 auth-grp = (
     a_type: nibble-field,
-    a_data: bstr .size(1..255),
-    ? add_a_data: bstr .size(0..255)
+    a_data: bstr .size(1..362)
 )
 area-grp = (
     area_count: 1..255,

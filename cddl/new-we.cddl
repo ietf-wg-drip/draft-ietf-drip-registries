@@ -1,0 +1,6 @@
+;# import endorsement, scope-data from new-endorsement
+wrapper-endorsement = endorsement
+e-type = 2
+evidence-data = [1*4 astm-message: bstr .size(25)]
+endorser-data = #6.54(bstr .size(16))
+signature-data = bstr .size(64)

@@ -1,0 +1,8 @@
+;# import endorsement, scope-data from new-endorsement
+broadcast-endorsement = endorsement
+e-type = 1
+evidence-data = [hhit: #6.54(bstr .size(16)), hi: bstr .size(32)]
+endorser-data = #6.54(bstr .size(16))
+signature-data = bstr .size(64)
+
+

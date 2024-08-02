@@ -1,0 +1,6 @@
+;# import endorsement, scope-data from new-endorsement
+frame-endorsement = endorsement
+e-type = 4
+evidence-data = [frame-type: uint .size(1), frame-data: data]
+endorser-data = #6.54(bstr .size(16))
+signature-data = bstr .size(64)
