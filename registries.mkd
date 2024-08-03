@@ -154,7 +154,7 @@ The administration, management and policy for operation a DIME at any level in t
 
 Per {{RFC9434}} all information classified as public is stored in the DNS, specifically Authoritative Name Servers, to satisfy REG-1 from {{RFC9153}}.
 
-Authoritative Name Servers use domain names as handles and data is stored in Resource Records (RR) with associated RRTypes. This document defines two new RRTypes, one for HHIT metadata (HHIT, {{hhit-rr}}) and another for UAS Broadcast RID information (BRID, {{bcast-rr}}). The former is particularly important as it contains a list URIs that point to Private Information resources.
+Authoritative Name Servers use domain names as handles and data is stored in Resource Records (RR) with associated RRTypes. This document defines two new RRTypes, one for HHIT metadata (HHIT, {{hhit-rr}}) and another for UAS Broadcast RID information (BRID, {{bcast-rr}}). The former RRType is particularly important as it contains a list URIs that point to Private Information resources.
 
 DETs, being IPv6 addresses, MUST be under `ip6.arpa` (nibble reversed per convention) with at minimum an HIP RRType and HHIT RRType. Depending on local circumstances other RRTypes, such as the BRID or CERT RRType, MAY be present.
 
@@ -376,7 +376,7 @@ Endorsements:
 
 URIs:
 
-: This field is a list of URIs that can be followed to obtain additional information of the given HHIT.
+: This field is a list of URIs that can be followed to obtain additional information of the given HHIT. The information available following the URIs MUST be protected with a AAA mechanism, per REG-2 of {{RFC9153}}. The definition of the AAA mechanism is out of scope for this document. At least one URI in this list SHOULD use the path segment of either Section 3.1.1 (`ip/<IP address>`) or Section 3.1.3 (`domain/<domain name>`) of {{RFC9082}}. The base URL of this URI is out of scope for this document.
 
 # UAS Broadcast RID Resource Record {#bcast-rr}
 
