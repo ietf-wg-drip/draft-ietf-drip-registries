@@ -1,5 +1,0 @@
-e-type = 2 ; SAM Type=2, Wrapper Endorsement
-$$evidence //= (*4 astm-message,)
-$$endorser //= (hhit,)
-$$signature = (eddsa25519-sig,)
-astm-message = bstr .size(25)

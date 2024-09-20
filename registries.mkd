@@ -1,7 +1,7 @@
 ---
 coding: utf-8
 
-title: DRIP Entity Tag (DET) in Domain Name System (DNS)
+title: DRIP Entity Tags (DET) in the Domain Name System (DNS)
 abbrev: DET in DNS
 docname: draft-ietf-drip-registries-18
 category: std
@@ -74,6 +74,17 @@ informative:
         ASTM: F3411-22A
         DOI: 10.1520/F3411-22A
 
+    ISO3166-1:
+      title: Codes for the representation of names of countries and their subdivisions
+      author:
+        - 
+          org: International Standards Organization (ISO)
+      target: https://www.iso.org/iso-3166-country-codes.html
+      date: August 2020
+      seriesinfo:
+        ISO: 3166-1:2020
+        DOI: 
+
 --- abstract
 
 This document describes the discovery and management of DRIP Entity Tags (DETs) in DNS. Authoritative Name Servers, with DRIP specific DNS structures and standard DNS methods, are the Public Information Registries for DETs and their related metadata.
@@ -142,11 +153,11 @@ This document makes use of the terms (PII, USS, etc.) defined in {{RFC9153}}. Ot
 
 The IPv6 Prefix, assigned by IANA for DETs as `2001:30::/28`, acts as the administrative and domain apex (nibble reversed as `3.0.0.1.0.0.2.ip6.arpa`). The scope of this document is limited to the use of DETs in DNS for UAS RID. However, other sectors may adopt this technology. It is RECOMMENDED that an global Apex (i.e. IPv6 prefix) and international Apex manager be designated for each sector. The selected domain apex (`ip6.arpa`) is under administrative control of the IAB. Thus all RAA delegations SHOULD be approved by the IAB (or their proxy). See {{iana-raa}} for more details.
 
-Due to the nature of the hierarchy split and its relationship to nibble reversing of the IPv6 address, the upper level of hierarchy (i.e. RAAs) "borrows" the upper two bits of their respective HDA space for DNS delegation. As such the IPv6 prefix of RAAs are `2001:3x:xxx::/44` and HDAs are `2001:3x:xxxx:xx::/56` with respective nibble reverse domains of `x.x.x.x.3.0.0.1.0.0.2.ip6.arpa` and `x.x.x.x.x.x.x.3.0.0.1.0.0.2.ip6.arpa`. This creates four 12 bit HDA spaces each with its own 16 bit RAA value for delegation purposes.
+Due to the nature of the hierarchy split and its relationship to nibble reversing of the IPv6 address, the upper level of hierarchy (i.e. RAAs) "borrows" the upper two bits of their respective HDA space for DNS delegation. As such the IPv6 prefix of RAAs are `2001:3x:xxx::/44` and HDAs are `2001:3x:xxxx:xx::/56` with respective nibble reverse domains of `x.x.x.x.3.0.0.1.0.0.2.ip6.arpa` and `y.y.y.x.x.x.x.3.0.0.1.0.0.2.ip6.arpa`.
 
-Preallocations have been made based on the ISO 3166-1 Numeric Nation Code TODO-REF. This is to support the initial use case of DETs in UAS RID on an international level. See {{iana-raa}} for the RAA allocations.
+Preallocations have been made based on the ISO 3166-1 Numeric Nation Code {{ISO3166-1}}. This is to support the initial use case of DETs in UAS RID on an international level. See {{iana-raa}} for the RAA allocations.
 
-The RAA value of 0 is reserved for the Apex and SHOULD be used to endorse delegations of additional RAAs by the Apex. The HDA values of 0, 4096, 8192 and 12288 are reserved for operational use of an RAA, specifically when to register with the Apex and endorse delegations of HDAs in their namespace. All delegations SHOULD be endorsed using {{endorsements}}.
+The RAA value of 0 is reserved for the Apex and SHOULD be used to endorse delegations of additional RAAs by the Apex. The HDA values of 0, 4096, 8192 and 12288 are reserved for operational use of an RAA, specifically when to register with the Apex and endorse delegations of HDAs in their namespace.
 
 The administration, management and policy for operation a DIME at any level in the hierarchy (Apex, RAA or HDA), be it external or from a parent level, is out of scope for this document. In some cases, such as the RAAs and HDAs of a nation, these are National Matters which are to be dealt with by those parties accordingly.
 
@@ -154,54 +165,73 @@ The administration, management and policy for operation a DIME at any level in t
 
 Per {{RFC9434}} all information classified as public is stored in the DNS, specifically Authoritative Name Servers, to satisfy REG-1 from {{RFC9153}}.
 
-Authoritative Name Servers use domain names as handles and data is stored in Resource Records (RR) with associated RRTypes. This document defines two new RRTypes, one for HHIT metadata (HHIT, {{hhit-rr}}) and another for UAS Broadcast RID information (BRID, {{bcast-rr}}). The former RRType is particularly important as it contains a list URIs that point to Private Information resources.
+Authoritative Name Servers use domain names as handles and data is stored in Resource Records (RR) with associated RRTypes. This document defines two new RRTypes, one for HHIT metadata (HHIT, {{hhit-rr}}) and another for UAS Broadcast RID information (BRID, {{bcast-rr}}). The former RRType is particularly important as it contains a list URIs (as part of the the certificate) that point to Private Information resources.
 
-DETs, being IPv6 addresses, MUST be under `ip6.arpa` (nibble reversed per convention) with at minimum an HIP RRType and HHIT RRType. Depending on local circumstances other RRTypes, such as the BRID or CERT RRType, MAY be present.
+DETs, being IPv6 addresses, MUST be under `ip6.arpa` (nibble reversed per convention) with at minimum an HHIT RRType. Depending on local circumstances other RRTypes MAY be present. For UAS RID the BRID RRType MUST be present to provide the Broadcast Endorsements defined in {{RFC9575}}.
 
 DNSSEC is strongly RECOMMENDED (especially for RAA-level and higher zones). When a DIME decides to use DNSSEC they SHOULD define a framework for cryptographic algorithms and key management {{RFC6841}}. This may be influenced by frequency of updates, size of the zone, and policies.
 
-UAS specific information, such as physical characteristics, that is publicly available MAY also be stored in DNS but is out of scope for this document. This specification information is currently drafted in {{uas-sn-dns}}.
+UAS specific information, such as physical characteristics, MAY also be stored in DNS but is out of scope for this document. This specification information is currently drafted in {{uas-sn-dns}}.
 
 An example, from Apex to client, of the DNS zones in available in {{zone-examples}}.
 
-Lookups of the above RRTypes are performed with the standard DNS methodology using the nibble reversed DET as the query name affixed to the `ip6.arpa` domain apex and asking for the specific RRType. Lookup clients are expected to use the HI from the HIP RRType to perform signature verification while the HHIT RRType is to be used to obtain URIs for the location of Private Information resources and/or the Broadcast Endorsement to validate the DET registration. The optional BRID RRType is for a lookup client to query to obtain static UAS RID information they may have missed over broadcast media.
+Lookups of the above RRTypes are performed with the standard DNS methodology using the nibble reversed DET as the query name affixed to the `ip6.arpa` domain apex and asking for the specific RRType. The HHIT RRType provides the public key for signature verification and URIs via the certificate. The BRID RRType provides static Broadcast RID information such as the Broadcast Endorsements sent following {{RFC9575}}.
 
 > TODO(Jim): is there a specific RFC that can be cited for the above paragraphs first sentence?
 
-# Endorsements
+# Canonical Public Registration Certificate {#canonical-cert}
 
-DRIP Endorsements are defined in a CDDL {{RFC8610}} structure show in ({{endorsement-cddl}}). The default encoding of Endorsements are CBOR, however some Endorsements MAY also have a packed binary and/or JSON encodings if required.
-
-The CDDL was derived from the more specific packed binary structures developed for {{RFC9575}}. As such those structures, such as the UA Signed Evidence and the contents of DRIP Link (known as a Broadcast Endorsement), are a subset of the below definition and have Endorsement Types allocated for them.
-
-> Note: this section uses the term HHIT instead of DET as the Endorsements are designed to be generic and re-useable for other HHIT use-cases.
+The following is a canonical public registration certificate, generated upon successful registration and placed into {{hhit-rr}}. It is defined here as X.509 and MAY be encoded as a C.509. Other X.509 or C.509 MAY exist for specific use cases and MUST placed in CERT RRTypes.
 
 ~~~~
-{::include cddl/new-endorsement.cddl}
+-----BEGIN CERTIFICATE-----
+MIIBfjCCATCgAwIBAgIUFK0fFnTuRVVTIcm2fjN8q6ar01UwBQYDK2VwMBkxFzAV
+BgNVBAMMDjIwMDEwMDNmZmUwMDAxMB4XDTI0MDkxOTIxNDQyOVoXDTI0MDkyMDIx
+NDQyOVowADAqMAUGAytlcAMhADBOHqmuYekGMCVp2Hn+6eaVxe4pvqwC8mYtCgFa
+JHeso4GiMIGfMIGPBgNVHREBAf8EgYQwgYGHECABAD/+AAEFlx3P20zMh6aGbWh0
+dHBzOi8vdGVzdC5leGFtcGxlLmNvbS9yZGFwL2RvbWFpbi82LmEuNy44LmMuYy5j
+LjQuYi5kLmYuYy5kLjEuNy45LjUuMC4xLjAuMC4wLmUuZi5mLjMuMC4wLjEuMC4w
+LjIuaXA2LmFycGEwCwYDVR0PBAQDAgeAMAUGAytlcANBALdRwrjyOwOlxRxemFgH
+wdyf//iK1elujioMsju3Po0VBXqLEXGTN6wxQ6+bUCZahEv+2m5I1415L5B2f7S1
+Mww=
+-----END CERTIFICATE-----
+
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            14:ad:1f:16:74:ee:45:55:53:21:c9:b6:7e:33:7c:ab:a6:ab:d3:55
+        Signature Algorithm: ED25519
+        Issuer: CN = 2001003ffe0001
+        Validity
+            Not Before: Sep 19 21:44:29 2024 GMT
+            Not After : Sep 20 21:44:29 2024 GMT
+        Subject: 
+        Subject Public Key Info:
+            Public Key Algorithm: ED25519
+                ED25519 Public-Key:
+                pub:
+                    30:4e:1e:a9:ae:61:e9:06:30:25:69:d8:79:fe:e9:
+                    e6:95:c5:ee:29:be:ac:02:f2:66:2d:0a:01:5a:24:
+                    77:ac
+        X509v3 extensions:
+            X509v3 Subject Alternative Name: critical
+                IP Address:2001:3F:FE00:105:971D:CFDB:4CCC:87A6, URI:https://test.example.com/rdap/domain/6.a.7.8.c.c.c.4.b.d.f.c.d.1.7.9.5.0.1.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.arpa
+            X509v3 Key Usage: 
+                Digital Signature
+    Signature Algorithm: ED25519
+         b7:51:c2:b8:f2:3b:03:a5:c5:1c:5e:98:58:07:c1:dc:9f:ff:
+         f8:8a:d5:e9:6e:8e:2a:0c:b2:3b:b7:3e:8d:15:05:7a:8b:11:
+         71:93:37:ac:31:43:af:9b:50:26:5a:84:4b:fe:da:6e:48:d7:
+         8d:79:2f:90:76:7f:b4:b5:33:0c
 ~~~~
-{: #endorsement-cddl title="Endorsement CDDL"}
+{: title="Example Minimal UA Registration Certificate"}
 
-An Endorsement is made from a CBOR array with two elements; Endorsement Type and a CBOR array with four fixed elements (Scope, Evidence, Endorser and Signature).
+The URI extension is used to contain pointers to additional information on an HHIT. An HDA MUST included one containing the base URI for HHIT lookups in its certificate. An HDA MAY put one with the fully qualified URI for the given HHIT in their leaf certificates (as seen in the example above). These URI SHOULD use the path segment of Section 3.1.3 (`domain/<domain name>`) of {{RFC9082}}. The base URL is out of scope for this document.
 
-Endorsement Type:
+The information available following the URIs MUST be protected with a AAA mechanism, per REG-2 of {{RFC9153}}. The definition of the AAA mechanism is out of scope for this document.
 
-: a 16-bit value used to specify the contents of the next array element. See {{iana-e-types}} for more details.
-
-Scope:
-
-: This section is more formally known as "the scope of validity of the endorsement". The scope can come in various forms but MUST always contain a "valid not before" (`vnb`) and "valid not after" (`vna`) timestamps as the first two elements of the array. Other forms of the scope could for example also contain a 4-dimensional volume definition. This could be in raw latitude, longitude, altitude tuples or may be a URI pointing to scope information. Additional elements are out of scope for this document and should be defined with an `e-type`.
-
-Evidence:
-
-: an array, map or singleton type containing a set claims, usually CBOR encoded. The content and order of claims is specified explicitly for each `e-type`.
-
-Endorser:
-
-: an array, map or singleton type where the main identity information of the signer of the Endorsement is found. The identity can take many forms such as a handle to the identity (e.g. an HHIT), or can include more explicit data such as the public key (e.g. an HI). The content and ordering is specified explicitly for each `e-type`.
-
-Signature:
-
-: an array, map or singleton type containing the signature data for the Endorsement. The content and ordering is specified explicitly for each `e-type`. Signatures MUST be generated using the preceding values of the enclosing array in their binary forms (i.e. as a concatenated octet-string of values) rather than their CBOR encoding.
+Additional URIs MAY be present for other use cases.
 
 # IANA Considerations
 
@@ -218,46 +248,23 @@ RAA Allocations:
 | RAA Value(s)  | Status    | Allocation                 | Reference                       |
 | ------------- | --------- | -------------------------- | ------------------------------- |
 | 0             | Allocated | UAS RID (DRIP) Apex        | This RFC                        |
-| 1 - 1000      | Allocated | ISO 3166-1 Countries       | This RFC                        |
-| 1001 - 16375  | Reserved  | N/A                        | N/A                             |
+| 1 - 4000      | Allocated | ISO 3166-1 Countries       | This RFC                        |
+| 4001 - 16375  | Reserved  | N/A                        | N/A                             |
 | 16375 - 16384 | Allocated | DRIP WG (Experimental Use) | This RFC                        |
 
-To support DNS delegation in `ip6.arpa` a single RAA is given 4 values by borrowing the upper two bits of HDA space. This enables a clean nibble boundary in DNS to delegate from (i.e. the prefix `2001:3x:xxx0::/44`).
+To support DNS delegation in `ip6.arpa` a single RAA is given 4 delegations by borrowing the upper two bits of HDA space. This enables a clean nibble boundary in DNS to delegate from (i.e. the prefix `2001:3x:xxx0::/44`). These HDAs (0, 4096, 8192 and 12288) are reserved for the RAA.
 
-The mapping between ISO 3166-1 Numeric Numbers and RAAs can be found as a CSV file on [GitHub](https://github.com/ietf-wg-drip/draft-ietf-drip-registries/blob/main/iso3166-raa.csv).
+The mapping between ISO 3166-1 Numeric Numbers and RAAs can be found as a CSV file on [GitHub](https://github.com/ietf-wg-drip/draft-ietf-drip-registries/blob/main/iso3166-raa.csv). Each Nation is assigned four RAAs that are left to the national authority for their purpose. For RAAs under this range a shorter prefix of `2001:3x:xx00::/40` MAY be delegated to each CAA, which covers all 4 RAAs (and reserved HDAs) assigned to them.
 
 Since the prefix is under a zone controlled by the IAB (`ip6.arpa`) they have authority on delegation in this space. IANA and IAB SHOULD create a registration policy for RAAs that is published to allow for organization to register for an RAA value. The content and process of this registration for an RAA is out of scope for this document and left to the administrative organizations (IAB and IANA) to decide. IANA has agreed to serve as an interim Apex manager.
 
-### Endorsement Types {#iana-e-types}
+### HHIT Entity Type {#iana-hhit-type}
 
-This document requests a new registry for Endorsement Type under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
+This document requests a new registry for HHIT Entity Type under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
 
-Endorsement Type:
+HHIT Entity Type:
 
-: A 16-bit value to provide hinting of the contents of other sections of an Endorsement. Future additions to this registry are to be made through Specification Required (Section 4.3 of {{RFC8126}}) for values 0x0000 to 0xEFFF and First Come First Served (Section 4.4 of {{RFC8126}}) for the values 0xF000 to 0xFFFF. The following values are defined:
-
-| Value | Endorsement Type         | Reference                |
-| ----- | ------------------------ | ------------------------ |
-| 0     | Reserved                 | This RFC                 |
-| 1     | Broadcast Endorsement    | This RFC                 |
-| 2     | Wrapper                  | This RFC                 |
-| 3     | Manifest                 | This RFC                 |
-| 4     | Frame                    | This RFC                 |
-
-To register an `e-type` the following MUST be provided in CDDL for review:
-
-- Additions to `scope` map (optional)
-- Specific group contents of `$$evidence`
-- Specific group contents of `$$endorser`
-- Specific group contents of `$$signature`
-
-### HHIT Type {#iana-hhit-type}
-
-This document requests a new registry for HHIT Type under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
-
-HHIT Type:
-
-: numeric, 16-bit, field of the HHIT RRType to encode the HHIT Type. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
+: numeric, 16-bit, field of the HHIT RRType to encode the HHIT Entity Type. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
 
 | Value         | Type                                       | Reference    |
 | ------------- | ------------------------------------------ | ------------ |
@@ -272,7 +279,7 @@ HHIT Type:
 | 18            | Authentication CA                          | {{drip-dki}} |
 | 19            | Uncrewed Aircraft (UA)                     | This RFC     |
 | 20            | Ground Control Station (GCS)               | This RFC     |
-| 21            | Uncrewed Aerial System (UAS)               | This RFC     |
+| 21            | Uncrewed Aircraft System (UAS)             | This RFC     |
 | 22            | Remote Identification (RID) Module         | This RFC     |
 | 23            | Pilot                                      | This RFC     |
 | 24            | Operator                                   | This RFC     |
@@ -282,23 +289,6 @@ HHIT Type:
 | 28            | Network RID Display Provider (DP)          | This RFC     |
 | 29            | Supplemental Data Service Provider (SDSP)  | This RFC     |
 | 30 - 65535    | Reserved                                   |              |
-
-> Author: text on DRIP Expert Review process
-
-### HHIT Status {#iana-hhit-status}
-
-This document requests a new registry for HHIT Status under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
-
-HHIT Status:
-
-: numeric, 8 bit, field of the HHIT RR to encode the HHIT Status. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
-
-| Value | Status     | Description                                 | Reference |
-| ----- | ---------- | ------------------------------------------- | --------- |
-| 0     | Inactive   | Default when accepted by DIME               | This RFC  |
-| 1     | Active     | Set when in use                             | This RFC  |
-| 2     | Expired    | Set when past VNA                           | This RFC  |
-| 3     | Deprecated | Set when no longer in use (but not expired) | This RFC  |
 
 > Author: text on DRIP Expert Review process
 
@@ -318,7 +308,7 @@ Decisions about DNS or registry best practices and other operational matters SHO
 
 DETs are built upon asymmetric keypairs. As such the public key must be revealed to enable clients to perform signature verifications.
 
-While unlikely the forging of a corresponding private key is possible if given enough time (and computational power). As such it is RECOMMENDED that the public key for any DET not be exposed in DNS (using the HIP RR) until it is required.
+While unlikely the forging of a corresponding private key is possible if given enough time (and computational power). As such it is RECOMMENDED that the public key for any DET not be exposed in DNS (under any RRType) until it is required.
 
 Optimally this requires the UAS somehow signal the DIME that a flight using a Specific Session ID will soon be underway or complete. It may also be facilitated under UTM if the USS (which may or may not be a DIME) signals when a given operation using a Session ID goes active.
 
@@ -345,7 +335,7 @@ The wire format for the HHIT RRType MUST be encoded in CBOR. The CDDL of the RRT
 
 ## Presentation Format {#hhit-rr-presentation}
 
-The presentation format of the HHIT RRType MUST be in Extended Diagnostic Notation as defined in Appendix G of {{RFC8610}}. {{hhit-text}} provides an example of a HHIT RRType in this form.
+The presentation format of the HHIT RRType MUST be in Extended Diagnostic Notation as defined in Appendix G of {{RFC8610}}. {{hhit-text}} provides an example of a HHIT RRType in this form. It is RECOMMENDED to have all byte strings, except for IPv6 addresses, be displayed as base64.
 
 ~~~~
 {::include examples/hhit-rr.txt}
@@ -354,29 +344,17 @@ The presentation format of the HHIT RRType MUST be in Extended Diagnostic Notati
 
 ## Field Descriptions {#hhit-rr-fields}
 
-Type:
+HHIT Entity Type:
 
 : This field is two octets with values defined in {{iana-hhit-type}}. It is envisioned that there may be many types of HHITs in use. In some cases it may be helpful to understand the HHITs role in the ecosystem like described in {{drip-dki}}. This field provides such context.
 
-Status:
-
-: This field is a single byte with values defined in {{iana-hhit-status}} to provide current status of the HHIT.
-
-HHIT:
-
-: The full IPv6 address. Equivalent to the HIT field in the HIP RRType.
-
-Abbreviation:
+HID Abbreviation:
 
 : This field is meant to provide an abbreviation to the HID structure for display devices. The specific contents of this field are not defined here.
 
-Endorsements:
+Canonical Registration Certificate:
 
-: This field is a list of Endorsements ({{endorsements}}) in `e-type` order, encoded in CBOR. It MUST included at least one Broadcast Endorsement.
-
-URIs:
-
-: This field is a list of URIs that can be followed to obtain additional information of the given HHIT. The information available following the URIs MUST be protected with a AAA mechanism, per REG-2 of {{RFC9153}}. The definition of the AAA mechanism is out of scope for this document. At least one URI in this list SHOULD use the path segment of either Section 3.1.1 (`ip/<IP address>`) or Section 3.1.3 (`domain/<domain name>`) of {{RFC9082}}. The base URL of this URI is out of scope for this document.
+: This field is the canonical registration certificate for the HHIT in either X.509 DER or C.509 form. It MUST contain at least the bare minimum as defined in {{canonical-cert}}.
 
 # UAS Broadcast RID Resource Record {#bcast-rr}
 
@@ -395,7 +373,7 @@ The wire format for the BRID RRType MUST be encoded in CBOR. The CDDL of the RRT
 
 ## Presentation Format {#bcast-rr-presentation}
 
-The presentation format of the BRID RRType MUST be in Extended Diagnostic Notation as defined in Appendix G of {{RFC8610}}. {{hhit-text}} provides an example of a HHIT RRType in this form.
+The presentation format of the BRID RRType MUST be in Extended Diagnostic Notation as defined in Appendix G of {{RFC8610}}. {{hhit-text}} provides an example of a BRID RRType in this form. All byte strings longer than 20 SHOULD be displayed as base64 when possible.
 
 ~~~~
 {::include examples/bcast-rr.txt}
@@ -406,88 +384,43 @@ The presentation format of the BRID RRType MUST be in Extended Diagnostic Notati
 
 The field names and their general typing are borrowed from the ASTM {{F3411}} data dictionary. See that document for additional information on fields semantics and units.
 
-# Generic DET Registration
-
-This appendix is normative.
-
-Generically a DET can be used as an identifier for any node in UTM and SHOULD be registered to a DIME. For example a CAA may choose to use DETs as an identifier for its Operators. A data model would be required to define all the information for registration for a given type of client. Such data models are out of scope for this document.
-
-The general process for a registering DET is shown in {{registration-timeline}} and the accompanying text.
-
-~~~~
-            registrant             dime
-                |                   |
-(1) GEN_DET/HI  |                   |
-                |----(2) INPUT----->|
-                |                   | (3) VALID_INPUT?
-                |<-------FAIL-------|
-                |                   | (4) DUPE_HI?
-                |<-------FAIL-------|
-                |                   | (5) DUPE_DET?
-                |<-------FAIL-------|
-                |                   | (6) GEN_BE
-                |                   | (7) UPDATE_DATABASE
-                |                   | (8) UPDATE_NS
-                |<----(9) OUTPUT----|
-~~~~
-{:fig #registration-timeline title="DET Registration Timeline"}
-
-(1) GEN_DET/HI:
-
-: The registrant that plans to use the identity and its cryptographic properties MUST generate the asymmetric key-pair of their choosing and protect the private key with best common practices. The registrant SHOULD derive the corresponding DET. How the registrant obtains the desired HID for DET generation is out of scope for this document.
-
-(2) INPUT:
-
-: The registrant MUST format and send the required information for a given registration as specified by the DIME. Specific data models and methods are out of scope of this document.
-
-(3) VALID_INPUT?:
-
-: The DIME, upon receipt of registration inputs, MUST validate the input data. This may be simply performing syntax checks to ensure the data is properly formatted all the way to full semantic validation. Signed data, such as Endorsements, MUST have their signatures verified before further processing. Failure of input validation SHOULD return errors to the registrant.
-
-(4) DUPE_HI?:
-
-: The DIME MUST check that the proposed HI is not a duplicate already in use. The registrant SHOULD be notified with an error if duplication is detected.
-
-(5) DUPE_DET?:
-
-: The DIME MUST check that the proposed DET, derived from the HI, is not a duplicate already in use. If the registrant proposed a DET with HID outside that of the DIME, it MUST be rejected. If the registrant only provided the HI, the DIME MUST generate the DET using its HID. The registrant SHOULD be notified with an error if duplication is detected.
-
-(6) GEN_BE:
-
-: The DIME, after all the above validation, MUST generate a Broadcast Endorsement using the provided HI and DET from the registrant as the evidence. This Endorsement signifies the DIME accepts the DET/HI pairing from the registrant.
-
-(7) UPDATE_DATABASE:
-
-: The DIME MUST update the Private Information Registry with any PII that was part of the registration. It MAY include additional metadata or public information. How the Private Information Registry is updated is out of scope for this document.
-
-(8) UPDATE_NS:
-
-: The DIME MUST update the Authoritative Name Server with any public information that was part of the registration. This information MUST be stored as described in {{dns}}.
-
-(9) OUTPUT:
-
-: The DIME, upon successful updates of the Private Information Registry and Authoritative Name Server, transmits to the registrant the list of Broadcast Endorsements that make up the trust chain for use in {{RFC9575}}.
-
 # DET DNS Zone Examples {#zone-examples}
 
 This appendix is informative, showing an example of the DNS zone setup/content from Apex to a client.
 
-For this example the following DETs are shown; Apex = `DET-TODO`, RAA = `DET-TODO`, HDA = `DET-TODO`, and client = `DET-TODO`. The RAA allocation of `16376` (with an HDA of `8192`) and individual HDA of `8193` have been selected.
+For this example the following DETs are shown:
+
+- Apex = `2001:0030:0000:0005:fad8:7fea:e0f6:90ad`
+- RAA = `2001:003f:fe00:0005:618a:cd8e:76d3:b790`
+- HDA = `2001:003f:fe00:0105:ad79:a278:1c10:5443`
+- Client = `2001:003f:fe00:0105:6a26:21d4:ef57:2ef5`
+  
+The RAA allocation of `16376` and an HDA of `1` have been selected.
 
 ~~~~
-@ORIGIN 3.0.0.1.0.0.2.ip6.arpa
-TODO
+$ORIGIN 3.0.0.1.0.0.2.ip6.arpa.
+d.a.0.9.6.f.0.e.a.e.f.7.8.d.a.f.5.0.0.0.0.0.0.0.0 IN BRID ( a3687561735f7479706500677561735f6964738065617574687381820558890180d0ec660004ce682001003000000005fad87feae0f690ad1a377f5436d1936ed049be001cdd3689464135e82c08eaee913b5f04f7fa731a2001003000000005fad87feae0f690adcff4646166ded406c43bc341e26bfaeffc4c24e04d1765d5e0aa3d6efb848ae64f1d11359736d2a323712b44e73c781ba7b7bd09ca503fbf122039825148770a )
+d.a.0.9.6.f.0.e.a.e.f.7.8.d.a.f.5.0.0.0.0.0.0.0.0 IN HHIT ( 0 APEX 5901823082017e30820130a00302010202141bb140bd7f8d37970397297ab88e5ae1bc848a07300506032b657030193117301506035504030c0e3230303130303330303030303030301e170d3234303931393231333134345a170d3234303932303231333134345a3000302a300506032b65700321001a377f5436d1936ed049be001cdd3689464135e82c08eaee913b5f04f7fa731aa381a230819f30818f0603551d110101ff04818430818187102001003000000005fad87feae0f690ad866d68747470733a2f2f617065782e6578616d706c652e636f6d2f726461702f646f6d61696e2f642e612e302e392e362e662e302e652e612e652e662e372e382e642e612e662e352e302e302e302e302e302e302e302e302e332e302e302e312e302e302e322e6970362e61727061300b0603551d0f040403020780300506032b6570034100bb903442cdc2ec6aecb684da1ec05813467b6ace75e6f54de1b9b8d334cc3afaf7cf8eaf74883dc7dc98ee78cf0ae3e7dcb9a7189eb708936634bcaffe7fb80a )
+0.e.f.f IN NS ns1.raa-16376.example.com
+1.e.f.f IN NS ns1.raa-16376.example.com
+2.e.f.f IN NS ns1.raa-16376.example.com
+3.e.f.f IN NS ns1.raa-16376.example.com
 ~~~~
 {: title="Apex Zone"}
 
 ~~~~
-@ORIGIN x.x.x.x.3.0.0.1.0.0.2.ip6.arpa
-TODO
+$ORIGIN 0.e.f.f.3.0.0.1.0.0.2.ip6.arpa.
+0.9.7.b.3.d.6.7.e.8.d.c.a.8.1.6.5.0.0.0.0 IN BRID ( a3687561735f7479706500677561735f6964738065617574687382820558890180d0ec660004ce682001003000000005fad87feae0f690ad1a377f5436d1936ed049be001cdd3689464135e82c08eaee913b5f04f7fa731a2001003000000005fad87feae0f690adcff4646166ded406c43bc341e26bfaeffc4c24e04d1765d5e0aa3d6efb848ae64f1d11359736d2a323712b44e73c781ba7b7bd09ca503fbf122039825148770a820558890180d0ec660004ce682001003ffe100005846f65ab0c817f58196c9e749237f0867d3a72b6e2e23dc6c4c1731790986151df5c2c57aacb85242001003000000005fad87feae0f690ad48ee88a13e11e1000c57efd34bc260de4ded03f13d48f51e93873b843cca2ad068ab9c73cbf0a2e5bc7fde6bc020f20c954ed6f9620b411f13ddb349c51a5a0b )
+0.9.7.b.3.d.6.7.e.8.d.c.a.8.1.6.5.0.0.0.0 IN HHIT ( 0 RAA 5901813082017d3082012fa003020102021459af752f30cb9012a97c6f6437c72b34f009e32f300506032b657030193117301506035504030c0e3230303130303330303030303030301e170d3234303931393231333134345a170d3234303932303231333134345a3000302a300506032b65700321006e0a752385a0d0141f36436aef23ed69deb100e53f87b28f7561ac2eddf4474ea381a130819e30818e0603551d110101ff04818330818087102001003ffe000005618acd8e76d3b790866c68747470733a2f2f7261612e6578616d706c652e636f6d2f726461702f646f6d61696e2f302e392e372e622e332e642e362e372e652e382e642e632e612e382e312e362e352e302e302e302e302e302e652e662e662e332e302e302e312e302e302e322e6970362e61727061300b0603551d0f040403020780300506032b65700341002391f4dda03598aeb28937d0d0e8b76356b641077efe17d9cb668ca7a9b285b55381148a21646245a80c94bf1971812abe2f3bb1f8d59aa7fe1e24f5adcb0d0c )
+1.0.0 IN NS ns1.hda-1.example.com
 ~~~~
 {: title="RAA Zone"}
 
 ~~~~
-@ORIGIN x.x.x.x.x.x.x.3.0.0.1.0.0.2.ip6.arpa
-TODO
+$ORIGIN 1.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.arpa.
+3.4.4.5.0.1.c.1.8.7.2.a.9.7.d.a.5.0 IN BRID ( a3687561735f7479706500677561735f6964738065617574687383820558890180d0ec660004ce682001003000000005fad87feae0f690ad1a377f5436d1936ed049be001cdd3689464135e82c08eaee913b5f04f7fa731a2001003000000005fad87feae0f690adcff4646166ded406c43bc341e26bfaeffc4c24e04d1765d5e0aa3d6efb848ae64f1d11359736d2a323712b44e73c781ba7b7bd09ca503fbf122039825148770a820558890180d0ec660004ce682001003ffe100005846f65ab0c817f58196c9e749237f0867d3a72b6e2e23dc6c4c1731790986151df5c2c57aacb85242001003000000005fad87feae0f690ad48ee88a13e11e1000c57efd34bc260de4ded03f13d48f51e93873b843cca2ad068ab9c73cbf0a2e5bc7fde6bc020f20c954ed6f9620b411f13ddb349c51a5a0b820558890180d0ec660004ce682001003ffe000105ad79a2781c10544309d0385c04bf421bb12a3f04da8a977f7f7f5d1d267aac097e3c7504b7c285632001003ffe100005846f65ab0c817f58b5f8e1343569000fa5a1de93e6d398baa048f895c154363d49627a72cabb1de32ccd3ec04a2981059ad390a458f68f88a113485c711eda2336c74bc60365340c )
+3.4.4.5.0.1.c.1.8.7.2.a.9.7.d.a.5.0 IN HHIT ( 0 HDA 5901813082017d3082012fa003020102021468e5fc3b57fff27feb02850fce0894c1aa995df8300506032b657030193117301506035504030c0e3230303130303366666531303030301e170d3234303931393231333134345a170d3234303932303231333134345a3000302a300506032b657003210009d0385c04bf421bb12a3f04da8a977f7f7f5d1d267aac097e3c7504b7c28563a381a130819e30818e0603551d110101ff04818330818087102001003ffe000105ad79a2781c105443866c68747470733a2f2f6864612e6578616d706c652e636f6d2f726461702f646f6d61696e2f332e342e342e352e302e312e632e312e382e372e322e612e392e372e642e612e352e302e312e302e302e302e652e662e662e332e302e302e312e302e302e322e6970362e61727061300b0603551d0f040403020780300506032b65700341008e57975cbc6da6c7cabcf46d9805b90994522a3ff4194cc7c454c1c5d36f7e81e3e2ef57c73f0d3017b44466ec4f94dd26e77cf07861006dd99bd023a484ac0a )
+5.f.e.2.7.5.f.e.4.d.1.2.6.2.a.6.5.0 IN BRID ( a3687561735f7479706500677561735f69647381820451012001003ffe0001056a2621d4ef572ef565617574687384820558890180d0ec660004ce682001003000000005fad87feae0f690ad1a377f5436d1936ed049be001cdd3689464135e82c08eaee913b5f04f7fa731a2001003000000005fad87feae0f690adcff4646166ded406c43bc341e26bfaeffc4c24e04d1765d5e0aa3d6efb848ae64f1d11359736d2a323712b44e73c781ba7b7bd09ca503fbf122039825148770a820558890180d0ec660004ce682001003ffe100005846f65ab0c817f58196c9e749237f0867d3a72b6e2e23dc6c4c1731790986151df5c2c57aacb85242001003000000005fad87feae0f690ad48ee88a13e11e1000c57efd34bc260de4ded03f13d48f51e93873b843cca2ad068ab9c73cbf0a2e5bc7fde6bc020f20c954ed6f9620b411f13ddb349c51a5a0b820558890180d0ec660004ce682001003ffe000105ad79a2781c10544309d0385c04bf421bb12a3f04da8a977f7f7f5d1d267aac097e3c7504b7c285632001003ffe100005846f65ab0c817f58b5f8e1343569000fa5a1de93e6d398baa048f895c154363d49627a72cabb1de32ccd3ec04a2981059ad390a458f68f88a113485c711eda2336c74bc60365340c820558890180d0ec660004ce682001003ffe0001056a2621d4ef572ef5e5ed7e2a588312627f215ace37696e402c88a7516ab830d70d7bc7a187bdcf742001003ffe000105ad79a2781c105443710b93353cb9283e7612ebe0fbc8e8bb6deb789e1e770a6d30de794ed5ca6da5ae0469214072f506b42f8e4edec074d7c221b7b3ec1d7f180979984613aeee00 )
+5.f.e.2.7.5.f.e.4.d.1.2.6.2.a.6.5.0 IN HHIT ( 0 CHILD 5901813082017d3082012fa00302010202145c7cac8baf342e307c290c7df226026b753cfaf9300506032b657030193117301506035504030c0e3230303130303366666530303031301e170d3234303931393231333134345a170d3234303932303231333134345a3000302a300506032b6570032100e5ed7e2a588312627f215ace37696e402c88a7516ab830d70d7bc7a187bdcf74a381a130819e30818e0603551d110101ff04818330818087102001003ffe0001056a2621d4ef572ef5866c68747470733a2f2f6864612e6578616d706c652e636f6d2f726461702f646f6d61696e2f352e662e652e322e372e352e662e652e342e642e312e322e362e322e612e362e352e302e312e302e302e302e652e662e662e332e302e302e312e302e302e322e6970362e61727061300b0603551d0f040403020780300506032b65700341002e1f24a3b1e7422cb35c509d2a912561adeda3b4ca79f9e8996d7a0d4904f1d1e741ddc85a078aa5ecb60f7689c9d145caf6a7252dea3ef577584a4636330306 )
 ~~~~
 {: title="HDA Zone"}

@@ -1,5 +1,0 @@
-e-type = 3  ; SAM Type=3, Manifest Endorsement
-$$evidence //= (3*11 manifest-hash,)
-$$endorser //= (hhit,)
-$$signature = (eddsa25519-sig,)
-manifest-hash = bstr .size(8)

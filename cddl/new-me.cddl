@@ -1,6 +1,0 @@
-;# import endorsement, scope-data from new-endorsement
-manifest-endorsement = endorsement
-e-type = 3
-evidence-data = [3*11 manifest-hash: bstr .size(8)]
-endorser-data = #6.54(bstr .size(16))
-signature-data = bstr .size(64)
