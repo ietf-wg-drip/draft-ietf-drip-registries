@@ -93,15 +93,15 @@ This document describes the discovery and management of DRIP Entity Tags (DETs) 
 
 # Introduction
 
-Registries are fundamental to Unmanned Aircraft System (UAS) Remote Identification (RID). Only very limited operational information can be sent via Broadcast RID, but extended information is sometimes needed. The most essential element of information is the UAS ID, the unique key for lookup of extended information in relevant registries (see Figure 4 of {{RFC9434}}).
+Registries are fundamental to Unmanned Aircraft System (UAS) Remote Identification (RID). Only very limited operational information can be sent via Broadcast RID, but extended information is sometimes needed. The most essential element of information from RID is the UAS ID, the unique key for lookup of extended information in relevant registries (see Figure 4 of {{RFC9434}}).
 
-Such extended information is retrieved from the UAS ID via the use of a DRIP Entity Tag (DET) {{RFC9374}} which is managed by the DRIP Identity Management Entity (DIME). In this document we assume the DIME is a function of UAS Service Suppliers (USS) (Appendix A.2 of {{RFC9434}}) but a DIME can be independent or handled by another entity as well.
+When a DRIP Entity Tag (DET) {{RFC9374}} is used as the UAS ID in RID, extended information can be retrieved from a DRIP Identity Management Entity (DIME) which manages registration of and associated lookups from DETs. In this document we assume the DIME is a function of UAS Service Suppliers (USS) (Appendix A.2 of {{RFC9434}}) but a DIME can be independent or handled by another entity as well.
 
 ## General Concept
 
-DETs MUST be registered within the hierarchy to perform lookups and also obtain the trust inherited from being a member of the hierarchy. DIME's are the points in the hierarchy that enforce requirements on registration and information access. Other identifiers and their methods are out of scope for this document.
+DETs embedded a hierarchy scheme which is mapped onto DNS. DIME's enforce registration and information access of data associated with a DET while also providing the trust inherited from being a member of the hierarchy. Other identifiers and their methods are out of scope for this document.
 
-Authoritative Name Servers of the Domain Name System (DNS) provide the Public Information such as the public keys, endorsements and certificates of DETs and pointers to Private Information resources.
+Authoritative Name Servers of the Domain Name System (DNS) provide the Public Information such as the cryptographic keys, endorsements and certificates of DETs and pointers to Private Information resources. Cryptographic (public) keys are used to authenticate anything signed by a DET, such as in the Authentication defined {{RFC9575}} for Broadcast RID. Endorsements and certificates are used to endorse the claim of being part of the hierarchy.
 
 Aspects of Private Information Registries to store and protect, through AAA mechanisms, Personally Identifiable Information (PII) are not described in this document.
 
@@ -109,7 +109,7 @@ Aspects of Private Information Registries to store and protect, through AAA mech
 
 DRIP relies on the DNS and as such roughly follows the registrant-registrar-registry model. In DRIP, the registrant would be the end user who owns/controls the Unmanned Aircraft. They are ultimately responsible for the DET and any other information that gets published in the DNS. Registrants use agents known as registrars to manage their interactions with the registry. Registrars typically provide optional additional services such as DNS hosting.
 
-The registry maintains a database of the registered domain names and their related metadata such as the contact details for domain name holder and the relevant registrar. The registry provides DNS service for the zone apex - `3.0.0.1.0.0.2.ip6.arpa` for DRIP (the prefix assigned in {{RFC9374}}) - which contains delegation information for the domain names of the registered DETs. Registries generally provide services such as WHOIS or RDAP to publish metadata about the registered domain names and their registrants and registrars.
+The registry maintains a database of the registered domain names and their related metadata such as the contact details for domain name holder and the relevant registrar. The registry provides DNS service for the zone apex which contains delegation information for domain names. Registries generally provide services such as WHOIS or RDAP to publish metadata about the registered domain names and their registrants and registrars.
 
 Registrants have contracts with registrars who in turn have contracts with registries. Payments follow this model too: the registrant buys services from a registrar who pays for services provided by the registry.
 
@@ -117,7 +117,15 @@ By definition, there can only be one registry for a domain name. Since that regi
 
 It is not necessary, and in some case may not be desirable, for DRIP registrations to strictly follow this registrant-registrar-registry model. Prevailing circumstances and/or local policy may mean some combination of these roles could be combined. A DRIP registry might be operated by the CAA. Or it could be outsourced to a DNS registry provider. Registration policies - pricing, renewals, registrar and registrant agreements, etc. - will need to be developed. These considerations SHOULD be determined by the CAA, perhaps in consultation with local stakeholders. They are are out of scope for this document.
 
+The specifics for the UAS RID use case are detailed in the rest of document.
+
 > Review(MGLT) / TODO(Jim): I think that the model is flexible enough so the paragraph above is not necessary. However, I think it is nice to mention that that we have the IAB the owns the ip6.arpa and so the "3.0.0.1.0.0.2.ip6.arpa", that it is foreseen that each CAA / RA become register to that zone (registrant) to later operate as (registry/registrar) to further HDA which in turn become (registry/registrar) for UAS owners. I put in () registrar/registry. We need to smooth the wording to not raise debates on registrar/registries.
+
+## Scope
+
+The scope of this document is limited to the `2001:30::/28` IPv6 prefix and its associated reverse domain in DNS for DETs being used in UAS RID for participating parties (UA, Observer devices, DIMEs, etc.).
+
+Other sectors may adopt this technology. It is RECOMMENDED that an global Apex (i.e. IPv6 prefix) and international Apex manager be designated for each sector.
 
 # Terminology {#terminology}
 
@@ -151,23 +159,23 @@ This document makes use of the terms (PII, USS, etc.) defined in {{RFC9153}}. Ot
 ~~~~
 {:fig #hhit-fig title="DRIP Entity Tag Breakdown"}
 
-The IPv6 Prefix, assigned by IANA for DETs as `2001:30::/28`, acts as the administrative and domain apex (nibble reversed as `3.0.0.1.0.0.2.ip6.arpa`). The scope of this document is limited to the use of DETs in DNS for all parties participating in UAS RID (UA, Observer devices, DIMEs, etc.). However, other sectors may adopt this technology. It is RECOMMENDED that an global Apex (i.e. IPv6 prefix) and international Apex manager be designated for each sector. The selected domain apex (`ip6.arpa`) is under administrative control of the IAB. Thus all RAA delegations SHOULD be approved by the IAB (or their proxy). See {{iana-raa}} for more details.
+The IPv6 Prefix, assigned by IANA for DETs is `2001:30::/28`. The corresponding domain (nibble reversed as `3.0.0.1.0.0.2.ip6.arpa`) is owned by the IAB.
 
 Due to the nature of the hierarchy split and its relationship to nibble reversing of the IPv6 address, the upper level of hierarchy (i.e. RAAs) "borrows" the upper two bits of their respective HDA space for DNS delegation. As such the IPv6 prefix of RAAs are `2001:3x:xxx::/44` and HDAs are `2001:3x:xxxx:xx::/56` with respective nibble reverse domains of `x.x.x.x.3.0.0.1.0.0.2.ip6.arpa` and `y.y.y.x.x.x.x.3.0.0.1.0.0.2.ip6.arpa`.
 
 Preallocations have been made based on the ISO 3166-1 Numeric Nation Code {{ISO3166-1}}. This is to support the initial use case of DETs in UAS RID on an international level. See {{iana-raa}} for the RAA allocations.
 
-The RAA value of 0 is reserved for the Apex and SHOULD be used to endorse delegations of additional RAAs by the Apex. The HDA values of 0, 4096, 8192 and 12288 are reserved for operational use of an RAA, specifically when to register with the Apex and endorse delegations of HDAs in their namespace.
+The HDA values of 0, 4096, 8192 and 12288 are reserved for operational use of an RAA (a by-product of the above mentioned borrowing of bits), specifically when to register with the Apex and endorse delegations of HDAs in their namespace.
 
 The administration, management and policy for operation a DIME at any level in the hierarchy (Apex, RAA or HDA), be it external or from a parent level, is out of scope for this document. In some cases, such as the RAAs and HDAs of a nation, these are National Matters which are to be dealt with by those parties accordingly.
 
 # Public Information Registry {#dns}
 
-Per {{RFC9434}} all information classified as public is stored in the DNS, specifically Authoritative Name Servers, to satisfy REG-1 from {{RFC9153}}.
+Per {{RFC9434}} all information classified, by all parties involved, as public is stored in the DNS, specifically Authoritative Name Servers, to satisfy REG-1 from {{RFC9153}}.
 
-Authoritative Name Servers use domain names as handles and data is stored in Resource Records (RR) with associated RRTypes. This document defines two new RRTypes, one for HHIT metadata (HHIT, {{hhit-rr}}) and another for UAS Broadcast RID information (BRID, {{bcast-rr}}). The former RRType is particularly important as it contains a list URIs (as part of the the certificate) that point to Private Information resources.
+Authoritative Name Servers use domain names as handles and data is stored in Resource Records (RR) with associated RRTypes. This document defines two new RRTypes, one for HHIT metadata (HHIT, {{hhit-rr}}) and another for UAS Broadcast RID information (BRID, {{bcast-rr}}). The former RRType is particularly important as it contains a list URIs (as part of the certificate) that point to Private Information resources.
 
-DETs, being IPv6 addresses, MUST be under `ip6.arpa` (nibble reversed per convention) with at minimum an HHIT RRType. Depending on local circumstances other RRTypes MAY be present. For UAS RID the BRID RRType MUST be present to provide the Broadcast Endorsements defined in {{RFC9575}}.
+DETs, being IPv6 addresses, are to be under `ip6.arpa` (nibble reversed per convention) with at minimum an HHIT RRType. Depending on local circumstances other RRTypes MAY be present. For UAS RID the BRID RRType MUST be present to provide the Broadcast Endorsements defined in {{RFC9575}}.
 
 DNSSEC is strongly RECOMMENDED (especially for RAA-level and higher zones). When a DIME decides to use DNSSEC they SHOULD define a framework for cryptographic algorithms and key management {{RFC6841}}. This may be influenced by frequency of updates, size of the zone, and policies.
 
