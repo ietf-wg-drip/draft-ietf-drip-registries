@@ -101,13 +101,13 @@ Such extended information is retrieved from the UAS ID via the use of a DRIP Ent
 
 DETs MUST be registered within the hierarchy to perform lookups and also obtain the trust inherited from being a member of the hierarchy. DIME's are the points in the hierarchy that enforce requirements on registration and information access. Other identifiers and their methods are out of scope for this document.
 
-Authoritative Name Servers of the Domain Name System (DNS) provide the Public Information such as the public keys of DETs and pointers to Private Information resources.
+Authoritative Name Servers of the Domain Name System (DNS) provide the Public Information such as the public keys, endorsements and certificates of DETs and pointers to Private Information resources.
 
 Aspects of Private Information Registries to store and protect, through AAA mechanisms, Personally Identifiable Information (PII) are not described in this document.
 
 ## Use of Existing DNS Models
 
-As DRIP relies on the DNS and as such roughly follows the registrant-registrar-registry model. In DRIP, the registrant would be the end user who owns/controls the Unmanned Aircraft. They are ultimately responsible for the DET and any other information that gets published in the DNS. Registrants use agents known as registrars to manage their interactions with the registry. Registrars typically provide optional additional services such as DNS hosting and so on.
+DRIP relies on the DNS and as such roughly follows the registrant-registrar-registry model. In DRIP, the registrant would be the end user who owns/controls the Unmanned Aircraft. They are ultimately responsible for the DET and any other information that gets published in the DNS. Registrants use agents known as registrars to manage their interactions with the registry. Registrars typically provide optional additional services such as DNS hosting.
 
 The registry maintains a database of the registered domain names and their related metadata such as the contact details for domain name holder and the relevant registrar. The registry provides DNS service for the zone apex - `3.0.0.1.0.0.2.ip6.arpa` for DRIP (the prefix assigned in {{RFC9374}}) - which contains delegation information for the domain names of the registered DETs. Registries generally provide services such as WHOIS or RDAP to publish metadata about the registered domain names and their registrants and registrars.
 
@@ -151,7 +151,7 @@ This document makes use of the terms (PII, USS, etc.) defined in {{RFC9153}}. Ot
 ~~~~
 {:fig #hhit-fig title="DRIP Entity Tag Breakdown"}
 
-The IPv6 Prefix, assigned by IANA for DETs as `2001:30::/28`, acts as the administrative and domain apex (nibble reversed as `3.0.0.1.0.0.2.ip6.arpa`). The scope of this document is limited to the use of DETs in DNS for UAS RID. However, other sectors may adopt this technology. It is RECOMMENDED that an global Apex (i.e. IPv6 prefix) and international Apex manager be designated for each sector. The selected domain apex (`ip6.arpa`) is under administrative control of the IAB. Thus all RAA delegations SHOULD be approved by the IAB (or their proxy). See {{iana-raa}} for more details.
+The IPv6 Prefix, assigned by IANA for DETs as `2001:30::/28`, acts as the administrative and domain apex (nibble reversed as `3.0.0.1.0.0.2.ip6.arpa`). The scope of this document is limited to the use of DETs in DNS for all parties participating in UAS RID (UA, Observer devices, DIMEs, etc.). However, other sectors may adopt this technology. It is RECOMMENDED that an global Apex (i.e. IPv6 prefix) and international Apex manager be designated for each sector. The selected domain apex (`ip6.arpa`) is under administrative control of the IAB. Thus all RAA delegations SHOULD be approved by the IAB (or their proxy). See {{iana-raa}} for more details.
 
 Due to the nature of the hierarchy split and its relationship to nibble reversing of the IPv6 address, the upper level of hierarchy (i.e. RAAs) "borrows" the upper two bits of their respective HDA space for DNS delegation. As such the IPv6 prefix of RAAs are `2001:3x:xxx::/44` and HDAs are `2001:3x:xxxx:xx::/56` with respective nibble reverse domains of `x.x.x.x.3.0.0.1.0.0.2.ip6.arpa` and `y.y.y.x.x.x.x.3.0.0.1.0.0.2.ip6.arpa`.
 
@@ -216,7 +216,8 @@ Certificate:
                     77:ac
         X509v3 extensions:
             X509v3 Subject Alternative Name: critical
-                IP Address:2001:3F:FE00:105:971D:CFDB:4CCC:87A6, URI:https://test.example.com/rdap/domain/6.a.7.8.c.c.c.4.b.d.f.c.d.1.7.9.5.0.1.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.arpa
+                IP Address:2001:3F:FE00:105:971D:CFDB:4CCC:87A6, 
+                URI:https://test.example.com/rdap/domain/6.a.7.8.c.c.c.4.b.d.f.c.d.1.7.9.5.0.1.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.arpa
             X509v3 Key Usage: 
                 Digital Signature
     Signature Algorithm: ED25519
@@ -270,25 +271,33 @@ HHIT Entity Type:
 | ------------- | ------------------------------------------ | ------------ |
 | 0             | Not Defined                                | This RFC     |
 | 1             | DRIP Identity Management Entity (DIME)     | This RFC     |
-| 2             | Apex                                       | This RFC     |
-| 3             | Registered Assigning Authority (RAA)       | This RFC     |
-| 4             | HHIT Domain Authority (HDA)                | This RFC     |
-| 5 - 15        | Reserved                                   |              |
-| 16            | Endpoint Entity (EE)                       | {{drip-dki}} |
-| 17            | Issuer CA                                  | {{drip-dki}} |
-| 18            | Authentication CA                          | {{drip-dki}} |
-| 19            | Uncrewed Aircraft (UA)                     | This RFC     |
-| 20            | Ground Control Station (GCS)               | This RFC     |
-| 21            | Uncrewed Aircraft System (UAS)             | This RFC     |
-| 22            | Remote Identification (RID) Module         | This RFC     |
-| 23            | Pilot                                      | This RFC     |
-| 24            | Operator                                   | This RFC     |
-| 25            | Discovery & Synchronization Service (DSS)  | This RFC     |
-| 26            | UAS Service Supplier (USS)                 | This RFC     |
-| 27            | Network RID Service Provider (SP)          | This RFC     |
-| 28            | Network RID Display Provider (DP)          | This RFC     |
-| 29            | Supplemental Data Service Provider (SDSP)  | This RFC     |
-| 30 - 65535    | Reserved                                   |              |
+| 2             | DIME: Authentication CA                    | {{drip-dki}} |
+| 3             | DIME: Issuing CA                           | {{drip-dki}} |
+| 4             | Reserved                                   | This RFC     |
+| 5             | Apex                                       | This RFC     |
+| 6             | Apex: Authentication CA                    | {{drip-dki}} |
+| 7             | Apex: Issuing CA                           | {{drip-dki}} |
+| 8             | Reserved                                   | This RFC     |
+| 9             | Registered Assigning Authority (RAA)       | This RFC     |
+| 10            | RAA: Authentication CA                     | {{drip-dki}} |
+| 11            | RAA: Issuing CA                            | {{drip-dki}} |
+| 12            | Reserved                                   | This RFC     |
+| 13            | HHIT Domain Authority (HDA)                | This RFC     |
+| 14            | HDA: Authentication CA                     | {{drip-dki}} |
+| 15            | HDA: Issuing CA                            | {{drip-dki}} |
+| 16            | Uncrewed Aircraft (UA)                     | This RFC     |
+| 17            | Ground Control Station (GCS)               | This RFC     |
+| 18            | Uncrewed Aircraft System (UAS)             | This RFC     |
+| 19            | Remote Identification (RID) Module         | This RFC     |
+| 20            | Pilot                                      | This RFC     |
+| 21            | Operator                                   | This RFC     |
+| 22            | Discovery & Synchronization Service (DSS)  | This RFC     |
+| 23            | UAS Service Supplier (USS)                 | This RFC     |
+| 24            | Network RID Service Provider (SP)          | This RFC     |
+| 25            | Network RID Display Provider (DP)          | This RFC     |
+| 26            | Supplemental Data Service Provider (SDSP)  | This RFC     |
+| 27 - 31       | Reserved For UAS Use Cases                 | This RFC     |
+| 32 - 65535    | Reserved                                   |              |
 
 > Author: text on DRIP Expert Review process
 
@@ -302,11 +311,11 @@ If DNSSEC is used, a DNSSEC Practice Statement (DPS) SHOULD be developed and pub
 
 The interfaces and protocol specifications for registry-registrar interactions are intentionally not specified in this document. These will depend on nationally defined policy and prevailing local circumstances. It is expected registry-registrar activity will use the Extensible Provisioning Protocol (EPP) {{RFC5730}}. The registry SHOULD provide a lookup service such as WHOIS {{RFC3912}} or RDAP {{RFC9082}} to provide public information about registered domain names.
 
-Decisions about DNS or registry best practices and other operational matters SHOULD be made by the CAA, ideally in consultation with local stakeholders.
+Decisions about DNS or registry best practices and other operational matters SHOULD be made by the CAA, ideally in consultation with local stakeholders. This document RECOMMENDS that DNSSEC SHOULD be used by both Apex (to control RAA levels) and RAA (to control HDA level) zones.
 
 # Public Key Exposure
 
-DETs are built upon asymmetric keypairs. As such the public key must be revealed to enable clients to perform signature verifications.
+DETs are built upon asymmetric keys. As such the public key must be revealed to enable clients to perform signature verifications. {{RFC9374}} security considerations cover various attacks on such keys.
 
 While unlikely the forging of a corresponding private key is possible if given enough time (and computational power). As such it is RECOMMENDED that the public key for any DET not be exposed in DNS (under any RRType) until it is required.
 
