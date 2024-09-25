@@ -181,54 +181,51 @@ Lookups of the above RRTypes are performed with the standard DNS methodology usi
 
 # Canonical Public Registration Certificate {#canonical-cert}
 
-The following is a canonical public registration certificate, generated upon successful registration and placed into {{hhit-rr}}. It is defined here as X.509 and MAY be encoded as a C.509. Other X.509 or C.509 MAY exist for specific use cases and MUST placed in CERT RRTypes.
+The following is a minimal canonical public registration certificate, generated upon successful registration and placed into {{hhit-rr}}. It is defined here as X.509 and MAY be encoded as a C.509. Other X.509 or C.509 MAY exist for specific use cases and MUST placed in CERT RRTypes.
 
 ~~~~
 -----BEGIN CERTIFICATE-----
-MIIBfjCCATCgAwIBAgIUFK0fFnTuRVVTIcm2fjN8q6ar01UwBQYDK2VwMBkxFzAV
-BgNVBAMMDjIwMDEwMDNmZmUwMDAxMB4XDTI0MDkxOTIxNDQyOVoXDTI0MDkyMDIx
-NDQyOVowADAqMAUGAytlcAMhADBOHqmuYekGMCVp2Hn+6eaVxe4pvqwC8mYtCgFa
-JHeso4GiMIGfMIGPBgNVHREBAf8EgYQwgYGHECABAD/+AAEFlx3P20zMh6aGbWh0
-dHBzOi8vdGVzdC5leGFtcGxlLmNvbS9yZGFwL2RvbWFpbi82LmEuNy44LmMuYy5j
-LjQuYi5kLmYuYy5kLjEuNy45LjUuMC4xLjAuMC4wLmUuZi5mLjMuMC4wLjEuMC4w
-LjIuaXA2LmFycGEwCwYDVR0PBAQDAgeAMAUGAytlcANBALdRwrjyOwOlxRxemFgH
-wdyf//iK1elujioMsju3Po0VBXqLEXGTN6wxQ6+bUCZahEv+2m5I1415L5B2f7S1
-Mww=
+MIIBCTCBvKADAgECAhQsKjO1bWo9IQm4g6DnIDJmnQqRrDAFBgMrZXAwGTEXMBUG
+A1UEAwwOMjAwMTAwM2ZmZTAwMDEwHhcNMjQwOTI1MjA0MTQ1WhcNMjQwOTI2MjA0
+MTQ1WjAAMCowBQYDK2VwAyEAe9/qfhAvPzw/rWb5n4wmVfKZcUezxygo7qFDIO7z
+TVejLzAtMB4GA1UdEQEB/wQUMBKHECABAD/+AAEFu+Gv+JeyXlowCwYDVR0PBAQD
+AgeAMAUGAytlcANBACB7NmtdXksQDzkzVpJtl29H8g9EioEB75tNHQSSvlpjyFyO
+uxKnOYUhN+fIuLhk4Inn79qbFhddGyVqFvcsfQk=
 -----END CERTIFICATE-----
 
 Certificate:
     Data:
         Version: 3 (0x2)
         Serial Number:
-            14:ad:1f:16:74:ee:45:55:53:21:c9:b6:7e:33:7c:ab:a6:ab:d3:55
+            2c:2a:33:b5:6d:6a:3d:21:09:b8:83:a0:e7:20:32:66:9d:0a:91:ac
         Signature Algorithm: ED25519
         Issuer: CN = 2001003ffe0001
         Validity
-            Not Before: Sep 19 21:44:29 2024 GMT
-            Not After : Sep 20 21:44:29 2024 GMT
+            Not Before: Sep 25 20:41:45 2024 GMT
+            Not After : Sep 26 20:41:45 2024 GMT
         Subject: 
         Subject Public Key Info:
             Public Key Algorithm: ED25519
                 ED25519 Public-Key:
                 pub:
-                    30:4e:1e:a9:ae:61:e9:06:30:25:69:d8:79:fe:e9:
-                    e6:95:c5:ee:29:be:ac:02:f2:66:2d:0a:01:5a:24:
-                    77:ac
+                    7b:df:ea:7e:10:2f:3f:3c:3f:ad:66:f9:9f:8c:26:
+                    55:f2:99:71:47:b3:c7:28:28:ee:a1:43:20:ee:f3:
+                    4d:57
         X509v3 extensions:
             X509v3 Subject Alternative Name: critical
-                IP Address:2001:3F:FE00:105:971D:CFDB:4CCC:87A6, 
-                URI:https://test.example.com/rdap/domain/6.a.7.8.c.c.c.4.b.d.f.c.d.1.7.9.5.0.1.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.arpa
+                IP Address:2001:3F:FE00:105:BBE1:AFF8:97B2:5E5A
             X509v3 Key Usage: 
                 Digital Signature
     Signature Algorithm: ED25519
-         b7:51:c2:b8:f2:3b:03:a5:c5:1c:5e:98:58:07:c1:dc:9f:ff:
-         f8:8a:d5:e9:6e:8e:2a:0c:b2:3b:b7:3e:8d:15:05:7a:8b:11:
-         71:93:37:ac:31:43:af:9b:50:26:5a:84:4b:fe:da:6e:48:d7:
-         8d:79:2f:90:76:7f:b4:b5:33:0c
+         20:7b:36:6b:5d:5e:4b:10:0f:39:33:56:92:6d:97:6f:47:f2:
+         0f:44:8a:81:01:ef:9b:4d:1d:04:92:be:5a:63:c8:5c:8e:bb:
+         12:a7:39:85:21:37:e7:c8:b8:b8:64:e0:89:e7:ef:da:9b:16:
+         17:5d:1b:25:6a:16:f7:2c:7d:09
+
 ~~~~
 {: title="Example Minimal UA Registration Certificate"}
 
-The URI extension is used to contain pointers to additional information on an HHIT. An HDA MUST included one containing the base URI for HHIT lookups in its certificate. An HDA MAY put one with the fully qualified URI for the given HHIT in their leaf certificates (as seen in the example above). These URI SHOULD use the path segment of Section 3.1.3 (`domain/<domain name>`) of {{RFC9082}}. The base URL is out of scope for this document.
+The URI extension (not shown in example above) is used to contain pointers to additional information on an HHIT. An HDA MUST included one containing the base URI for HHIT lookups in its certificate. An HDA MAY put one with the fully qualified URI for the given HHIT in their leaf certificates. These URI SHOULD use the path segment of Section 3.1.3 (`domain/<domain name>`) of {{RFC9082}}. The base URL is out of scope for this document.
 
 The information available following the URIs MUST be protected with a AAA mechanism, per REG-2 of {{RFC9153}}. The definition of the AAA mechanism is out of scope for this document.
 
