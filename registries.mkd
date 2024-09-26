@@ -119,13 +119,11 @@ It is not necessary, and in some case may not be desirable, for DRIP registratio
 
 The specifics for the UAS RID use case are detailed in the rest of document.
 
-> Review(MGLT) / TODO(Jim): I think that the model is flexible enough so the paragraph above is not necessary. However, I think it is nice to mention that that we have the IAB the owns the ip6.arpa and so the "3.0.0.1.0.0.2.ip6.arpa", that it is foreseen that each CAA / RA become register to that zone (registrant) to later operate as (registry/registrar) to further HDA which in turn become (registry/registrar) for UAS owners. I put in () registrar/registry. We need to smooth the wording to not raise debates on registrar/registries.
-
 ## Scope
 
 The scope of this document is limited to the `2001:30::/28` IPv6 prefix and its associated reverse domain in DNS for DETs being used in UAS RID for participating parties (UA, Observer devices, DIMEs, etc.).
 
-Other sectors may adopt this technology. It is RECOMMENDED that an global Apex (i.e. IPv6 prefix) and international Apex manager be designated for each sector.
+Other sectors may adopt this technology. It is RECOMMENDED that a global Apex (i.e. IPv6 prefix) and international Apex manager be designated for each sector.
 
 # Terminology {#terminology}
 
@@ -173,9 +171,9 @@ The administration, management and policy for operation a DIME at any level in t
 
 Per {{RFC9434}} all information classified, by all parties involved, as public is stored in the DNS, specifically Authoritative Name Servers, to satisfy REG-1 from {{RFC9153}}.
 
-Authoritative Name Servers use domain names as handles and data is stored in Resource Records (RR) with associated RRTypes. This document defines two new RRTypes, one for HHIT metadata (HHIT, {{hhit-rr}}) and another for UAS Broadcast RID information (BRID, {{bcast-rr}}). The former RRType is particularly important as it contains a list URIs (as part of the certificate) that point to Private Information resources.
+Authoritative Name Servers use domain names as handles and data is stored in Resource Records (RR) with associated RRTypes. This document defines two new RRTypes, one for HHIT metadata (HHIT, {{hhit-rr}}) and another for UAS Broadcast RID information (BRID, {{bcast-rr}}). The former RRType is particularly important as it contains a URI (as part of the certificate) that point to Private Information resources.
 
-DETs, being IPv6 addresses, are to be under `ip6.arpa` (nibble reversed per convention) with at minimum an HHIT RRType. Depending on local circumstances other RRTypes MAY be present. For UAS RID the BRID RRType MUST be present to provide the Broadcast Endorsements defined in {{RFC9575}}.
+DETs, being IPv6 addresses, are to be under `ip6.arpa` (nibble reversed per convention) with at minimum an HHIT RRType. Depending on local circumstances or additional use cases other RRTypes MAY be present. For UAS RID the BRID RRType MUST be present to provide the Broadcast Endorsements defined in {{RFC9575}}.
 
 DNSSEC is strongly RECOMMENDED (especially for RAA-level and higher zones). When a DIME decides to use DNSSEC they SHOULD define a framework for cryptographic algorithms and key management {{RFC6841}}. This may be influenced by frequency of updates, size of the zone, and policies.
 
@@ -185,11 +183,9 @@ An example, from Apex to client, of the DNS zones in available in {{zone-example
 
 Lookups of the above RRTypes are performed with the standard DNS methodology using the nibble reversed DET as the query name affixed to the `ip6.arpa` domain apex and asking for the specific RRType. The HHIT RRType provides the public key for signature verification and URIs via the certificate. The BRID RRType provides static Broadcast RID information such as the Broadcast Endorsements sent following {{RFC9575}}.
 
-> TODO(Jim): is there a specific RFC that can be cited for the above paragraphs first sentence?
-
 # Canonical Public Registration Certificate {#canonical-cert}
 
-The following is a minimal canonical public registration certificate, generated upon successful registration and placed into {{hhit-rr}}. It is defined here as X.509 and MAY be encoded as a C.509. Other X.509 or C.509 MAY exist for specific use cases and MUST placed in CERT RRTypes.
+The following is a canonical public registration certificate, generated upon successful registration and placed into {{hhit-rr}}. It is defined here as X.509 and MAY be encoded as a C.509. Other X.509 or C.509 MAY exist for specific use cases and MUST placed in CERT RRTypes.
 
 ~~~~
 -----BEGIN CERTIFICATE-----
@@ -231,15 +227,23 @@ Certificate:
          17:5d:1b:25:6a:16:f7:2c:7d:09
 
 ~~~~
-{: title="Example Minimal UA Registration Certificate"}
+{: title="Example UA Canonical Registration Certificate"}
 
-The URI extension (not shown in example above) is used to contain pointers to additional information on an HHIT. An HDA MUST included one containing the base URI for HHIT lookups in its certificate. An HDA MAY put one with the fully qualified URI for the given HHIT in their leaf certificates. These URI SHOULD use the path segment of Section 3.1.3 (`domain/<domain name>`) of {{RFC9082}}. The base URL is out of scope for this document.
+## Private Information Registry URI
 
-The information available following the URIs MUST be protected with a AAA mechanism, per REG-2 of {{RFC9153}}. The definition of the AAA mechanism is out of scope for this document.
+The Public Information Registry MUST contain a pointer to a Private Information Registry to obtain additional information associated with an HHIT. The information available following a pointer MUST be protected with a AAA mechanism, per REG-2 of {{RFC9153}}. The definition of the AAA mechanism is out of scope for this document.
 
-Additional URIs MAY be present for other use cases.
+For DRIP, a URI extension in the X.509 ({{canonical-cert}}) is the selected way to provide this information in DNS. A base URI, to perform lookups, for a DIME MUST be included in their Canonical Registration Certificate. A DIME MAY include a fully qualified URI in an registering entities X.509 as needed.
+
+These URI SHOULD use the path segment of Section 3.1.3 (`domain/<domain name>`) of {{RFC9082}}. The base URI is out of scope for this document. The use of the RDAP bootstrap process is OPTIONAL.
+
+Additional URIs MAY be present in the X.509 for other use cases.
 
 # IANA Considerations
+
+## DRIP Prefix Delegation
+
+This memo requests that the IANA delegate the `3.0.0.1.0.0.2.ip6.arpa` domain following instructions to be provided by the IAB. Names within this zone are to be further delegated to the appropriated RAA's described by this document.
 
 ## IANA DRIP Registry
 
@@ -261,8 +265,6 @@ RAA Allocations:
 To support DNS delegation in `ip6.arpa` a single RAA is given 4 delegations by borrowing the upper two bits of HDA space. This enables a clean nibble boundary in DNS to delegate from (i.e. the prefix `2001:3x:xxx0::/44`). These HDAs (0, 4096, 8192 and 12288) are reserved for the RAA.
 
 The mapping between ISO 3166-1 Numeric Numbers and RAAs can be found as a CSV file on [GitHub](https://github.com/ietf-wg-drip/draft-ietf-drip-registries/blob/main/iso3166-raa.csv). Each Nation is assigned four RAAs that are left to the national authority for their purpose. For RAAs under this range a shorter prefix of `2001:3x:xx00::/40` MAY be delegated to each CAA, which covers all 4 RAAs (and reserved HDAs) assigned to them.
-
-Since the prefix is under a zone controlled by the IAB (`ip6.arpa`) they have authority on delegation in this space. IANA and IAB SHOULD create a registration policy for RAAs that is published to allow for organization to register for an RAA value. The content and process of this registration for an RAA is out of scope for this document and left to the administrative organizations (IAB and IANA) to decide. IANA has agreed to serve as an interim Apex manager.
 
 ### HHIT Entity Type {#iana-hhit-type}
 
@@ -301,10 +303,9 @@ HHIT Entity Type:
 | 24            | Network RID Service Provider (SP)          | This RFC     |
 | 25            | Network RID Display Provider (DP)          | This RFC     |
 | 26            | Supplemental Data Service Provider (SDSP)  | This RFC     |
-| 27 - 31       | Reserved For UAS Use Cases                 | This RFC     |
-| 32 - 65535    | Reserved                                   |              |
+| 27 - 65535    | Reserved                                   | This RFC     |
 
-> Author: text on DRIP Expert Review process
+Future additions to this registry MUST NOT be allowed if they can be covered under an existing registration.
 
 # Security Considerations
 
@@ -368,7 +369,7 @@ HID Abbreviation:
 
 Canonical Registration Certificate:
 
-: This field is the canonical registration certificate for the HHIT in either X.509 DER or C.509 form. It MUST contain at least the bare minimum as defined in {{canonical-cert}}.
+: This field is the canonical registration certificate as described in {{canonical-cert}} for the HHIT in either X.509 DER or C.509 form.
 
 # UAS Broadcast RID Resource Record {#bcast-rr}
 
@@ -387,7 +388,7 @@ The wire format for the BRID RRType MUST be encoded in CBOR. The CDDL of the RRT
 
 ## Presentation Format {#bcast-rr-presentation}
 
-The presentation format of the BRID RRType MUST be in Extended Diagnostic Notation as defined in Appendix G of {{RFC8610}}. {{hhit-text}} provides an example of a BRID RRType in this form. All byte strings longer than 20 SHOULD be displayed as base64 when possible.
+The presentation format of the BRID RRType MUST be in Extended Diagnostic Notation as defined in Appendix G of {{RFC8610}}. {{bcast-text}} provides an example of a BRID RRType in this form. All byte strings longer than 20 SHOULD be displayed as base64 when possible.
 
 ~~~~
 {::include examples/bcast-rr.txt}
@@ -413,8 +414,9 @@ The RAA allocation of `16376` and an HDA of `1` have been selected.
 
 ~~~~
 $ORIGIN 3.0.0.1.0.0.2.ip6.arpa.
-d.a.0.9.6.f.0.e.a.e.f.7.8.d.a.f.5.0.0.0.0.0.0.0.0 IN BRID ( a3687561735f7479706500677561735f6964738065617574687381820558890180d0ec660004ce682001003000000005fad87feae0f690ad1a377f5436d1936ed049be001cdd3689464135e82c08eaee913b5f04f7fa731a2001003000000005fad87feae0f690adcff4646166ded406c43bc341e26bfaeffc4c24e04d1765d5e0aa3d6efb848ae64f1d11359736d2a323712b44e73c781ba7b7bd09ca503fbf122039825148770a )
-d.a.0.9.6.f.0.e.a.e.f.7.8.d.a.f.5.0.0.0.0.0.0.0.0 IN HHIT ( 0 APEX 5901823082017e30820130a00302010202141bb140bd7f8d37970397297ab88e5ae1bc848a07300506032b657030193117301506035504030c0e3230303130303330303030303030301e170d3234303931393231333134345a170d3234303932303231333134345a3000302a300506032b65700321001a377f5436d1936ed049be001cdd3689464135e82c08eaee913b5f04f7fa731aa381a230819f30818f0603551d110101ff04818430818187102001003000000005fad87feae0f690ad866d68747470733a2f2f617065782e6578616d706c652e636f6d2f726461702f646f6d61696e2f642e612e302e392e362e662e302e652e612e652e662e372e382e642e612e662e352e302e302e302e302e302e302e302e302e332e302e302e312e302e302e322e6970362e61727061300b0603551d0f040403020780300506032b6570034100bb903442cdc2ec6aecb684da1ec05813467b6ace75e6f54de1b9b8d334cc3afaf7cf8eaf74883dc7dc98ee78cf0ae3e7dcb9a7189eb708936634bcaffe7fb80a )
+d.a.0.9.6.f.0.e.a.e.f.7.8.d.a.f.5.0.0.0.0.0.0.0.0 IN BRID ( a368..770a )
+d.a.0.9.6.f.0.e.a.e.f.7.8.d.a.f.5.0.0.0.0.0.0.0.0 IN HHIT ( 0 APEX 
+                                                            5901..b80a )
 0.e.f.f IN NS ns1.raa-16376.example.com
 1.e.f.f IN NS ns1.raa-16376.example.com
 2.e.f.f IN NS ns1.raa-16376.example.com
@@ -424,17 +426,17 @@ d.a.0.9.6.f.0.e.a.e.f.7.8.d.a.f.5.0.0.0.0.0.0.0.0 IN HHIT ( 0 APEX 5901823082017
 
 ~~~~
 $ORIGIN 0.e.f.f.3.0.0.1.0.0.2.ip6.arpa.
-0.9.7.b.3.d.6.7.e.8.d.c.a.8.1.6.5.0.0.0.0 IN BRID ( a3687561735f7479706500677561735f6964738065617574687382820558890180d0ec660004ce682001003000000005fad87feae0f690ad1a377f5436d1936ed049be001cdd3689464135e82c08eaee913b5f04f7fa731a2001003000000005fad87feae0f690adcff4646166ded406c43bc341e26bfaeffc4c24e04d1765d5e0aa3d6efb848ae64f1d11359736d2a323712b44e73c781ba7b7bd09ca503fbf122039825148770a820558890180d0ec660004ce682001003ffe100005846f65ab0c817f58196c9e749237f0867d3a72b6e2e23dc6c4c1731790986151df5c2c57aacb85242001003000000005fad87feae0f690ad48ee88a13e11e1000c57efd34bc260de4ded03f13d48f51e93873b843cca2ad068ab9c73cbf0a2e5bc7fde6bc020f20c954ed6f9620b411f13ddb349c51a5a0b )
-0.9.7.b.3.d.6.7.e.8.d.c.a.8.1.6.5.0.0.0.0 IN HHIT ( 0 RAA 5901813082017d3082012fa003020102021459af752f30cb9012a97c6f6437c72b34f009e32f300506032b657030193117301506035504030c0e3230303130303330303030303030301e170d3234303931393231333134345a170d3234303932303231333134345a3000302a300506032b65700321006e0a752385a0d0141f36436aef23ed69deb100e53f87b28f7561ac2eddf4474ea381a130819e30818e0603551d110101ff04818330818087102001003ffe000005618acd8e76d3b790866c68747470733a2f2f7261612e6578616d706c652e636f6d2f726461702f646f6d61696e2f302e392e372e622e332e642e362e372e652e382e642e632e612e382e312e362e352e302e302e302e302e302e652e662e662e332e302e302e312e302e302e322e6970362e61727061300b0603551d0f040403020780300506032b65700341002391f4dda03598aeb28937d0d0e8b76356b641077efe17d9cb668ca7a9b285b55381148a21646245a80c94bf1971812abe2f3bb1f8d59aa7fe1e24f5adcb0d0c )
+0.9.7.b.3.d.6.7.e.8.d.c.a.8.1.6.5.0.0.0.0 IN BRID ( a368..5a0b )
+0.9.7.b.3.d.6.7.e.8.d.c.a.8.1.6.5.0.0.0.0 IN HHIT ( 0 RAA 5901..0d0c )
 1.0.0 IN NS ns1.hda-1.example.com
 ~~~~
 {: title="RAA Zone"}
 
 ~~~~
 $ORIGIN 1.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.arpa.
-3.4.4.5.0.1.c.1.8.7.2.a.9.7.d.a.5.0 IN BRID ( a3687561735f7479706500677561735f6964738065617574687383820558890180d0ec660004ce682001003000000005fad87feae0f690ad1a377f5436d1936ed049be001cdd3689464135e82c08eaee913b5f04f7fa731a2001003000000005fad87feae0f690adcff4646166ded406c43bc341e26bfaeffc4c24e04d1765d5e0aa3d6efb848ae64f1d11359736d2a323712b44e73c781ba7b7bd09ca503fbf122039825148770a820558890180d0ec660004ce682001003ffe100005846f65ab0c817f58196c9e749237f0867d3a72b6e2e23dc6c4c1731790986151df5c2c57aacb85242001003000000005fad87feae0f690ad48ee88a13e11e1000c57efd34bc260de4ded03f13d48f51e93873b843cca2ad068ab9c73cbf0a2e5bc7fde6bc020f20c954ed6f9620b411f13ddb349c51a5a0b820558890180d0ec660004ce682001003ffe000105ad79a2781c10544309d0385c04bf421bb12a3f04da8a977f7f7f5d1d267aac097e3c7504b7c285632001003ffe100005846f65ab0c817f58b5f8e1343569000fa5a1de93e6d398baa048f895c154363d49627a72cabb1de32ccd3ec04a2981059ad390a458f68f88a113485c711eda2336c74bc60365340c )
-3.4.4.5.0.1.c.1.8.7.2.a.9.7.d.a.5.0 IN HHIT ( 0 HDA 5901813082017d3082012fa003020102021468e5fc3b57fff27feb02850fce0894c1aa995df8300506032b657030193117301506035504030c0e3230303130303366666531303030301e170d3234303931393231333134345a170d3234303932303231333134345a3000302a300506032b657003210009d0385c04bf421bb12a3f04da8a977f7f7f5d1d267aac097e3c7504b7c28563a381a130819e30818e0603551d110101ff04818330818087102001003ffe000105ad79a2781c105443866c68747470733a2f2f6864612e6578616d706c652e636f6d2f726461702f646f6d61696e2f332e342e342e352e302e312e632e312e382e372e322e612e392e372e642e612e352e302e312e302e302e302e652e662e662e332e302e302e312e302e302e322e6970362e61727061300b0603551d0f040403020780300506032b65700341008e57975cbc6da6c7cabcf46d9805b90994522a3ff4194cc7c454c1c5d36f7e81e3e2ef57c73f0d3017b44466ec4f94dd26e77cf07861006dd99bd023a484ac0a )
-5.f.e.2.7.5.f.e.4.d.1.2.6.2.a.6.5.0 IN BRID ( a3687561735f7479706500677561735f69647381820451012001003ffe0001056a2621d4ef572ef565617574687384820558890180d0ec660004ce682001003000000005fad87feae0f690ad1a377f5436d1936ed049be001cdd3689464135e82c08eaee913b5f04f7fa731a2001003000000005fad87feae0f690adcff4646166ded406c43bc341e26bfaeffc4c24e04d1765d5e0aa3d6efb848ae64f1d11359736d2a323712b44e73c781ba7b7bd09ca503fbf122039825148770a820558890180d0ec660004ce682001003ffe100005846f65ab0c817f58196c9e749237f0867d3a72b6e2e23dc6c4c1731790986151df5c2c57aacb85242001003000000005fad87feae0f690ad48ee88a13e11e1000c57efd34bc260de4ded03f13d48f51e93873b843cca2ad068ab9c73cbf0a2e5bc7fde6bc020f20c954ed6f9620b411f13ddb349c51a5a0b820558890180d0ec660004ce682001003ffe000105ad79a2781c10544309d0385c04bf421bb12a3f04da8a977f7f7f5d1d267aac097e3c7504b7c285632001003ffe100005846f65ab0c817f58b5f8e1343569000fa5a1de93e6d398baa048f895c154363d49627a72cabb1de32ccd3ec04a2981059ad390a458f68f88a113485c711eda2336c74bc60365340c820558890180d0ec660004ce682001003ffe0001056a2621d4ef572ef5e5ed7e2a588312627f215ace37696e402c88a7516ab830d70d7bc7a187bdcf742001003ffe000105ad79a2781c105443710b93353cb9283e7612ebe0fbc8e8bb6deb789e1e770a6d30de794ed5ca6da5ae0469214072f506b42f8e4edec074d7c221b7b3ec1d7f180979984613aeee00 )
-5.f.e.2.7.5.f.e.4.d.1.2.6.2.a.6.5.0 IN HHIT ( 0 CHILD 5901813082017d3082012fa00302010202145c7cac8baf342e307c290c7df226026b753cfaf9300506032b657030193117301506035504030c0e3230303130303366666530303031301e170d3234303931393231333134345a170d3234303932303231333134345a3000302a300506032b6570032100e5ed7e2a588312627f215ace37696e402c88a7516ab830d70d7bc7a187bdcf74a381a130819e30818e0603551d110101ff04818330818087102001003ffe0001056a2621d4ef572ef5866c68747470733a2f2f6864612e6578616d706c652e636f6d2f726461702f646f6d61696e2f352e662e652e322e372e352e662e652e342e642e312e322e362e322e612e362e352e302e312e302e302e302e652e662e662e332e302e302e312e302e302e322e6970362e61727061300b0603551d0f040403020780300506032b65700341002e1f24a3b1e7422cb35c509d2a912561adeda3b4ca79f9e8996d7a0d4904f1d1e741ddc85a078aa5ecb60f7689c9d145caf6a7252dea3ef577584a4636330306 )
+3.4.4.5.0.1.c.1.8.7.2.a.9.7.d.a.5.0 IN BRID ( a368..340c )
+3.4.4.5.0.1.c.1.8.7.2.a.9.7.d.a.5.0 IN HHIT ( 0 HDA 5901..ac0a )
+5.f.e.2.7.5.f.e.4.d.1.2.6.2.a.6.5.0 IN BRID ( a368..ee00 )
+5.f.e.2.7.5.f.e.4.d.1.2.6.2.a.6.5.0 IN HHIT ( 0 CHILD 5901..0306 )
 ~~~~
 {: title="HDA Zone"}

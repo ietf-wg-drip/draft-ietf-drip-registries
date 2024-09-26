@@ -1,7 +1,12 @@
 {
-  "uas_type": 12,
-  "uas_ids": {0: h'16487EXAMPLE'},
-  "ua_class": 7,
-  "eu_class": 0,
-  "eu_category": 5
+  "uas_type": 0, 
+  "uas_ids": [
+    [4, h'012001003FFE0001056A2621D4EF572EF5']
+  ], 
+  "auths": [
+    [5, b64'AYDQ..dwo='],
+    [5, b64'AYDQ..Wgs='],
+    [5, b64'AYDQ..NAw='],
+    [5, b64'AYDQ..7gA=']
+  ]
 }
