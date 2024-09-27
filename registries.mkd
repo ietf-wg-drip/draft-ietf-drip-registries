@@ -83,7 +83,7 @@ informative:
       date: August 2020
       seriesinfo:
         ISO: 3166-1:2020
-        DOI: 
+        DOI:  # TODO(Editor): where do thou find?
 
 --- abstract
 
@@ -243,7 +243,7 @@ Additional URIs MAY be present in the X.509 for other use cases.
 
 ## DRIP Prefix Delegation
 
-This memo requests that the IANA delegate the `3.0.0.1.0.0.2.ip6.arpa` domain following instructions to be provided by the IAB. Names within this zone are to be further delegated to the appropriated RAA's described by this document.
+This document requests that the IANA delegate the `3.0.0.1.0.0.2.ip6.arpa` domain following instructions to be provided by the IAB. Names within this zone are to be further delegated to the appropriated RAA's described by this document.
 
 ## IANA DRIP Registry
 
@@ -257,10 +257,10 @@ RAA Allocations:
 
 | RAA Value(s)  | Status    | Allocation                 | Reference                       |
 | ------------- | --------- | -------------------------- | ------------------------------- |
-| 0             | Allocated | UAS RID (DRIP) Apex        | This RFC                        |
-| 1 - 4000      | Allocated | ISO 3166-1 Countries       | This RFC                        |
-| 4001 - 16375  | Reserved  | N/A                        | N/A                             |
-| 16375 - 16384 | Allocated | DRIP WG (Experimental Use) | This RFC                        |
+| 0 - 3         | Reserved  | N/A                        | N/A                             |
+| 4 - 3999      | Allocated | ISO 3166-1 Countries       | This RFC                        |
+| 4000 - 16375  | Reserved  | N/A                        | N/A                             |
+| 16376 - 16383 | Allocated | DRIP WG (Experimental Use) | This RFC                        |
 
 To support DNS delegation in `ip6.arpa` a single RAA is given 4 delegations by borrowing the upper two bits of HDA space. This enables a clean nibble boundary in DNS to delegate from (i.e. the prefix `2001:3x:xxx0::/44`). These HDAs (0, 4096, 8192 and 12288) are reserved for the RAA.
 
@@ -303,7 +303,7 @@ HHIT Entity Type:
 | 24            | Network RID Service Provider (SP)          | This RFC     |
 | 25            | Network RID Display Provider (DP)          | This RFC     |
 | 26            | Supplemental Data Service Provider (SDSP)  | This RFC     |
-| 27 - 65535    | Reserved                                   | This RFC     |
+| 27 - 65535    | Reserved                                   | N/A          |
 
 Future additions to this registry MUST NOT be allowed if they can be covered under an existing registration.
 
@@ -414,26 +414,29 @@ The RAA allocation of `16376` and an HDA of `1` have been selected.
 
 ~~~~
 $ORIGIN 3.0.0.1.0.0.2.ip6.arpa.
-d.a.0.9.6.f.0.e.a.e.f.7.8.d.a.f.5.0.0.0.0.0.0.0.0 IN BRID ( a368..770a )
-d.a.0.9.6.f.0.e.a.e.f.7.8.d.a.f.5.0.0.0.0.0.0.0.0 IN HHIT ( 0 APEX 
-                                                            5901..b80a )
 0.e.f.f IN NS ns1.raa-16376.example.com
 1.e.f.f IN NS ns1.raa-16376.example.com
 2.e.f.f IN NS ns1.raa-16376.example.com
 3.e.f.f IN NS ns1.raa-16376.example.com
+
+$ORIGIN 5.0.0.0.0.0.0.0.0.3.0.0.1.0.0.2.ip6.arpa.
+d.a.0.9.6.f.0.e.a.e.f.7.8.d.a.f IN BRID ( a368..770a )
+d.a.0.9.6.f.0.e.a.e.f.7.8.d.a.f IN HHIT ( 0 APEX 5901..b80a )
 ~~~~
-{: title="Apex Zone"}
+{: title="Apex Zones"}
 
 ~~~~
 $ORIGIN 0.e.f.f.3.0.0.1.0.0.2.ip6.arpa.
-0.9.7.b.3.d.6.7.e.8.d.c.a.8.1.6.5.0.0.0.0 IN BRID ( a368..5a0b )
-0.9.7.b.3.d.6.7.e.8.d.c.a.8.1.6.5.0.0.0.0 IN HHIT ( 0 RAA 5901..0d0c )
 1.0.0 IN NS ns1.hda-1.example.com
+
+$ORIGIN 5.0.0.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.arpa.
+0.9.7.b.3.d.6.7.e.8.d.c.a.8.1.6 IN BRID ( a368..5a0b )
+0.9.7.b.3.d.6.7.e.8.d.c.a.8.1.6 IN HHIT ( 0 RAA 5901..0d0c )
 ~~~~
-{: title="RAA Zone"}
+{: title="RAA Zones"}
 
 ~~~~
-$ORIGIN 1.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.arpa.
+$ORIGIN 0.1.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.arpa.
 3.4.4.5.0.1.c.1.8.7.2.a.9.7.d.a.5.0 IN BRID ( a368..340c )
 3.4.4.5.0.1.c.1.8.7.2.a.9.7.d.a.5.0 IN HHIT ( 0 HDA 5901..ac0a )
 5.f.e.2.7.5.f.e.4.d.1.2.6.2.a.6.5.0 IN BRID ( a368..ee00 )
