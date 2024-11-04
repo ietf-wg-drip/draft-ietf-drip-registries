@@ -3,7 +3,7 @@ coding: utf-8
 
 title: DRIP Entity Tags (DET) in the Domain Name System (DNS)
 abbrev: DET in DNS
-docname: draft-ietf-drip-registries-18
+docname: draft-ietf-drip-registries-19
 category: std
 
 ipr: trust200902
@@ -83,7 +83,6 @@ informative:
       date: August 2020
       seriesinfo:
         ISO: 3166-1:2020
-        DOI:  # TODO(Editor): where do thou find?
 
 --- abstract
 
@@ -183,61 +182,69 @@ An example, from Apex to client, of the DNS zones in available in {{zone-example
 
 Lookups of the above RRTypes are performed with the standard DNS methodology using the nibble reversed DET as the query name affixed to the `ip6.arpa` domain apex and asking for the specific RRType. The HHIT RRType provides the public key for signature verification and URIs via the certificate. The BRID RRType provides static Broadcast RID information such as the Broadcast Endorsements sent following {{RFC9575}}.
 
-# Canonical Public Registration Certificate {#canonical-cert}
+# Resource Records
 
-The following is a canonical public registration certificate, generated upon successful registration and placed into {{hhit-rr}}. It is defined here as X.509 and MAY be encoded as a C.509. Other X.509 or C.509 MAY exist for specific use cases and MUST placed in CERT RRTypes.
+## HHIT Resource Record {#hhit-rr}
 
-~~~~
------BEGIN CERTIFICATE-----
-MIIBCTCBvKADAgECAhQsKjO1bWo9IQm4g6DnIDJmnQqRrDAFBgMrZXAwGTEXMBUG
-A1UEAwwOMjAwMTAwM2ZmZTAwMDEwHhcNMjQwOTI1MjA0MTQ1WhcNMjQwOTI2MjA0
-MTQ1WjAAMCowBQYDK2VwAyEAe9/qfhAvPzw/rWb5n4wmVfKZcUezxygo7qFDIO7z
-TVejLzAtMB4GA1UdEQEB/wQUMBKHECABAD/+AAEFu+Gv+JeyXlowCwYDVR0PBAQD
-AgeAMAUGAytlcANBACB7NmtdXksQDzkzVpJtl29H8g9EioEB75tNHQSSvlpjyFyO
-uxKnOYUhN+fIuLhk4Inn79qbFhddGyVqFvcsfQk=
------END CERTIFICATE-----
+The HHIT Resource Record is a metadata record for various bits of HHIT specific information that isn't available in the pre-existing HIP RRType. It is encoded as a CBOR array.
 
-Certificate:
-    Data:
-        Version: 3 (0x2)
-        Serial Number:
-            2c:2a:33:b5:6d:6a:3d:21:09:b8:83:a0:e7:20:32:66:9d:0a:91:ac
-        Signature Algorithm: ED25519
-        Issuer: CN = 2001003ffe0001
-        Validity
-            Not Before: Sep 25 20:41:45 2024 GMT
-            Not After : Sep 26 20:41:45 2024 GMT
-        Subject: 
-        Subject Public Key Info:
-            Public Key Algorithm: ED25519
-                ED25519 Public-Key:
-                pub:
-                    7b:df:ea:7e:10:2f:3f:3c:3f:ad:66:f9:9f:8c:26:
-                    55:f2:99:71:47:b3:c7:28:28:ee:a1:43:20:ee:f3:
-                    4d:57
-        X509v3 extensions:
-            X509v3 Subject Alternative Name: critical
-                IP Address:2001:3F:FE00:105:BBE1:AFF8:97B2:5E5A
-            X509v3 Key Usage: 
-                Digital Signature
-    Signature Algorithm: ED25519
-         20:7b:36:6b:5d:5e:4b:10:0f:39:33:56:92:6d:97:6f:47:f2:
-         0f:44:8a:81:01:ef:9b:4d:1d:04:92:be:5a:63:c8:5c:8e:bb:
-         12:a7:39:85:21:37:e7:c8:b8:b8:64:e0:89:e7:ef:da:9b:16:
-         17:5d:1b:25:6a:16:f7:2c:7d:09
+### Wire Format {#hhit-rr-wire}
+
+The wire format for the HHIT RRType MUST be encoded in CBOR. The CDDL of the RRType is provided in {{hhit-wire-cddl}}.
 
 ~~~~
-{: title="Example UA Canonical Registration Certificate"}
+{::include cddl/hhit-rr.cddl}
+~~~~
+{: #hhit-wire-cddl title="HHIT Wire Format CDDL"}
 
-## Private Information Registry URI
+### Presentation Format {#hhit-rr-presentation}
 
-The Public Information Registry MUST contain a pointer to a Private Information Registry to obtain additional information associated with an HHIT. The information available following a pointer MUST be protected with a AAA mechanism, per REG-2 of {{RFC9153}}. The definition of the AAA mechanism is out of scope for this document.
+The presentation format of the HHIT RRType MUST be in Extended Diagnostic Notation as defined in Appendix G of {{RFC8610}}. {{hhit-text}} provides an example of a HHIT RRType in this form. It is RECOMMENDED to have all byte strings, except for IPv6 addresses, be displayed as base64.
 
-For DRIP, a URI extension in the X.509 ({{canonical-cert}}) is the selected way to provide this information in DNS. A base URI, to perform lookups, for a DIME MUST be included in their Canonical Registration Certificate. A DIME MAY include a fully qualified URI in an registering entities X.509 as needed.
+~~~~
+{::include examples/hhit-rr.txt}
+~~~~
+{: #hhit-text title="HHIT Presentation Format"}
 
-These URI SHOULD use the path segment of Section 3.1.3 (`domain/<domain name>`) of {{RFC9082}}. The base URI is out of scope for this document. The use of the RDAP bootstrap process is OPTIONAL.
+### Field Descriptions {#hhit-rr-fields}
 
-Additional URIs MAY be present in the X.509 for other use cases.
+HHIT Entity Type:
+
+: This field is two octets with values defined in {{iana-hhit-type}}. It is envisioned that there may be many types of HHITs in use. In some cases it may be helpful to understand the HHITs role in the ecosystem like described in {{drip-dki}}. This field provides such context.
+
+HID Abbreviation:
+
+: This field is meant to provide an abbreviation to the HID structure for display devices. The specific contents of this field are not defined here.
+
+Canonical Registration Certificate:
+
+: This field is reserved for any certificate to endorse registration that contains the DET. It is in either encoded as X.509 DER or C.509.
+
+## UAS Broadcast RID Resource Record {#bcast-rr}
+
+The UAS Broadcast RID Resource Record type (BRID) is a format to hold public information typically sent of the UAS Broadcast RID that is static. It can act as a data source if information is not received over Broadcast RID or for cross validation.
+
+### Wire Format {#bcast-rr-wire}
+
+The wire format for the BRID RRType MUST be encoded in CBOR. The CDDL of the RRType is provided in {{bcast-wire-cddl}}.
+
+~~~~
+{::include cddl/bcast-rr.cddl}
+~~~~
+{: #bcast-wire-cddl title="BRID Wire Format CDDL"}
+
+### Presentation Format {#bcast-rr-presentation}
+
+The presentation format of the BRID RRType MUST be in Extended Diagnostic Notation as defined in Appendix G of {{RFC8610}}. {{bcast-text}} provides an example of a BRID RRType in this form. All byte strings longer than 20 SHOULD be displayed as base64 when possible.
+
+~~~~
+{::include examples/bcast-rr.txt}
+~~~~
+{: #bcast-text title="BRID Presentation Format"}
+
+### Field Descriptions {#bcast-rr-fields}
+
+The field names and their general typing are borrowed from the ASTM {{F3411}} data dictionary. See that document for additional information on fields semantics and units.
 
 # IANA Considerations
 
@@ -265,6 +272,8 @@ RAA Allocations:
 To support DNS delegation in `ip6.arpa` a single RAA is given 4 delegations by borrowing the upper two bits of HDA space. This enables a clean nibble boundary in DNS to delegate from (i.e. the prefix `2001:3x:xxx0::/44`). These HDAs (0, 4096, 8192 and 12288) are reserved for the RAA.
 
 The mapping between ISO 3166-1 Numeric Numbers and RAAs can be found as a CSV file on [GitHub](https://github.com/ietf-wg-drip/draft-ietf-drip-registries/blob/main/iso3166-raa.csv). Each Nation is assigned four RAAs that are left to the national authority for their purpose. For RAAs under this range a shorter prefix of `2001:3x:xx00::/40` MAY be delegated to each CAA, which covers all 4 RAAs (and reserved HDAs) assigned to them.
+
+Requests in the DRIP WG allocation block MUST be forwarded to the contact point in the DRIP WG to evaluate the request and MUST contain a desired/proposed length of time for the allocation. Allocations in the block are not permanent and have a limited time the delegation is to be supported (max of 12 months). The length of the time proposed is evaluated on a case-by-case basis by the DRIP WG and can result in negotiations for adjustment.
 
 ### HHIT Entity Type {#iana-hhit-type}
 
@@ -333,72 +342,6 @@ Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LL
 
 --- back
 
-# HHIT Resource Record {#hhit-rr}
-
-This appendix is normative.
-
-The HHIT Resource Record is a metadata record for various bits of HHIT specific information that isn't available in the pre-existing HIP RRType. It is encoded as a CBOR array.
-
-## Wire Format {#hhit-rr-wire}
-
-The wire format for the HHIT RRType MUST be encoded in CBOR. The CDDL of the RRType is provided in {{hhit-wire-cddl}}.
-
-~~~~
-{::include cddl/hhit-rr.cddl}
-~~~~
-{: #hhit-wire-cddl title="HHIT Wire Format CDDL"}
-
-## Presentation Format {#hhit-rr-presentation}
-
-The presentation format of the HHIT RRType MUST be in Extended Diagnostic Notation as defined in Appendix G of {{RFC8610}}. {{hhit-text}} provides an example of a HHIT RRType in this form. It is RECOMMENDED to have all byte strings, except for IPv6 addresses, be displayed as base64.
-
-~~~~
-{::include examples/hhit-rr.txt}
-~~~~
-{: #hhit-text title="HHIT Presentation Format"}
-
-## Field Descriptions {#hhit-rr-fields}
-
-HHIT Entity Type:
-
-: This field is two octets with values defined in {{iana-hhit-type}}. It is envisioned that there may be many types of HHITs in use. In some cases it may be helpful to understand the HHITs role in the ecosystem like described in {{drip-dki}}. This field provides such context.
-
-HID Abbreviation:
-
-: This field is meant to provide an abbreviation to the HID structure for display devices. The specific contents of this field are not defined here.
-
-Canonical Registration Certificate:
-
-: This field is the canonical registration certificate as described in {{canonical-cert}} for the HHIT in either X.509 DER or C.509 form.
-
-# UAS Broadcast RID Resource Record {#bcast-rr}
-
-This appendix is normative.
-
-The UAS Broadcast RID Resource Record type (BRID) is a format to hold public information typically sent of the UAS Broadcast RID that is static. It can act as a data source if information is not received over Broadcast RID or for cross validation.
-
-## Wire Format {#bcast-rr-wire}
-
-The wire format for the BRID RRType MUST be encoded in CBOR. The CDDL of the RRType is provided in {{bcast-wire-cddl}}.
-
-~~~~
-{::include cddl/bcast-rr.cddl}
-~~~~
-{: #bcast-wire-cddl title="BRID Wire Format CDDL"}
-
-## Presentation Format {#bcast-rr-presentation}
-
-The presentation format of the BRID RRType MUST be in Extended Diagnostic Notation as defined in Appendix G of {{RFC8610}}. {{bcast-text}} provides an example of a BRID RRType in this form. All byte strings longer than 20 SHOULD be displayed as base64 when possible.
-
-~~~~
-{::include examples/bcast-rr.txt}
-~~~~
-{: #bcast-text title="BRID Presentation Format"}
-
-## Field Descriptions {#bcast-rr-fields}
-
-The field names and their general typing are borrowed from the ASTM {{F3411}} data dictionary. See that document for additional information on fields semantics and units.
-
 # DET DNS Zone Examples {#zone-examples}
 
 This appendix is informative, showing an example of the DNS zone setup/content from Apex to a client.
@@ -418,10 +361,6 @@ $ORIGIN 3.0.0.1.0.0.2.ip6.arpa.
 1.e.f.f IN NS ns1.raa-16376.example.com
 2.e.f.f IN NS ns1.raa-16376.example.com
 3.e.f.f IN NS ns1.raa-16376.example.com
-
-$ORIGIN 5.0.0.0.0.0.0.0.0.3.0.0.1.0.0.2.ip6.arpa.
-d.a.0.9.6.f.0.e.a.e.f.7.8.d.a.f IN BRID ( a368..770a )
-d.a.0.9.6.f.0.e.a.e.f.7.8.d.a.f IN HHIT ( 0 APEX 5901..b80a )
 ~~~~
 {: title="Apex Zones"}
 
@@ -436,10 +375,10 @@ $ORIGIN 5.0.0.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.arpa.
 {: title="RAA Zones"}
 
 ~~~~
-$ORIGIN 0.1.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.arpa.
-3.4.4.5.0.1.c.1.8.7.2.a.9.7.d.a.5.0 IN BRID ( a368..340c )
-3.4.4.5.0.1.c.1.8.7.2.a.9.7.d.a.5.0 IN HHIT ( 0 HDA 5901..ac0a )
-5.f.e.2.7.5.f.e.4.d.1.2.6.2.a.6.5.0 IN BRID ( a368..ee00 )
-5.f.e.2.7.5.f.e.4.d.1.2.6.2.a.6.5.0 IN HHIT ( 0 CHILD 5901..0306 )
+$ORIGIN 5.0.1.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.arpa.
+3.4.4.5.0.1.c.1.8.7.2.a.9.7.d.a IN BRID ( a368..340c )
+3.4.4.5.0.1.c.1.8.7.2.a.9.7.d.a IN HHIT ( 0 HDA 5901..ac0a )
+5.f.e.2.7.5.f.e.4.d.1.2.6.2.a.6 IN BRID ( a368..ee00 )
+5.f.e.2.7.5.f.e.4.d.1.2.6.2.a.6 IN HHIT ( 0 CHILD 5901..0306 )
 ~~~~
 {: title="HDA Zone"}
