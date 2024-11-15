@@ -3,7 +3,7 @@ coding: utf-8
 
 title: DRIP Entity Tags (DET) in the Domain Name System (DNS)
 abbrev: DET in DNS
-docname: draft-ietf-drip-registries-19
+docname: draft-ietf-drip-registries-20
 category: std
 
 ipr: trust200902
@@ -98,7 +98,7 @@ When a DRIP Entity Tag (DET) {{RFC9374}} is used as the UAS ID in RID, extended 
 
 ## General Concept
 
-DETs embedded a hierarchy scheme which is mapped onto DNS. DIME's enforce registration and information access of data associated with a DET while also providing the trust inherited from being a member of the hierarchy. Other identifiers and their methods are out of scope for this document.
+DRIP Entity Tags (DETs) embedded a hierarchy scheme which is mapped onto the Domain Name System (DNS). DIME's enforce registration and information access of data associated with a DET while also providing the trust inherited from being a member of the hierarchy. Other identifiers and their methods are out of scope for this document.
 
 Authoritative Name Servers of the Domain Name System (DNS) provide the Public Information such as the cryptographic keys, endorsements and certificates of DETs and pointers to Private Information resources. Cryptographic (public) keys are used to authenticate anything signed by a DET, such as in the Authentication defined {{RFC9575}} for Broadcast RID. Endorsements and certificates are used to endorse the claim of being part of the hierarchy.
 
@@ -178,35 +178,45 @@ DNSSEC is strongly RECOMMENDED (especially for RAA-level and higher zones). When
 
 UAS specific information, such as physical characteristics, MAY also be stored in DNS but is out of scope for this document. This specification information is currently drafted in {{uas-sn-dns}}.
 
-An example, from Apex to client, of the DNS zones in available in {{zone-examples}}.
-
 Lookups of the above RRTypes are performed with the standard DNS methodology using the nibble reversed DET as the query name affixed to the `ip6.arpa` domain apex and asking for the specific RRType. The HHIT RRType provides the public key for signature verification and URIs via the certificate. The BRID RRType provides static Broadcast RID information such as the Broadcast Endorsements sent following {{RFC9575}}.
 
 # Resource Records
 
 ## HHIT Resource Record {#hhit-rr}
 
-The HHIT Resource Record is a metadata record for various bits of HHIT specific information that isn't available in the pre-existing HIP RRType. It is encoded as a CBOR array.
+The HHIT Resource Record is a metadata record for various bits of HHIT specific information that isn't available in the pre-existing HIP RRType.
 
-### Wire Format {#hhit-rr-wire}
+~~~~
+                     1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        HHIT Data Length                       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
+.                                                               .
+.                   HHIT Data (CBOR Encoded)                    .
+.                                                               .
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+~~~~
+{:fig #hhit-wire title="HHIT Wire Format"}
 
-The wire format for the HHIT RRType MUST be encoded in CBOR. The CDDL of the RRType is provided in {{hhit-wire-cddl}}.
+The HHIT Data Length is 32-bit integer representing the number of bytes contained in the HHIT Data field. The HHIT Data field MUST be encoded in CBOR bytes. The CDDL of the HHIT Data is provided in {{hhit-wire-cddl}}.
+
+### Text Representation {#hhit-rr-text}
+
+The HHIT Data is represented in base64 and may be divided into any number of white-space-separated substrings, down to single base64 digits, which are concatenated to obtain the full object. These substrings can span lines using the standard parenthesis. Note that the HHIT Data portion has internal subfields, but these do not appear in the master file representation only a single logical base64 string will appear. The HHIT Data Length is not represented as it is implicitly known by the HHIT Data.
+
+#### Presentation Representation {#hhit-rr-presentation}
+
+The HHIT Data portion MAY, for display purposes only, be represented using the Extended Diagnostic Notation as defined in Appendix G of {{RFC8610}}.
+
+### Field Descriptions {#hhit-rr-fields}
 
 ~~~~
 {::include cddl/hhit-rr.cddl}
 ~~~~
 {: #hhit-wire-cddl title="HHIT Wire Format CDDL"}
-
-### Presentation Format {#hhit-rr-presentation}
-
-The presentation format of the HHIT RRType MUST be in Extended Diagnostic Notation as defined in Appendix G of {{RFC8610}}. {{hhit-text}} provides an example of a HHIT RRType in this form. It is RECOMMENDED to have all byte strings, except for IPv6 addresses, be displayed as base64.
-
-~~~~
-{::include examples/hhit-rr.txt}
-~~~~
-{: #hhit-text title="HHIT Presentation Format"}
-
-### Field Descriptions {#hhit-rr-fields}
 
 HHIT Entity Type:
 
@@ -224,25 +234,37 @@ Canonical Registration Certificate:
 
 The UAS Broadcast RID Resource Record type (BRID) is a format to hold public information typically sent of the UAS Broadcast RID that is static. It can act as a data source if information is not received over Broadcast RID or for cross validation.
 
-### Wire Format {#bcast-rr-wire}
+~~~~
+                     1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        BRID Data Length                       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
+.                                                               .
+.                   BRID Data (CBOR Encoded)                    .
+.                                                               .
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+~~~~
+{:fig #bcast-wire title="BRID Wire Format"}
 
-The wire format for the BRID RRType MUST be encoded in CBOR. The CDDL of the RRType is provided in {{bcast-wire-cddl}}.
+The BRID Data Length is 32-bit integer representing the number of bytes contained in the BRID Data field. The BRID Data field MUST be encoded in CBOR bytes. The CDDL of the BRID Data is provided in {{bcast-wire-cddl}}.
+
+### Text Representation {#bcast-rr-text}
+
+The BRID Data is represented in base64 and may be divided into any number of white-space-separated substrings, down to single base64 digits, which are concatenated to obtain the full object. These substrings can span lines using the standard parenthesis. Note that the BRID Data portion has internal subfields, but these do not appear in the master file representation only a single logical base64 string will appear. The BRID Data Length is not represented as it is implicitly known by the BRID Data.
+
+#### Presentation Representation {#bcast-rr-presentation}
+
+The BRID Data portion MAY, for display purposes only, be represented using the Extended Diagnostic Notation as defined in Appendix G of {{RFC8610}}. All byte strings longer than a length of 20 SHOULD be displayed as base64 when possible.
+
+### Field Descriptions {#bcast-rr-fields}
 
 ~~~~
 {::include cddl/bcast-rr.cddl}
 ~~~~
 {: #bcast-wire-cddl title="BRID Wire Format CDDL"}
-
-### Presentation Format {#bcast-rr-presentation}
-
-The presentation format of the BRID RRType MUST be in Extended Diagnostic Notation as defined in Appendix G of {{RFC8610}}. {{bcast-text}} provides an example of a BRID RRType in this form. All byte strings longer than 20 SHOULD be displayed as base64 when possible.
-
-~~~~
-{::include examples/bcast-rr.txt}
-~~~~
-{: #bcast-text title="BRID Presentation Format"}
-
-### Field Descriptions {#bcast-rr-fields}
 
 The field names and their general typing are borrowed from the ASTM {{F3411}} data dictionary. See that document for additional information on fields semantics and units.
 
@@ -250,7 +272,7 @@ The field names and their general typing are borrowed from the ASTM {{F3411}} da
 
 ## DRIP Prefix Delegation
 
-This document requests that the IANA delegate the `3.0.0.1.0.0.2.ip6.arpa` domain following instructions to be provided by the IAB. Names within this zone are to be further delegated to the appropriated RAA's described by this document.
+This document requests that the IANA delegate the `3.0.0.1.0.0.2.ip6.arpa` domain. IANA will be responsible for processing requests under the guidance of the Designated Expert.
 
 ## IANA DRIP Registry
 
@@ -273,7 +295,7 @@ To support DNS delegation in `ip6.arpa` a single RAA is given 4 delegations by b
 
 The mapping between ISO 3166-1 Numeric Numbers and RAAs can be found as a CSV file on [GitHub](https://github.com/ietf-wg-drip/draft-ietf-drip-registries/blob/main/iso3166-raa.csv). Each Nation is assigned four RAAs that are left to the national authority for their purpose. For RAAs under this range a shorter prefix of `2001:3x:xx00::/40` MAY be delegated to each CAA, which covers all 4 RAAs (and reserved HDAs) assigned to them.
 
-Requests in the DRIP WG allocation block MUST be forwarded to the contact point in the DRIP WG to evaluate the request and MUST contain a desired/proposed length of time for the allocation. Allocations in the block are not permanent and have a limited time the delegation is to be supported (max of 12 months). The length of the time proposed is evaluated on a case-by-case basis by the DRIP WG and can result in negotiations for adjustment.
+Requests in the DRIP WG allocation block MUST be forwarded to the contact point in the DRIP WG to evaluate the request and MUST contain a desired/proposed length of time for the allocation. Allocations in the block are not permanent and have a limited time the delegation is to be supported. The length of the time proposed is evaluated on a case-by-case basis by the DRIP WG and can result in negotiations for adjustment.
 
 ### HHIT Entity Type {#iana-hhit-type}
 
@@ -328,7 +350,7 @@ The interfaces and protocol specifications for registry-registrar interactions a
 
 Decisions about DNS or registry best practices and other operational matters SHOULD be made by the CAA, ideally in consultation with local stakeholders. This document RECOMMENDS that DNSSEC SHOULD be used by both Apex (to control RAA levels) and RAA (to control HDA level) zones.
 
-# Public Key Exposure
+## Public Key Exposure
 
 DETs are built upon asymmetric keys. As such the public key must be revealed to enable clients to perform signature verifications. {{RFC9374}} security considerations cover various attacks on such keys.
 
@@ -338,47 +360,6 @@ Optimally this requires the UAS somehow signal the DIME that a flight using a Sp
 
 # Contributors
 
-Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LLC) for their early work on the DRIP registries concept. Their early contributions laid the foundations for the content and processes of this architecture and document. Bob Moskowitz is also instrumental in the PKIX work defined in this document with his parallel work in ICAO.
+Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LLC) for their early work on the DRIP registries concept. Their early contributions laid the foundations for the content and processes of this architecture and document.
 
 --- back
-
-# DET DNS Zone Examples {#zone-examples}
-
-This appendix is informative, showing an example of the DNS zone setup/content from Apex to a client.
-
-For this example the following DETs are shown:
-
-- Apex = `2001:0030:0000:0005:fad8:7fea:e0f6:90ad`
-- RAA = `2001:003f:fe00:0005:618a:cd8e:76d3:b790`
-- HDA = `2001:003f:fe00:0105:ad79:a278:1c10:5443`
-- Client = `2001:003f:fe00:0105:6a26:21d4:ef57:2ef5`
-  
-The RAA allocation of `16376` and an HDA of `1` have been selected.
-
-~~~~
-$ORIGIN 3.0.0.1.0.0.2.ip6.arpa.
-0.e.f.f IN NS ns1.raa-16376.example.com
-1.e.f.f IN NS ns1.raa-16376.example.com
-2.e.f.f IN NS ns1.raa-16376.example.com
-3.e.f.f IN NS ns1.raa-16376.example.com
-~~~~
-{: title="Apex Zones"}
-
-~~~~
-$ORIGIN 0.e.f.f.3.0.0.1.0.0.2.ip6.arpa.
-1.0.0 IN NS ns1.hda-1.example.com
-
-$ORIGIN 5.0.0.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.arpa.
-0.9.7.b.3.d.6.7.e.8.d.c.a.8.1.6 IN BRID ( a368..5a0b )
-0.9.7.b.3.d.6.7.e.8.d.c.a.8.1.6 IN HHIT ( 0 RAA 5901..0d0c )
-~~~~
-{: title="RAA Zones"}
-
-~~~~
-$ORIGIN 5.0.1.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.arpa.
-3.4.4.5.0.1.c.1.8.7.2.a.9.7.d.a IN BRID ( a368..340c )
-3.4.4.5.0.1.c.1.8.7.2.a.9.7.d.a IN HHIT ( 0 HDA 5901..ac0a )
-5.f.e.2.7.5.f.e.4.d.1.2.6.2.a.6 IN BRID ( a368..ee00 )
-5.f.e.2.7.5.f.e.4.d.1.2.6.2.a.6 IN HHIT ( 0 CHILD 5901..0306 )
-~~~~
-{: title="HDA Zone"}
