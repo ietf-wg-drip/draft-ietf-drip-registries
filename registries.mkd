@@ -3,7 +3,7 @@ coding: utf-8
 
 title: DRIP Entity Tags (DET) in the Domain Name System (DNS)
 abbrev: DET in DNS
-docname: draft-ietf-drip-registries-20
+docname: draft-ietf-drip-registries-21
 category: std
 
 ipr: trust200902
@@ -43,6 +43,7 @@ normative:
 informative:
     drip-dki: I-D.moskowitz-drip-dki
     uas-sn-dns: I-D.wiethuechter-drip-uas-sn-dns
+    cbor-x509: I-D.draft-ietf-cose-cbor-encoded-cert
 
     RFC5730: # epp
     RFC6841: # dnssec policy
@@ -114,15 +115,15 @@ Registrants have contracts with registrars who in turn have contracts with regis
 
 By definition, there can only be one registry for a domain name. Since that registry is a de facto monopoly, the scope of its activities are usually kept to a minimum to reduce the potential for market distortions or anti-competitive practices. A registry can have an arbitrary number of registrars who compete with each other on price, service and customer support.
 
-It is not necessary, and in some case may not be desirable, for DRIP registrations to strictly follow this registrant-registrar-registry model. Prevailing circumstances and/or local policy may mean some combination of these roles could be combined. A DRIP registry might be operated by the CAA. Or it could be outsourced to a DNS registry provider. Registration policies - pricing, renewals, registrar and registrant agreements, etc. - will need to be developed. These considerations SHOULD be determined by the CAA, perhaps in consultation with local stakeholders. They are are out of scope for this document.
+It is not necessary, and in some case may not be desirable, for DRIP registrations to strictly follow this registrant-registrar-registry model. Prevailing circumstances and/or local policy may mean some combination of these roles could be combined. A DRIP registry might be operated by the CAA. Or it could be outsourced to a DNS registry provider. Registration policies - pricing, renewals, registrar and registrant agreements, etc. - will need to be developed. These considerations should be determined by the CAA, perhaps in consultation with local stakeholders. They are are out of scope for this document.
 
 The specifics for the UAS RID use case are detailed in the rest of document.
 
 ## Scope
 
-The scope of this document is limited to the `2001:30::/28` IPv6 prefix and its associated reverse domain in DNS for DETs being used in UAS RID for participating parties (UA, Observer devices, DIMEs, etc.).
+The scope of this document is limited to the `2001:30::/28` IPv6 prefix and its associated reverse domain in DNS. The use case of DETs for UAS RID was the primary driver for the technology (and this document), as such requirements of other sectors or use cases are unknown at the time of publication.
 
-Other sectors may adopt this technology. It is RECOMMENDED that a global Apex (i.e. IPv6 prefix) and international Apex manager be designated for each sector.
+Other sectors may adopt this technology. It is recommended that a global Apex (i.e. IPv6 prefix) and international Apex manager be designated for each sector.
 
 # Terminology {#terminology}
 
@@ -136,7 +137,7 @@ This document makes use of the terms (PII, USS, etc.) defined in {{RFC9153}}. Ot
 
 # DET Hierarchy in DNS
 
-{{RFC9374}} defines the Hierarchical Host Identity Tag (HHIT) and further specifies an instance of them used for UAS RID called DETs. The HHIT is a 128-bit value that is as an IPv6 address intended primarily as an identifier rather than locator. It's format is in {{hhit-fig}} and further information is in {{RFC9374}}.
+{{RFC9374}} defines the Hierarchical Host Identity Tag (HHIT) and further specifies an instance of them used for UAS RID called DETs. The HHIT is a 128-bit value that is as an IPv6 address intended primarily as an identifier rather than locator. It's format is in {{hhit-fig}}, shown here for reference, and further information is in {{RFC9374}}.
 
 {:fig: artwork-align="center"}
 ~~~~
@@ -158,9 +159,9 @@ This document makes use of the terms (PII, USS, etc.) defined in {{RFC9153}}. Ot
 
 The IPv6 Prefix, assigned by IANA for DETs is `2001:30::/28`. The corresponding domain (nibble reversed as `3.0.0.1.0.0.2.ip6.arpa`) is owned by the IAB.
 
-Due to the nature of the hierarchy split and its relationship to nibble reversing of the IPv6 address, the upper level of hierarchy (i.e. RAAs) "borrows" the upper two bits of their respective HDA space for DNS delegation. As such the IPv6 prefix of RAAs are `2001:3x:xxx::/44` and HDAs are `2001:3x:xxxx:xx::/56` with respective nibble reverse domains of `x.x.x.x.3.0.0.1.0.0.2.ip6.arpa` and `y.y.y.x.x.x.x.3.0.0.1.0.0.2.ip6.arpa`.
+Due to the nature of the hierarchy split and its relationship to nibble reversing of the IPv6 address, the upper level of hierarchy (i.e. RAAs) "borrows" the upper two bits of their respective HDA space for DNS delegation. As such the IPv6 prefix of RAAs are `2001:3x:xxx::/44` and HDAs are `2001:3x:xxxy:yy::/56` with respective nibble reverse domains of `x.x.x.x.3.0.0.1.0.0.2.ip6.arpa` and `y.y.y.x.x.x.x.3.0.0.1.0.0.2.ip6.arpa`.
 
-Preallocations have been made based on the ISO 3166-1 Numeric Nation Code {{ISO3166-1}}. This is to support the initial use case of DETs in UAS RID on an international level. See {{iana-raa}} for the RAA allocations.
+A subset of RAAs have preallocations based on the ISO 3166-1 Numeric Nation Code {{ISO3166-1}}. This is to support the initial use case of DETs in UAS RID on an international level. See {{iana-raa}} for the RAA allocations.
 
 The HDA values of 0, 4096, 8192 and 12288 are reserved for operational use of an RAA (a by-product of the above mentioned borrowing of bits), specifically when to register with the Apex and endorse delegations of HDAs in their namespace.
 
@@ -184,7 +185,7 @@ Lookups of the above RRTypes are performed with the standard DNS methodology usi
 
 ## HHIT Resource Record {#hhit-rr}
 
-The HHIT Resource Record is a metadata record for various bits of HHIT specific information that isn't available in the pre-existing HIP RRType.
+The HHIT Resource Record is a metadata record for various bits of HHIT specific information that isn't available in the pre-existing HIP RRType. It does not replace the HIP RRType. The primary advantage of this RRType over the existing RRType is the inclusion a certificate containing an entity's public key signed by the registrar, or other trust anchor, to confirm registration.
 
 ~~~~
                      1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
@@ -228,11 +229,11 @@ HID Abbreviation:
 
 Canonical Registration Certificate:
 
-: This field is reserved for any certificate to endorse registration that contains the DET. It is in either encoded as X.509 DER or C.509.
+: This field is reserved for any certificate to endorse registration that contains the DET. It MUST be encoded as X.509 DER or C.509 {{cbor-x509}}. This certificate MAY be self-signed when the entity is acting as a root of trust (i.e. an apex). Such self-signed behavior is defined by policy, such as in {{drip-dki}}, and is out of scope for this document.
 
 ## UAS Broadcast RID Resource Record {#bcast-rr}
 
-The UAS Broadcast RID Resource Record type (BRID) is a format to hold public information typically sent of the UAS Broadcast RID that is static. It can act as a data source if information is not received over Broadcast RID or for cross validation.
+The UAS Broadcast RID Resource Record type (BRID) is a format to hold public information typically sent of the UAS Broadcast RID that is static. It can act as a data source if information is not received over Broadcast RID or for cross validation. The primary function for DRIP is the inclusion of one or more Broadcast Endorsements as defined in {{RFC9575}} in the `auth` field. These Endorsements are generated by the registrar upon successful registration and broadcast by the entity.
 
 ~~~~
                      1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
@@ -295,7 +296,7 @@ To support DNS delegation in `ip6.arpa` a single RAA is given 4 delegations by b
 
 The mapping between ISO 3166-1 Numeric Numbers and RAAs can be found as a CSV file on [GitHub](https://github.com/ietf-wg-drip/draft-ietf-drip-registries/blob/main/iso3166-raa.csv). Each Nation is assigned four RAAs that are left to the national authority for their purpose. For RAAs under this range a shorter prefix of `2001:3x:xx00::/40` MAY be delegated to each CAA, which covers all 4 RAAs (and reserved HDAs) assigned to them.
 
-Requests in the DRIP WG allocation block MUST be forwarded to the contact point in the DRIP WG to evaluate the request and MUST contain a desired/proposed length of time for the allocation. Allocations in the block are not permanent and have a limited time the delegation is to be supported. The length of the time proposed is evaluated on a case-by-case basis by the DRIP WG and can result in negotiations for adjustment.
+Requests in the DRIP WG allocation block MUST be forwarded to the contact point in the DRIP WG to evaluate the request and MUST contain a desired/proposed length of time for the allocation. Allocations in the block are not permanent and have a limited time the delegation is to be supported. The length of the time proposed is evaluated on a case-by-case basis by the DRIP WG.
 
 ### HHIT Entity Type {#iana-hhit-type}
 
