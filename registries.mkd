@@ -99,7 +99,7 @@ When a DRIP Entity Tag (DET) {{RFC9374}} is used as the UAS ID in RID, extended 
 
 DRIP Entity Tags (DETs) embedded a hierarchy scheme which is mapped onto the Domain Name System (DNS). DIME's enforce registration and information access of data associated with a DET while also providing the trust inherited from being a member of the hierarchy. Other identifiers and their methods are out of scope for this document.
 
-Authoritative Name Servers of the Domain Name System (DNS) provide the Public Information such as the cryptographic keys, endorsements and certificates of DETs and pointers to Private Information resources. Cryptographic (public) keys are used to authenticate anything signed by a DET, such as in the Authentication defined {{RFC9575}} for Broadcast RID. Endorsements and certificates are used to endorse the claim of being part of the hierarchy.
+Authoritative Name Servers of the Domain Name System (DNS) provide the Public Information such as the cryptographic keys, endorsements and certificates of DETs and pointers to Private Information resources. Cryptographic (public) keys are used to authenticate anything signed by a DET, such as in the Authentication defined in {{RFC9575}} for Broadcast RID. Endorsements and certificates are used to endorse the claim of being part of the hierarchy.
 
 Aspects of Private Information Registries to store and protect, through AAA mechanisms, Personally Identifiable Information (PII) are not described in this document.
 
@@ -227,7 +227,7 @@ HHIT Entity Type:
 
 HID Abbreviation:
 
-: This field is meant to provide an abbreviation to the HID structure for display devices. The specific contents of this field are not defined here.
+: This field is a string meant to provide an abbreviation to the HID structure for display devices. The specific contents of this field are not defined here.
 
 Canonical Registration Certificate:
 
@@ -296,7 +296,7 @@ RAA Allocations:
 
 To support DNS delegation in `ip6.arpa` a single RAA is given 4 delegations by borrowing the upper two bits of HDA space. This enables a clean nibble boundary in DNS to delegate from (i.e. the prefix `2001:3x:xxx0::/44`). These HDAs (0, 4096, 8192 and 12288) are reserved for the RAA.
 
-The mapping between ISO 3166-1 Numeric Numbers and RAAs can be found as a CSV file on [GitHub](https://github.com/ietf-wg-drip/draft-ietf-drip-registries/blob/main/iso3166-raa.csv). Each Nation is assigned four RAAs that are left to the national authority for their purpose. For RAAs under this range a shorter prefix of `2001:3x:xx00::/40` MAY be delegated to each CAA, which covers all 4 RAAs (and reserved HDAs) assigned to them.
+The mapping between ISO 3166-1 Numeric Numbers and RAAs can be found as a CSV file on [GitHub](https://github.com/ietf-wg-drip/draft-ietf-drip-registries/blob/main/iso3166-raa.csv). Each Nation is assigned four RAAs that are left to the national authority for their purpose. For RAAs under this range, a shorter prefix of `2001:3x:xx00::/40` MAY be delegated to each CAA, which covers all 4 RAAs (and reserved HDAs) assigned to them.
 
 Requests in the DRIP WG allocation block MUST be forwarded to the contact point in the DRIP WG to evaluate the request and MUST contain a desired/proposed length of time for the allocation. Allocations in the block are not permanent and have a limited time the delegation is to be supported. The length of the time proposed is evaluated on a case-by-case basis by the DRIP WG.
 
