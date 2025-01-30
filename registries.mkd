@@ -40,8 +40,6 @@ normative:
 
 informative:
     drip-dki: I-D.moskowitz-drip-dki
-    uas-sn-dns: I-D.wiethuechter-drip-uas-sn-dns
-    cbor-x509: I-D.draft-ietf-cose-cbor-encoded-cert
 
     RFC5730: # epp
     RFC6841: # dnssec policy
@@ -177,7 +175,7 @@ DETs, being IPv6 addresses, are to be under `ip6.arpa` (nibble reversed per conv
 
 DNSSEC is strongly RECOMMENDED (especially for RAA-level and higher zones). When a DIME decides to use DNSSEC they SHOULD define a framework for cryptographic algorithms and key management {{RFC6841}}. This may be influenced by frequency of updates, size of the zone, and policies.
 
-UAS specific information, such as physical characteristics, MAY also be stored in DNS but is out of scope for this document. This specification information is currently drafted in {{uas-sn-dns}}.
+UAS specific information, such as physical characteristics, MAY also be stored in DNS but is out of scope for this document.
 
 Lookups of the above RRTypes are performed with the standard DNS methodology using the nibble reversed DET as the query name affixed to the `ip6.arpa` domain apex and asking for the specific RRType. The HHIT RRType provides the public key for signature verification and URIs via the certificate. The BRID RRType provides static Broadcast RID information such as the Broadcast Endorsements sent following {{RFC9575}}.
 
@@ -229,7 +227,7 @@ HID Abbreviation:
 
 Canonical Registration Certificate:
 
-: This field is reserved for any certificate to endorse registration that contains the DET. It MUST be encoded as X.509 DER or C.509 {{cbor-x509}}. This certificate MAY be self-signed when the entity is acting as a root of trust (i.e. an apex). Such self-signed behavior is defined by policy, such as in {{drip-dki}}, and is out of scope for this document.
+: This field is reserved for any certificate to endorse registration that contains the DET. It MUST be encoded as X.509 DER. This certificate MAY be self-signed when the entity is acting as a root of trust (i.e. an apex). Such self-signed behavior is defined by policy, such as in {{drip-dki}}, and is out of scope for this document.
 
 ## UAS Broadcast RID Resource Record {#bcast-rr}
 
