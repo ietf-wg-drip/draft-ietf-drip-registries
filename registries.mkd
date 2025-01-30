@@ -119,7 +119,7 @@ The specifics for the UAS RID use case are detailed in the rest of document.
 
 ## Scope
 
-The scope of this document is limited to the `2001:30::/28` IPv6 prefix and its associated reverse domain in DNS. The use case of DETs for UAS RID was the primary driver for the technology (and this document), as such requirements of other sectors or use cases are unknown at the time of publication.
+The scope of this document is the DNS registration of DETs with the DNS delegation of the reverse domain of IPv6 Prefix, assigned by IANA for DETs `2001:30::/28` and RRsets used to handle DETs.
 
 Other sectors may adopt this technology. It is recommended that a global Apex (i.e. IPv6 prefix) and international Apex manager be designated for each sector.
 
@@ -171,7 +171,7 @@ Per {{RFC9434}} all information classified, by all parties involved, as public i
 
 Authoritative Name Servers use domain names as handles and data is stored in Resource Records (RR) with associated RRTypes. This document defines two new RRTypes, one for HHIT metadata (HHIT, {{hhit-rr}}) and another for UAS Broadcast RID information (BRID, {{bcast-rr}}). The former RRType is particularly important as it contains a URI (as part of the certificate) that point to Private Information resources.
 
-DETs, being IPv6 addresses, are to be under `ip6.arpa` (nibble reversed per convention) with at minimum an HHIT RRType. Depending on local circumstances or additional use cases other RRTypes MAY be present. For UAS RID the BRID RRType MUST be present to provide the Broadcast Endorsements defined in {{RFC9575}}.
+DETs, being IPv6 addresses, are to be under `ip6.arpa` (nibble reversed per convention) and MUST ultimately resolve, at minimum, to an HHIT RRType. Depending on local circumstances or additional use cases other RRTypes MAY be present. For UAS RID the BRID RRType MUST be present to provide the Broadcast Endorsements defined in {{RFC9575}}.
 
 DNSSEC is strongly RECOMMENDED (especially for RAA-level and higher zones). When a DIME decides to use DNSSEC they SHOULD define a framework for cryptographic algorithms and key management {{RFC6841}}. This may be influenced by frequency of updates, size of the zone, and policies.
 
