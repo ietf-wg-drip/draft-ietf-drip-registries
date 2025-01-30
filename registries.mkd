@@ -36,9 +36,7 @@ author:
     email: jim@rfc1035.com
 
 normative:
-    RFC9153: # drip-requirements
     RFC9374: # drip-det  -- TODO(Editor): Informative?
-    RFC9434: # drip-arch
 
 informative:
     drip-dki: I-D.moskowitz-drip-dki
@@ -50,6 +48,8 @@ informative:
     RFC8126: # iana-guidelines
     RFC8610: # cddl
     RFC9082: # rdap-query-format
+    RFC9153: # drip-requirements
+    RFC9434: # drip-arch
     RFC9575: # drip-auth
 
     # helpful DNS rfcs
