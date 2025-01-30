@@ -221,7 +221,7 @@ The HHIT Data portion MAY, for display purposes only, be represented using the E
 
 HHIT Entity Type:
 
-: This field is two octets with values defined in {{iana-hhit-type}}. It is envisioned that there may be many types of HHITs in use. In some cases it may be helpful to understand the HHITs role in the ecosystem like described in {{drip-dki}}. This field provides such context.
+: This field is a number with values defined in {{iana-hhit-type}}. It is envisioned that there may be many types of HHITs in use. In some cases it may be helpful to understand the HHITs role in the ecosystem like described in {{drip-dki}}. This field provides such context. This field MAY provide a signal of additional information and/or different handling of the data beyond what is defined in this document.
 
 HID Abbreviation:
 
@@ -304,26 +304,19 @@ This document requests a new registry for HHIT Entity Type under the [DRIP regis
 
 HHIT Entity Type:
 
-: numeric, 16-bit, field of the HHIT RRType to encode the HHIT Entity Type. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
+: numeric, field of the HHIT RRType to encode the HHIT Entity Type. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
 
 | Value         | Type                                       | Reference    |
 | ------------- | ------------------------------------------ | ------------ |
 | 0             | Not Defined                                | This RFC     |
 | 1             | DRIP Identity Management Entity (DIME)     | This RFC     |
-| 2             | DIME: Authentication CA                    | {{drip-dki}} |
-| 3             | DIME: Issuing CA                           | {{drip-dki}} |
-| 4             | Reserved                                   | This RFC     |
+| 2 - 4         | Reserved                                   | This RFC     |
 | 5             | Apex                                       | This RFC     |
-| 6             | Apex: Authentication CA                    | {{drip-dki}} |
-| 7             | Apex: Issuing CA                           | {{drip-dki}} |
-| 8             | Reserved                                   | This RFC     |
+| 6 - 8         | Reserved                                   | This RFC     |
 | 9             | Registered Assigning Authority (RAA)       | This RFC     |
-| 10            | RAA: Authentication CA                     | {{drip-dki}} |
-| 11            | RAA: Issuing CA                            | {{drip-dki}} |
-| 12            | Reserved                                   | This RFC     |
+| 10 - 12       | Reserved                                   | This RFC     |
 | 13            | HHIT Domain Authority (HDA)                | This RFC     |
-| 14            | HDA: Authentication CA                     | {{drip-dki}} |
-| 15            | HDA: Issuing CA                            | {{drip-dki}} |
+| 14 - 15       | Reserved                                   | This RFC     |
 | 16            | Uncrewed Aircraft (UA)                     | This RFC     |
 | 17            | Ground Control Station (GCS)               | This RFC     |
 | 18            | Uncrewed Aircraft System (UAS)             | This RFC     |
