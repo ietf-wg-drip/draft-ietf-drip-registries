@@ -193,8 +193,6 @@ The HHIT Resource Record is a metadata record for various bits of HHIT specific 
                      1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                        HHIT Data Length                       |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                                                               |
 .                                                               .
 .                   HHIT Data (CBOR Encoded)                    .
@@ -204,11 +202,11 @@ The HHIT Resource Record is a metadata record for various bits of HHIT specific 
 ~~~~
 {:fig #hhit-wire title="HHIT Wire Format"}
 
-The HHIT Data Length is 32-bit integer representing the number of bytes contained in the HHIT Data field. The HHIT Data field MUST be encoded in CBOR bytes. The CDDL of the HHIT Data is provided in {{hhit-wire-cddl}}.
+The HHIT Data field MUST be encoded in CBOR bytes. The CDDL of the HHIT Data is provided in {{hhit-wire-cddl}}.
 
 ### Text Representation {#hhit-rr-text}
 
-The HHIT Data is represented in base64 and may be divided into any number of white-space-separated substrings, down to single base64 digits, which are concatenated to obtain the full object. These substrings can span lines using the standard parenthesis. Note that the HHIT Data portion has internal subfields, but these do not appear in the master file representation only a single logical base64 string will appear. The HHIT Data Length is not represented as it is implicitly known by the HHIT Data.
+The HHIT Data is represented in base64 and may be divided into any number of white-space-separated substrings, down to single base64 digits, which are concatenated to obtain the full object. These substrings can span lines using the standard parenthesis. Note that the HHIT Data portion has internal subfields, but these do not appear in the master file representation only a single logical base64 string will appear.
 
 #### Presentation Representation {#hhit-rr-presentation}
 
@@ -241,8 +239,6 @@ The UAS Broadcast RID Resource Record type (BRID) is a format to hold public inf
                      1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                        BRID Data Length                       |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                                                               |
 .                                                               .
 .                   BRID Data (CBOR Encoded)                    .
@@ -252,11 +248,11 @@ The UAS Broadcast RID Resource Record type (BRID) is a format to hold public inf
 ~~~~
 {:fig #bcast-wire title="BRID Wire Format"}
 
-The BRID Data Length is 32-bit integer representing the number of bytes contained in the BRID Data field. The BRID Data field MUST be encoded in CBOR bytes. The CDDL of the BRID Data is provided in {{bcast-wire-cddl}}.
+The BRID Data field MUST be encoded in CBOR bytes. The CDDL of the BRID Data is provided in {{bcast-wire-cddl}}.
 
 ### Text Representation {#bcast-rr-text}
 
-The BRID Data is represented in base64 and may be divided into any number of white-space-separated substrings, down to single base64 digits, which are concatenated to obtain the full object. These substrings can span lines using the standard parenthesis. Note that the BRID Data portion has internal subfields, but these do not appear in the master file representation only a single logical base64 string will appear. The BRID Data Length is not represented as it is implicitly known by the BRID Data.
+The BRID Data is represented in base64 and may be divided into any number of white-space-separated substrings, down to single base64 digits, which are concatenated to obtain the full object. These substrings can span lines using the standard parenthesis. Note that the BRID Data portion has internal subfields, but these do not appear in the master file representation only a single logical base64 string will appear.
 
 #### Presentation Representation {#bcast-rr-presentation}
 
