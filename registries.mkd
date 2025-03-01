@@ -93,7 +93,7 @@ This document describes the discovery and management of DRIP Entity Tags (DETs) 
 
 Registries are fundamental to Unmanned Aircraft System (UAS) Remote Identification (RID). Only very limited operational information can be sent via Broadcast RID, but extended information is sometimes needed. The most essential element of information from RID is the UAS ID, the unique key for lookup of extended information in relevant registries (see Figure 4 of {{RFC9434}}).
 
-When a DRIP Entity Tag (DET) {{RFC9374}} is used as the UAS ID in RID, extended information can be retrieved from a DRIP Identity Management Entity (DIME) which manages registration of and associated lookups from DETs. In this document we assume the DIME is a function of UAS Service Suppliers (USS) (Appendix A.2 of {{RFC9434}}) but a DIME can be independent or handled by another entity as well.
+When a DRIP Entity Tag (DET) {{RFC9374}} is used as the UAS ID in RID, extended information can be retrieved from a DRIP Identity Management Entity (DIME), which manages registration of and associated lookups from DETs. In this document we assume the DIME is a function of UAS Service Suppliers (USS) (Appendix A.2 of {{RFC9434}}) but a DIME can be independent or handled by another entity as well.
 
 ## General Concept
 
