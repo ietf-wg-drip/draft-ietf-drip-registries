@@ -151,6 +151,45 @@ Registrants have contracts with registrars who in turn have contracts with regis
 
 By definition, there can only be one registry for a domain name. Since that registry is a de facto monopoly, the scope of its activities are usually kept to a minimum to reduce the potential for market distortions or anti-competitive practices. A registry can have an arbitrary number of registrars who compete with each other on price, service and customer support.
 
+~~~~
+Apex
+Registry/Registrar
+(IANA)
+                         +=========================+
+                         | 3.0.0.1.0.0.2.ip6.arpa. |
+                         +============o============+
+                                      |
+--------------------------------------|-------------------------
+National                              |
+Registries/Registrars                 |
+(RAA)                                 |
+                                      |
+        +--------------+--------------o-+---------------+
+        |              |                |               |
+  +=====o====+    +====o=====+    +=====o====+    +=====o====+
+  | 0.0.0.0. |    | 1.0.0.0. |    | 2.0.0.0. |    | 3.0.0.0. |
+  +====o=====+    +====o=====+    +====o=====+    +====o=====+
+                                       |
+---------------------------------------|------------------------
+Local                                  |
+Registries/Registrars                  |
+(HDA)                                  |
+                                       |
+        +--------------+---------------o--------...-----+
+        |              |               |                |
+  +=====o====+    +====o=====+    +====o=====+    +=====o====+
+  |  1.0.0.  |    |  2.0.0.  |    |  3.0.0.  |    |  f.f.f.  |
+  +====o=====+    +=====o====+    +====o=====+    +====o=====+
+                                       |
+---------------------------------------|------------------------
+Local                                  |
+Registrants                            |
+                 +=====================o================+
+                 | x.x.x.x.x.x.x.x.x.x.x.x.x.x.x.x.5.0. |
+                 +======================================+
+~~~~
+{: #dns-model-fig title="Example DRIP DNS Model"}
+
 While the registrant-registrar-registry model is mature and well understood, it may not be appropriate for DRIP registrations in some circumstances. It could add costs and complexity: developing policies and contracts as outlined above. On the other hand, registries and registrars offer customer service/support and can provide the supporting infrastructure for reliable DNS and WHOIS or RDAP service.
 
 Another approach could be to handle DRIP registrations in a comparable way to how IP address space gets provisioned. Here, blocks of addresses get delegated to a "trusted" third party, typically an ISP, who then issues IP addresses to its customers. For DRIP, blocks of IP addresses could be delegated from the `3.0.0.1.0.0.2.ip6.arpa` domain to an entity chosen by the appropriate CAA. This third party would be responsible for the corresponding DNS and WHOIS or RDAP infrastructure for these IP address blocks. They would also provision the HHIT records for these IP addresses. In principle a manufacturer or vendor of UAS devices could provide that role.
