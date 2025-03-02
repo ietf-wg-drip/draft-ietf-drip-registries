@@ -218,7 +218,7 @@ This document makes use of the terms (USS, etc.) defined in {{RFC9153}}. Other t
 
 # DET Hierarchy in DNS
 
-{{RFC9374}} defines the HHIT and further specifies an instance of them used for UAS RID called DETs. The HHIT is a 128-bit value that is as an IPv6 address intended primarily as an identifier rather than locator. It's format is in {{hhit-fig}}, shown here for reference, and further information is in {{RFC9374}}.
+{{RFC9374}} defines the HHIT and further specifies an instance of them used for UAS RID called DETs. The HHIT is a 128-bit value that is as an IPv6 address intended primarily as an identifier rather than locator. Its format is in {{hhit-fig}}, shown here for reference, and further information is in {{RFC9374}}.
 
 {:fig: artwork-align="center"}
 ~~~~
