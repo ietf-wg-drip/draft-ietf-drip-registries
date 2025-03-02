@@ -101,7 +101,7 @@ DRIP Entity Tags (DETs) embedded a hierarchy scheme which is mapped onto the Dom
 
 Authoritative Name Servers of the DNS provide the public information such as the cryptographic keys, endorsements and certificates of DETs and pointers to private information resources. Cryptographic (public) keys are used to authenticate anything signed by a DET, such as in the Authentication defined in {{RFC9575}} for Broadcast RID. Endorsements and certificates are used to endorse the claim of being part of the hierarchy.
 
-Aspects of Private Information Registries to store and protect, through AAA mechanisms, Personally Identifiable Information (PII) are not described in this document.
+This document does not describe AAA mechanisms used by Private Information Registries to store and protect Personally Identifiable Information (PII).
 
 ## Use of Existing DNS Models
 
