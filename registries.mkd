@@ -41,17 +41,17 @@ normative:
 informative:
     drip-dki: I-D.moskowitz-drip-dki
 
-    RFC5730: # epp
     RFC6841: # dnssec policy
     RFC8126: # iana-guidelines
     RFC8610: # cddl
-    RFC9082: # rdap-query-format
     RFC9153: # drip-requirements
     RFC9434: # drip-arch
     RFC9575: # drip-auth
 
     # helpful DNS rfcs
-    RFC1034:
+    STD13:  # dns
+    STD69:  # epp
+    STD95:  # rdap
     RFC4033:
     RFC5155:
     RFC8945:
@@ -135,7 +135,7 @@ When a DRIP Entity Tag (DET) {{RFC9374}} is used as the UAS ID in RID, extended 
 
 ## General Concept
 
-DRIP Entity Tags (DETs) embedded a hierarchy scheme which is mapped onto the Domain Name System (DNS) {{RFC1034}}. DIMEs enforce registration and information access of data associated with a DET while also providing the trust inherited from being a member of the hierarchy. Other identifiers and their methods are out of scope for this document.
+DRIP Entity Tags (DETs) embedded a hierarchy scheme which is mapped onto the Domain Name System (DNS) {{STD13}}. DIMEs enforce registration and information access of data associated with a DET while also providing the trust inherited from being a member of the hierarchy. Other identifiers and their methods are out of scope for this document.
 
 Authoritative Name Servers of the DNS provide the public information such as the cryptographic keys, endorsements and certificates of DETs and pointers to private information resources. Cryptographic (public) keys are used to authenticate anything signed by a DET, such as in the Authentication defined in {{RFC9575}} for Broadcast RID. Endorsements and certificates are used to endorse the claim of being part of the hierarchy.
 
@@ -145,7 +145,7 @@ This document does not specify AAA mechanisms used by Private Information Regist
 
 DRIP relies on the DNS and as such roughly follows the registrant-registrar-registry model. In the UAS ecosystem, the registrant would be the end user who owns/controls the Unmanned Aircraft. They are ultimately responsible for the DET and any other information that gets published in the DNS. Registrants use agents known as registrars to manage their interactions with the registry. Registrars typically provide optional additional services such as DNS hosting.
 
-The registry maintains a database of the registered domain names and their related metadata such as the contact details for domain name holder and the relevant registrar. The registry provides DNS service for the zone apex which contains delegation information for domain names. Registries generally provide services such as WHOIS or RDAP to publish metadata about the registered domain names and their registrants and registrars.
+The registry maintains a database of the registered domain names and their related metadata such as the contact details for domain name holder and the relevant registrar. The registry provides DNS service for the zone apex which contains delegation information for domain names. Registries generally provide services such as WHOIS {{RFC3912}} or RDAP {{STD95}} to publish metadata about the registered domain names and their registrants and registrars.
 
 Registrants have contracts with registrars who in turn have contracts with registries. Payments follow this model too: the registrant buys services from a registrar who pays for services provided by the registry.
 
@@ -415,7 +415,7 @@ The Registrar and Registry are commonly used concepts in the DNS. These componen
 
 If DNSSEC is used, a DNSSEC Practice Statement (DPS) SHOULD be developed and published. It SHOULD explain how DNSSEC has been deployed and what security measures are in place. {{RFC6841}} documents a Framework for DNSSEC Policies and DNSSEC Practice Statements.
 
-The interfaces and protocol specifications for registry-registrar interactions are intentionally not specified in this document. These will depend on nationally defined policy and prevailing local circumstances. It is expected registry-registrar activity will use the Extensible Provisioning Protocol (EPP) {{RFC5730}}. The registry SHOULD provide a lookup service such as WHOIS {{RFC3912}} or RDAP {{RFC9082}} to provide public information about registered domain names.
+The interfaces and protocol specifications for registry-registrar interactions are intentionally not specified in this document. These will depend on nationally defined policy and prevailing local circumstances. It is expected registry-registrar activity will use the Extensible Provisioning Protocol (EPP) {{STD69}}. The registry SHOULD provide a lookup service such as WHOIS {{RFC3912}} or RDAP {{STD95}} to provide public information about registered domain names.
 
 Decisions about DNS or registry best practices and other operational matters SHOULD be made by the CAA, ideally in consultation with local stakeholders. This document RECOMMENDS that DNSSEC SHOULD be used by both Apex (to control RAA levels) and RAA (to control HDA level) zones.
 
