@@ -143,7 +143,7 @@ This document does not specify AAA mechanisms used by Private Information Regist
 
 ## Use of Existing DNS Models
 
-DRIP relies on the DNS and as such roughly follows the registrant-registrar-registry model. In DRIP, the registrant would be the end user who owns/controls the Unmanned Aircraft. They are ultimately responsible for the DET and any other information that gets published in the DNS. Registrants use agents known as registrars to manage their interactions with the registry. Registrars typically provide optional additional services such as DNS hosting.
+DRIP relies on the DNS and as such roughly follows the registrant-registrar-registry model. In the UAS ecosystem, the registrant would be the end user who owns/controls the Unmanned Aircraft. They are ultimately responsible for the DET and any other information that gets published in the DNS. Registrants use agents known as registrars to manage their interactions with the registry. Registrars typically provide optional additional services such as DNS hosting.
 
 The registry maintains a database of the registered domain names and their related metadata such as the contact details for domain name holder and the relevant registrar. The registry provides DNS service for the zone apex which contains delegation information for domain names. Registries generally provide services such as WHOIS or RDAP to publish metadata about the registered domain names and their registrants and registrars.
 
