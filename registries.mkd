@@ -91,7 +91,44 @@ This document describes the discovery and management of DRIP Entity Tags (DETs) 
 
 # Introduction
 
-Registries are fundamental to Unmanned Aircraft System (UAS) Remote Identification (RID). Only very limited operational information can be sent via Broadcast RID, but extended information is sometimes needed. The most essential element of information from RID is the UAS ID, the unique key for lookup of extended information in relevant registries (see Figure 4 of {{RFC9434}}).
+Registries are fundamental to Unmanned Aircraft System (UAS) Remote Identification (RID). Only very limited operational information can be sent via Broadcast RID, but extended information is sometimes needed. The most essential element of information from RID is the UAS ID, the unique key for lookup of extended information in relevant registries (see {{rfc9434-fig4}}; Figure 4 of {{RFC9434}}).
+
+~~~~
+***************                                        ***************
+*    UAS1     *                                        *     UAS2    *
+*             *                                        *             *
+* +--------+  *                 DAA/V2V                *  +--------+ *
+* |   UA   o--*----------------------------------------*--o   UA   | *
+* +--o--o--+  *                                        *  +--o--o--+ *
+*    |  |     *   +------+      Lookups     +------+   *     |  |    *
+*    |  |     *   | GPOD o------.    .------o PSOD |   *     |  |    *
+*    |  |     *   +------+      |    |      +------+   *     |  |    *
+*    |  |     *                 |    |                 *     |  |    *
+* C2 |  |     *     V2I      ************     V2I      *     |  | C2 *
+*    |  '-----*--------------*          *--------------*-----'  |    *
+*    |        *              *          *              *        |    *
+*    |        o====Net-RID===*          *====Net-RID===o        |    *
+* +--o--+     *              * Internet *              *     +--o--+ *
+* | GCS o-----*--------------*          *--------------*-----o GCS | *
+* +-----+     * Registration *          * Registration *     +-----+ *
+*             * (and UTM)    *          * (and UTM)    *             *
+***************              ************              ***************
+                               |  |  |
+                +----------+   |  |  |   +----------+
+                | Public   o---'  |  '---o Private  |
+                | Registry |      |      | Registry |
+                +----------+      |      +----------+
+                               +--o--+
+                               | DNS |
+                               +-----+
+
+DAA:  Detect And Avoid
+GPOD: General Public Observer Device
+PSOD: Public Safety Observer Device
+V2I:  Vehicle-to-Infrastructure
+V2V:  Vehicle-to-Vehicle
+~~~~
+{: #rfc9434-fig4 title="Global UAS RID Usage Scenario (Figure 4 of RFC9434)"}
 
 When a DRIP Entity Tag (DET) {{RFC9374}} is used as the UAS ID in RID, extended information can be retrieved from a DRIP Identity Management Entity (DIME), which manages registration of and associated lookups from DETs. In this document it is assumed the DIME is a function of UAS Service Suppliers (USS) (Appendix A.2 of {{RFC9434}}) but a DIME can be independent or handled by another entity as well.
 
