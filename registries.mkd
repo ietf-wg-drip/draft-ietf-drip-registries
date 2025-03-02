@@ -149,7 +149,7 @@ The registry maintains a database of the registered domain names and their relat
 
 Registrants have contracts with registrars who in turn have contracts with registries. Payments follow this model too: the registrant buys services from a registrar who pays for services provided by the registry.
 
-By definition, there can only be one registry for a domain name. Since that registry is a de facto monopoly, the scope of its activities are usually kept to a minimum to reduce the potential for market distortions or anti-competitive practices. A registry can have an arbitrary number of registrars who compete with each other on price, service and customer support.
+By definition, there can only be one registry for a domain name. Since that registry is a de facto monopoly, the scope of its activities is usually kept to a minimum to reduce the potential for market distortions or anti-competitive practices. A registry can have an arbitrary number of registrars who compete with each other on price, service and customer support.
 
 ### DNS Model Considerations for DIMEs
 
