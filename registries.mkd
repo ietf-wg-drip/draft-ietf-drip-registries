@@ -292,7 +292,7 @@ HHIT Entity Type:
 
 HID Abbreviation:
 
-: This field is a string meant to provide an abbreviation to the HID structure for display devices. The specific contents of this field are not defined here.
+: This field is a string meant to provide an abbreviation to the HID structure for display devices. The convention for such abbreviations is a matter of local policy. Absent of such a policy, this field MUST be filled with the four chracter hexadecimal representations of the RAA and HDA (in that order) with a seperator character such as a space. For example a DET with an RAA value of 10 and HDA value of 20 would be abbreviated as: `000A 0014`.
 
 Canonical Registration Certificate:
 
