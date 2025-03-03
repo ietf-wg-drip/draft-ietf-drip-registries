@@ -319,7 +319,7 @@ The data MAY, for display purposes only, be represented using the Extended Diagn
 ~~~~
 {: #bcast-wire-cddl title="BRID Wire Format CDDL"}
 
-The field names and their general typing are borrowed from the ASTM {{F3411}} data dictionary (Table 1 and Table 2). See that document for additional context and background information on field semantics and units.
+The field names and their general typing are borrowed from the ASTM {{F3411}} data dictionary (Table 1 and Table 2). See that document for additional context and background information on aviation application-specific interperation of the field semantics. The excplicitly enumerated values included in the CDDL above are relevant to DRIP for its operation. Other values may be valid but are outside the scope of DRIP operation. Application-specific fields, such as UAS Typeare transported and authenticated by DRIP but are regarded as opaque user data to DRIP.
 
 # IANA Considerations
 
