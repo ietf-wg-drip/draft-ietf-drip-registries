@@ -3,7 +3,7 @@ coding: utf-8
 
 title: DRIP Entity Tags (DET) in the Domain Name System (DNS)
 abbrev: DET in DNS
-docname: draft-ietf-drip-registries-23
+docname: draft-ietf-drip-registries-24
 category: std
 
 ipr: trust200902
@@ -36,21 +36,44 @@ author:
     email: jim@rfc1035.com
 
 normative:
+    RFC4648: # base64
+    RFC8949: # cbor
     RFC9374: # drip-det  -- TODO(Editor): Informative?
 
-informative:
-    drip-dki: I-D.moskowitz-drip-dki
+    F3411:
+      title: Standard Specification for Remote ID and Tracking
+      author:
+        -
+          org: ASTM International
+      target: https://www.astm.org/f3411-22a.html
+      date: July 2022
+      seriesinfo:
+        ASTM: F3411-22A
+        DOI: 10.1520/F3411-22A
+    ISO3166-1:
+      title: Codes for the representation of names of countries and their subdivisions
+      author:
+        -
+          org: International Standards Organization (ISO)
+      target: https://www.iso.org/iso-3166-country-codes.html
+      date: August 2020
+      seriesinfo:
+        ISO: 3166-1:2020
 
-    RFC5730: # epp
+informative:
+    drip-dki: I-D.ietf-drip-dki
+
     RFC6841: # dnssec policy
     RFC8126: # iana-guidelines
     RFC8610: # cddl
-    RFC9082: # rdap-query-format
     RFC9153: # drip-requirements
     RFC9434: # drip-arch
     RFC9575: # drip-auth
 
     # helpful DNS rfcs
+    STD13:  # dns
+    STD69:  # epp
+    STD95:  # rdap
     RFC4033:
     RFC5155:
     RFC8945:
@@ -62,27 +85,6 @@ informative:
     RFC3912:
     RFC4786:
 
-    F3411:
-      title: Standard Specification for Remote ID and Tracking
-      author:
-        - 
-          org: ASTM International
-      target: https://www.astm.org/f3411-22a.html
-      date: July 2022
-      seriesinfo:
-        ASTM: F3411-22A
-        DOI: 10.1520/F3411-22A
-
-    ISO3166-1:
-      title: Codes for the representation of names of countries and their subdivisions
-      author:
-        - 
-          org: International Standards Organization (ISO)
-      target: https://www.iso.org/iso-3166-country-codes.html
-      date: August 2020
-      seriesinfo:
-        ISO: 3166-1:2020
-
 --- abstract
 
 This document describes the discovery and management of DRIP Entity Tags (DETs) in DNS. Authoritative Name Servers, with DRIP specific DNS structures and standard DNS methods, are the Public Information Registries for DETs and their related metadata.
@@ -91,33 +93,112 @@ This document describes the discovery and management of DRIP Entity Tags (DETs) 
 
 # Introduction
 
-Registries are fundamental to Unmanned Aircraft System (UAS) Remote Identification (RID). Only very limited operational information can be sent via Broadcast RID, but extended information is sometimes needed. The most essential element of information from RID is the UAS ID, the unique key for lookup of extended information in relevant registries (see Figure 4 of {{RFC9434}}).
+Registries are fundamental to Unmanned Aircraft System (UAS) Remote Identification (RID). Only very limited operational information can be sent via Broadcast RID, but extended information is sometimes needed. The most essential element of information from RID is the UAS ID, the unique key for lookup of extended information in relevant registries (see {{rfc9434-fig4}}; Figure 4 of {{RFC9434}}).
 
-When a DRIP Entity Tag (DET) {{RFC9374}} is used as the UAS ID in RID, extended information can be retrieved from a DRIP Identity Management Entity (DIME) which manages registration of and associated lookups from DETs. In this document we assume the DIME is a function of UAS Service Suppliers (USS) (Appendix A.2 of {{RFC9434}}) but a DIME can be independent or handled by another entity as well.
+{:fig: artwork-align="center"}
+~~~~
+***************                                        ***************
+*    UAS1     *                                        *     UAS2    *
+*             *                                        *             *
+* +--------+  *                 DAA/V2V                *  +--------+ *
+* |   UA   o--*----------------------------------------*--o   UA   | *
+* +--o--o--+  *                                        *  +--o--o--+ *
+*    |  |     *   +------+      Lookups     +------+   *     |  |    *
+*    |  |     *   | GPOD o------.    .------o PSOD |   *     |  |    *
+*    |  |     *   +------+      |    |      +------+   *     |  |    *
+*    |  |     *                 |    |                 *     |  |    *
+* C2 |  |     *     V2I      ************     V2I      *     |  | C2 *
+*    |  '-----*--------------*          *--------------*-----'  |    *
+*    |        *              *          *              *        |    *
+*    |        o====Net-RID===*          *====Net-RID===o        |    *
+* +--o--+     *              * Internet *              *     +--o--+ *
+* | GCS o-----*--------------*          *--------------*-----o GCS | *
+* +-----+     * Registration *          * Registration *     +-----+ *
+*             * (and UTM)    *          * (and UTM)    *             *
+***************              ************              ***************
+                               |  |  |
+                +----------+   |  |  |   +----------+
+                | Public   o---'  |  '---o Private  |
+                | Registry |      |      | Registry |
+                +----------+      |      +----------+
+                               +--o--+
+                               | DNS |
+                               +-----+
+
+DAA:  Detect And Avoid
+GPOD: General Public Observer Device
+PSOD: Public Safety Observer Device
+V2I:  Vehicle-to-Infrastructure
+V2V:  Vehicle-to-Vehicle
+~~~~
+{:fig #rfc9434-fig4 title="Global UAS RID Usage Scenario (Figure 4 of RFC9434)"}
+
+When a DRIP Entity Tag (DET) {{RFC9374}} is used as the UAS ID in RID, extended information can be retrieved from a DRIP Identity Management Entity (DIME), which manages registration of and associated lookups from DETs. In this document it is assumed the DIME is a function of UAS Service Suppliers (USS) (Appendix A.2 of {{RFC9434}}) but a DIME can be independent or handled by another entity as well.
 
 ## General Concept
 
-DRIP Entity Tags (DETs) embedded a hierarchy scheme which is mapped onto the Domain Name System (DNS). DIME's enforce registration and information access of data associated with a DET while also providing the trust inherited from being a member of the hierarchy. Other identifiers and their methods are out of scope for this document.
+DRIP Entity Tags (DETs) embedded a hierarchy scheme which is mapped onto the Domain Name System (DNS) {{STD13}}. DIMEs enforce registration and information access of data associated with a DET while also providing the trust inherited from being a member of the hierarchy. Other identifiers and their methods are out of scope for this document.
 
-Authoritative Name Servers of the Domain Name System (DNS) provide the Public Information such as the cryptographic keys, endorsements and certificates of DETs and pointers to Private Information resources. Cryptographic (public) keys are used to authenticate anything signed by a DET, such as in the Authentication defined in {{RFC9575}} for Broadcast RID. Endorsements and certificates are used to endorse the claim of being part of the hierarchy.
+Authoritative Name Servers of the DNS provide the public information such as the cryptographic keys, endorsements and certificates of DETs and pointers to private information resources. Cryptographic (public) keys are used to authenticate anything signed by a DET, such as in the Authentication defined in {{RFC9575}} for Broadcast RID. Endorsements and certificates are used to endorse the claim of being part of the hierarchy.
 
-Aspects of Private Information Registries to store and protect, through AAA mechanisms, Personally Identifiable Information (PII) are not described in this document.
+This document does not specify AAA mechanisms used by Private Information Registries to store and protect Personally Identifiable Information (PII).
 
 ## Use of Existing DNS Models
 
-DRIP relies on the DNS and as such roughly follows the registrant-registrar-registry model. In DRIP, the registrant would be the end user who owns/controls the Unmanned Aircraft. They are ultimately responsible for the DET and any other information that gets published in the DNS. Registrants use agents known as registrars to manage their interactions with the registry. Registrars typically provide optional additional services such as DNS hosting.
+DRIP relies on the DNS and as such roughly follows the registrant-registrar-registry model. In the UAS ecosystem, the registrant would be the end user who owns/controls the Unmanned Aircraft. They are ultimately responsible for the DET and any other information that gets published in the DNS. Registrants use agents known as registrars to manage their interactions with the registry. Registrars typically provide optional additional services such as DNS hosting.
 
-The registry maintains a database of the registered domain names and their related metadata such as the contact details for domain name holder and the relevant registrar. The registry provides DNS service for the zone apex which contains delegation information for domain names. Registries generally provide services such as WHOIS or RDAP to publish metadata about the registered domain names and their registrants and registrars.
+The registry maintains a database of the registered domain names and their related metadata such as the contact details for domain name holder and the relevant registrar. The registry provides DNS service for the zone apex which contains delegation information for domain names. Registries generally provide services such as WHOIS {{RFC3912}} or RDAP {{STD95}} to publish metadata about the registered domain names and their registrants and registrars.
 
 Registrants have contracts with registrars who in turn have contracts with registries. Payments follow this model too: the registrant buys services from a registrar who pays for services provided by the registry.
 
-By definition, there can only be one registry for a domain name. Since that registry is a de facto monopoly, the scope of its activities are usually kept to a minimum to reduce the potential for market distortions or anti-competitive practices. A registry can have an arbitrary number of registrars who compete with each other on price, service and customer support.
+By definition, there can only be one registry for a domain name. Since that registry is a de facto monopoly, the scope of its activities is usually kept to a minimum to reduce the potential for market distortions or anti-competitive practices. A registry can have an arbitrary number of registrars who compete with each other on price, service and customer support.
+
+### DNS Model Considerations for DIMEs
+
+~~~~
+Apex
+Registry/Registrar
+(IANA)
+                         +=========================+
+                         | 3.0.0.1.0.0.2.ip6.arpa. |
+                         +============o============+
+                                      |
+--------------------------------------|-------------------------
+National                              |
+Registries/Registrars                 |
+(RAA)                                 |
+                                      |
+        +--------------+--------------o-+---------------+
+        |              |                |               |
+  +=====o====+    +====o=====+    +=====o====+    +=====o====+
+  | 0.0.0.0. |    | 1.0.0.0. |    | 2.0.0.0. |    | 3.0.0.0. |
+  +====o=====+    +====o=====+    +====o=====+    +====o=====+
+                                       |
+---------------------------------------|------------------------
+Local                                  |
+Registries/Registrars                  |
+(HDA)                                  |
+                                       |
+        +--------------+---------------o--------...-----+
+        |              |               |                |
+  +=====o====+    +====o=====+    +====o=====+    +=====o====+
+  |  1.0.0.  |    |  2.0.0.  |    |  3.0.0.  |    |  f.f.f.  |
+  +====o=====+    +=====o====+    +====o=====+    +====o=====+
+                                       |
+---------------------------------------|------------------------
+Local                                  |
+Registrants                            |
+                 +=====================o================+
+                 | x.x.x.x.x.x.x.x.x.x.x.x.x.x.x.x.5.0. |
+                 +======================================+
+~~~~
+{:fig #dns-model-fig title="Example DRIP DNS Model"}
 
 While the registrant-registrar-registry model is mature and well understood, it may not be appropriate for DRIP registrations in some circumstances. It could add costs and complexity: developing policies and contracts as outlined above. On the other hand, registries and registrars offer customer service/support and can provide the supporting infrastructure for reliable DNS and WHOIS or RDAP service.
 
-Another approach could be to handle DRIP registrations in a comparable way to how IP address space gets provisioned. Here, blocks of addresses get delegated to a "trusted" third party, typically an ISP, who then issues IP addresses to its customers. For DRIP, blocks of IP addresses could be delegated from the `3.0.0.1.0.0.2.ip6.arpa` domain to an entity chosen by the appropriate CAA. This third party would be responsible for the corresponding DNS and WHOIS or RDAP infrastructure for these IP address blocks. They would also provision the HHIT records for these IP addresses. In principle a manufacturer or vendor of UAS devices could provide that role.
+Another approach could be to handle DRIP registrations in a comparable way to how IP address space gets provisioned. Here, blocks of addresses get delegated to a "trusted" third party, typically an ISP, who then issues IP addresses to its customers. For DRIP, blocks of IP addresses could be delegated from the `3.0.0.1.0.0.2.ip6.arpa` domain (reverse domain of prefix allocated by {{RFC9374}}) to an entity chosen by the appropriate Civil Aviation Authority (CAA). This third party would be responsible for the corresponding DNS and WHOIS or RDAP infrastructure for these IP address blocks. They would also provision the Hierarchial Host Identity Tag (HHIT, {{RFC9374}}) records for these IP addresses. In principle a manufacturer or vendor of UAS devices could provide that role. This is shown as an example in {{dns-model-fig}}.
 
-Dynamic DRIP registration is another possible solution, for example when the operator of a UAS device registers its corresponding HHIT record and other resources before a flight and deletes them afterwards. This may be feasible in controlled environments with well-behaved actors. However this approach may not scale since each device is likely to need a unique authentication token for updating the IT infrastructure which provisions the DNS.
+Dynamic DRIP registration is another possible solution, for example when the operator of a UAS device registers its corresponding HHIT record and other resources before a flight and deletes them afterwards. This may be feasible in controlled environments with well-behaved actors. However, this approach may not scale since each device is likely to need credentials for updating the IT infrastructure which provisions the DNS.
 
 Registration policies - pricing, renewals, registrar and registrant agreements, etc. - will need to be developed. These considerations should be determined by the CAA, perhaps in consultation with local stakeholders to assess the cost-benefits of these approaches (and others). All of these are out of scope for this document. The specifics for the UAS RID use case are detailed in the rest of document.
 
@@ -125,7 +206,7 @@ Registration policies - pricing, renewals, registrar and registrant agreements, 
 
 The scope of this document is the DNS registration of DETs with the DNS delegation of the reverse domain of IPv6 Prefix, assigned by IANA for DETs `2001:30::/28` and RRsets used to handle DETs.
 
-Other sectors may adopt this technology. It is recommended that a global Apex (i.e. IPv6 prefix) and international Apex manager be designated for each sector.
+Other sectors may adopt this technology. It is recommended that a global apex (i.e., IPv6 prefix) and international apex manager be designated for each sector.
 
 # Terminology {#terminology}
 
@@ -135,17 +216,16 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ## Additional Definitions
 
-This document makes use of the terms (PII, USS, etc.) defined in {{RFC9153}}. Other terms (DIME, Endorsement, etc.) are from {{RFC9434}}, while others (RAA, HDA, etc.) are from {{RFC9374}}.
+This document makes use of the terms (USS, etc.) defined in {{RFC9153}}. Other terms (DIME, Endorsement, etc.) are from {{RFC9434}}, while others (RAA, HDA, etc.) are from {{RFC9374}}.
 
 # DET Hierarchy in DNS
 
-{{RFC9374}} defines the Hierarchical Host Identity Tag (HHIT) and further specifies an instance of them used for UAS RID called DETs. The HHIT is a 128-bit value that is as an IPv6 address intended primarily as an identifier rather than locator. It's format is in {{hhit-fig}}, shown here for reference, and further information is in {{RFC9374}}.
+{{RFC9374}} defines the HHIT and further specifies an instance of them used for UAS RID called DETs. The HHIT is a 128-bit value that is as an IPv6 address intended primarily as an identifier rather than locator. Its format is in {{hhit-fig}}, shown here for reference, and further information is in {{RFC9374}}.
 
-{:fig: artwork-align="center"}
 ~~~~
 +-------------+--------------+---------------+-------------+
 | IPv6 Prefix | Hierarchy ID | HHIT Suite ID | ORCHID Hash |
-| (28-bits)   | (28-bits)    | (8-bits)      | (64-bits)   |
+| (28 bits)   | (28 bits)    | (8 bits)      | (64 bits)   |
 +-------------+--------------+---------------+-------------+
              /                \
             /                  \
@@ -154,20 +234,20 @@ This document makes use of the terms (PII, USS, etc.) defined in {{RFC9153}}. Ot
          /                                                      \
         +--------------------------------+-----------------------+
         | Registered Assigning Authority | HHIT Domain Authority |
-        | (14-bits)                      | (14-bits)             |
+        | (14 bits)                      | (14 bits)             |
         +--------------------------------+-----------------------+
 ~~~~
 {:fig #hhit-fig title="DRIP Entity Tag Breakdown"}
 
 The IPv6 Prefix, assigned by IANA for DETs is `2001:30::/28`. The corresponding domain (nibble reversed as `3.0.0.1.0.0.2.ip6.arpa`) is owned by the IAB.
 
-Due to the nature of the hierarchy split and its relationship to nibble reversing of the IPv6 address, the upper level of hierarchy (i.e. RAAs) "borrows" the upper two bits of their respective HDA space for DNS delegation. As such the IPv6 prefix of RAAs are `2001:3x:xxx::/44` and HDAs are `2001:3x:xxxy:yy::/56` with respective nibble reverse domains of `x.x.x.x.3.0.0.1.0.0.2.ip6.arpa` and `y.y.y.x.x.x.x.3.0.0.1.0.0.2.ip6.arpa`.
+Due to the nature of the hierarchy split and its relationship to nibble reversing of the IPv6 address, the upper level of hierarchy (i.e., Registered Assigning Authority (RAA)) "borrows" the upper two bits of their respective HHIT Domain Authority (HDA) space for DNS delegation. As such the IPv6 prefix of RAAs are `2001:3x:xxx::/44` and HDAs are `2001:3x:xxxy:yy::/56` with respective nibble reverse domains of `x.x.x.x.3.0.0.1.0.0.2.ip6.arpa` and `y.y.y.x.x.x.x.3.0.0.1.0.0.2.ip6.arpa`.
 
-A subset of RAAs have preallocations based on the ISO 3166-1 Numeric Nation Code {{ISO3166-1}}. This is to support the initial use case of DETs in UAS RID on an international level. See {{iana-raa}} for the RAA allocations.
+This document preallocates a subset of RAAs based on the ISO 3166-1 Numeric Nation Code {{ISO3166-1}}. This is to support the initial use case of DETs in UAS RID on an international level. See {{iana-raa}} for the RAA allocations.
 
-The HDA values of 0, 4096, 8192 and 12288 are reserved for operational use of an RAA (a by-product of the above mentioned borrowing of bits), specifically when to register with the Apex and endorse delegations of HDAs in their namespace.
+The HDA values of 0, 4096, 8192 and 12288 are reserved for operational use of an RAA (a by-product of the above mentioned borrowing of bits), specifically when to register with the apex and endorse delegations of HDAs in their namespace.
 
-The administration, management and policy for operation a DIME at any level in the hierarchy (Apex, RAA or HDA), be it external or from a parent level, is out of scope for this document. In some cases, such as the RAAs and HDAs of a nation, these are National Matters which are to be dealt with by those parties accordingly.
+The administration, management and policy for operation a DIME at any level in the hierarchy (Apex, RAA or HDA), be it external or from a parent level, is out of scope for this document. In some cases, such as the RAAs and HDAs of a nation, these are national matters which are to be dealt with by those parties accordingly.
 
 # Public Information Registry {#dns}
 
@@ -189,28 +269,15 @@ Lookups of the above RRTypes are performed with the standard DNS methodology usi
 
 The HHIT Resource Record is a metadata record for various bits of HHIT specific information that isn't available in the pre-existing HIP RRType. It does not replace the HIP RRType. The primary advantage of this RRType over the existing RRType is the inclusion a certificate containing an entity's public key signed by the registrar, or other trust anchor, to confirm registration.
 
-~~~~
-                     1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                               |
-.                                                               .
-.                   HHIT Data (CBOR Encoded)                    .
-.                                                               .
-|                                                               |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-~~~~
-{:fig #hhit-wire title="HHIT Wire Format"}
-
-The HHIT Data field MUST be encoded in CBOR bytes. The CDDL of the HHIT Data is provided in {{hhit-wire-cddl}}.
+The data MUST be encoded in CBOR {{RFC8949}} bytes. The CDDL {{RFC8610}} of the data is provided in {{hhit-wire-cddl}}.
 
 ### Text Representation {#hhit-rr-text}
 
-The HHIT Data is represented in base64 and may be divided into any number of white-space-separated substrings, down to single base64 digits, which are concatenated to obtain the full object. These substrings can span lines using the standard parenthesis. Note that the HHIT Data portion has internal subfields, but these do not appear in the master file representation only a single logical base64 string will appear.
+The data is represented in base64 {{RFC4648}} and may be divided into any number of white-space-separated substrings, down to single base64 digits, which are concatenated to obtain the full object. These substrings can span lines using the standard parenthesis. Note that the data has internal subfields, but these do not appear in the master file representation only a single logical base64 string will appear.
 
 #### Presentation Representation {#hhit-rr-presentation}
 
-The HHIT Data portion MAY, for display purposes only, be represented using the Extended Diagnostic Notation as defined in Appendix G of {{RFC8610}}.
+The data MAY, for display purposes only, be represented using the Extended Diagnostic Notation as defined in Appendix G of {{RFC8610}}.
 
 ### Field Descriptions {#hhit-rr-fields}
 
@@ -221,7 +288,7 @@ The HHIT Data portion MAY, for display purposes only, be represented using the E
 
 HHIT Entity Type:
 
-: This field is a number with values defined in {{iana-hhit-type}}. It is envisioned that there may be many types of HHITs in use. In some cases it may be helpful to understand the HHITs role in the ecosystem like described in {{drip-dki}}. This field provides such context. This field MAY provide a signal of additional information and/or different handling of the data beyond what is defined in this document.
+: This field is a number with values defined in {{iana-hhit-type}}. It is envisioned that there may be many types of HHITs in use. In some cases, it may be helpful to understand the HHITs role in the ecosystem like described in {{drip-dki}}. This field provides such context. This field MAY provide a signal of additional information and/or different handling of the data beyond what is defined in this document.
 
 HID Abbreviation:
 
@@ -229,34 +296,21 @@ HID Abbreviation:
 
 Canonical Registration Certificate:
 
-: This field is reserved for any certificate to endorse registration that contains the DET. It MUST be encoded as X.509 DER. This certificate MAY be self-signed when the entity is acting as a root of trust (i.e. an apex). Such self-signed behavior is defined by policy, such as in {{drip-dki}}, and is out of scope for this document.
+: This field is reserved for any certificate to endorse registration that contains the DET. It MUST be encoded as X.509 DER. This certificate MAY be self-signed when the entity is acting as a root of trust (i.e., an apex). Such self-signed behavior is defined by policy, such as in {{drip-dki}}, and is out of scope for this document.
 
 ## UAS Broadcast RID Resource Record {#bcast-rr}
 
 The UAS Broadcast RID Resource Record type (BRID) is a format to hold public information typically sent of the UAS Broadcast RID that is static. It can act as a data source if information is not received over Broadcast RID or for cross validation. The primary function for DRIP is the inclusion of one or more Broadcast Endorsements as defined in {{RFC9575}} in the `auth` field. These Endorsements are generated by the registrar upon successful registration and broadcast by the entity.
 
-~~~~
-                     1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                               |
-.                                                               .
-.                   BRID Data (CBOR Encoded)                    .
-.                                                               .
-|                                                               |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-~~~~
-{:fig #bcast-wire title="BRID Wire Format"}
-
-The BRID Data field MUST be encoded in CBOR bytes. The CDDL of the BRID Data is provided in {{bcast-wire-cddl}}.
+The data MUST be encoded in CBOR {{RFC8949}} bytes. The CDDL {{RFC8610}} of the data is provided in {{bcast-wire-cddl}}.
 
 ### Text Representation {#bcast-rr-text}
 
-The BRID Data is represented in base64 and may be divided into any number of white-space-separated substrings, down to single base64 digits, which are concatenated to obtain the full object. These substrings can span lines using the standard parenthesis. Note that the BRID Data portion has internal subfields, but these do not appear in the master file representation only a single logical base64 string will appear.
+The data is represented in base64 {{RFC4648}} and may be divided into any number of white-space-separated substrings, down to single base64 digits, which are concatenated to obtain the full object. These substrings can span lines using the standard parenthesis. Note that the data has internal subfields, but these do not appear in the master file representation only a single logical base64 string will appear.
 
 #### Presentation Representation {#bcast-rr-presentation}
 
-The BRID Data portion MAY, for display purposes only, be represented using the Extended Diagnostic Notation as defined in Appendix G of {{RFC8610}}. All byte strings longer than a length of 20 SHOULD be displayed as base64 when possible.
+The data MAY, for display purposes only, be represented using the Extended Diagnostic Notation as defined in Appendix G of {{RFC8610}}. All byte strings longer than a length of 20 SHOULD be displayed as base64 when possible.
 
 ### Field Descriptions {#bcast-rr-fields}
 
@@ -265,13 +319,13 @@ The BRID Data portion MAY, for display purposes only, be represented using the E
 ~~~~
 {: #bcast-wire-cddl title="BRID Wire Format CDDL"}
 
-The field names and their general typing are borrowed from the ASTM {{F3411}} data dictionary. See that document for additional information on fields semantics and units.
+The field names and their general typing are borrowed from the ASTM {{F3411}} data dictionary (Table 1 and Table 2). See that document for additional information on fields semantics and units.
 
 # IANA Considerations
 
-## DRIP Prefix Delegation
+## DET Prefix Delegation
 
-This document requests that the IANA delegate the `3.0.0.1.0.0.2.ip6.arpa` domain. IANA will be responsible for processing requests under the guidance of the Designated Expert.
+This document requests that the IANA delegate the `3.0.0.1.0.0.2.ip6.arpa` domain. IANA will be responsible for processing requests under the guidance of the Designated Experts.
 
 ## IANA DRIP Registry
 
@@ -290,7 +344,7 @@ RAA Allocations:
 | 4000 - 16375  | Reserved  | N/A                        | N/A                             |
 | 16376 - 16383 | Allocated | DRIP WG (Experimental Use) | This RFC                        |
 
-To support DNS delegation in `ip6.arpa` a single RAA is given 4 delegations by borrowing the upper two bits of HDA space. This enables a clean nibble boundary in DNS to delegate from (i.e. the prefix `2001:3x:xxx0::/44`). These HDAs (0, 4096, 8192 and 12288) are reserved for the RAA.
+To support DNS delegation in `ip6.arpa` a single RAA is given 4 delegations by borrowing the upper two bits of HDA space. This enables a clean nibble boundary in DNS to delegate from (i.e., the prefix `2001:3x:xxx0::/44`). These HDAs (0, 4096, 8192 and 12288) are reserved for the RAA.
 
 The mapping between ISO 3166-1 Numeric Numbers and RAAs can be found as a CSV file on [GitHub](https://github.com/ietf-wg-drip/draft-ietf-drip-registries/blob/main/iso3166-raa.csv). Each Nation is assigned four RAAs that are left to the national authority for their purpose. For RAAs under this range, a shorter prefix of `2001:3x:xx00::/40` MAY be delegated to each CAA, which covers all 4 RAAs (and reserved HDAs) assigned to them.
 
@@ -336,9 +390,9 @@ Future additions to this registry MUST NOT be allowed if they can be covered und
 
 The Registrar and Registry are commonly used concepts in the DNS. These components interface the DIME into the DNS hierarchy and thus operation SHOULD follow best common practices, specifically in security (such as running DNSSEC) as appropriate. The following RFC provide suitable guidance: {{RFC7720}}, {{RFC4033}}, {{RFC4034}}, {{RFC4035}}, {{RFC5155}}, {{RFC8945}}, {{RFC2182}}, {{RFC4786}}, {{RFC3007}}.
 
-If DNSSEC is used, a DNSSEC Practice Statement (DPS) SHOULD be developed and published. It SHOULD explain how DNSSEC has been deployed and what security measures are in place. {{RFC6841}} documents a Framework for DNSSEC Policies and DNSSEC Practice Statements.
+If DNSSEC is used, a DNSSEC Practice Statement SHOULD be developed and published. It SHOULD explain how DNSSEC has been deployed and what security measures are in place. {{RFC6841}} documents a Framework for DNSSEC Policies and DNSSEC Practice Statements.
 
-The interfaces and protocol specifications for registry-registrar interactions are intentionally not specified in this document. These will depend on nationally defined policy and prevailing local circumstances. It is expected registry-registrar activity will use the Extensible Provisioning Protocol (EPP) {{RFC5730}}. The registry SHOULD provide a lookup service such as WHOIS {{RFC3912}} or RDAP {{RFC9082}} to provide public information about registered domain names.
+The interfaces and protocol specifications for registry-registrar interactions are intentionally not specified in this document. These will depend on nationally defined policy and prevailing local circumstances. It is expected registry-registrar activity will use the Extensible Provisioning Protocol (EPP) {{STD69}}. The registry SHOULD provide a lookup service such as WHOIS {{RFC3912}} or RDAP {{STD95}} to provide public information about registered domain names.
 
 Decisions about DNS or registry best practices and other operational matters SHOULD be made by the CAA, ideally in consultation with local stakeholders. This document RECOMMENDS that DNSSEC SHOULD be used by both Apex (to control RAA levels) and RAA (to control HDA level) zones.
 
@@ -346,11 +400,11 @@ Decisions about DNS or registry best practices and other operational matters SHO
 
 DETs are built upon asymmetric keys. As such the public key must be revealed to enable clients to perform signature verifications. {{RFC9374}} security considerations cover various attacks on such keys.
 
-While unlikely the forging of a corresponding private key is possible if given enough time (and computational power). As such it is RECOMMENDED that the public key for any DET not be exposed in DNS (under any RRType) until it is required.
+While unlikely the forging of a corresponding private key is possible if given enough time (and computational power). As such it is RECOMMENDED that the public key for any DET not be exposed in DNS (under any RRType) until it is required for use in verification by other parties.
 
 Optimally this requires the UAS somehow signal the DIME that a flight using a Specific Session ID will soon be underway or complete. It may also be facilitated under UTM if the USS (which may or may not be a DIME) signals when a given operation using a Session ID goes active.
 
-# Contributors
+# Acknowledgements
 
 Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LLC) for their early work on the DRIP registries concept. Their early contributions laid the foundations for the content and processes of this architecture and document.
 
