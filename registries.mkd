@@ -390,7 +390,7 @@ Future additions to this registry MUST NOT be allowed if they can be covered und
 
 The Registrar and Registry are commonly used concepts in the DNS. These components interface the DIME into the DNS hierarchy and thus operation SHOULD follow best common practices, specifically in security (such as running DNSSEC) as appropriate. The following RFC provide suitable guidance: {{RFC7720}}, {{RFC4033}}, {{RFC4034}}, {{RFC4035}}, {{RFC5155}}, {{RFC8945}}, {{RFC2182}}, {{RFC4786}}, {{RFC3007}}.
 
-If DNSSEC is used, a DNSSEC Practice Statement (DPS) SHOULD be developed and published. It SHOULD explain how DNSSEC has been deployed and what security measures are in place. {{RFC6841}} documents a Framework for DNSSEC Policies and DNSSEC Practice Statements.
+If DNSSEC is used, a DNSSEC Practice Statement SHOULD be developed and published. It SHOULD explain how DNSSEC has been deployed and what security measures are in place. {{RFC6841}} documents a Framework for DNSSEC Policies and DNSSEC Practice Statements.
 
 The interfaces and protocol specifications for registry-registrar interactions are intentionally not specified in this document. These will depend on nationally defined policy and prevailing local circumstances. It is expected registry-registrar activity will use the Extensible Provisioning Protocol (EPP) {{STD69}}. The registry SHOULD provide a lookup service such as WHOIS {{RFC3912}} or RDAP {{STD95}} to provide public information about registered domain names.
 
@@ -400,7 +400,7 @@ Decisions about DNS or registry best practices and other operational matters SHO
 
 DETs are built upon asymmetric keys. As such the public key must be revealed to enable clients to perform signature verifications. {{RFC9374}} security considerations cover various attacks on such keys.
 
-While unlikely the forging of a corresponding private key is possible if given enough time (and computational power). As such it is RECOMMENDED that the public key for any DET not be exposed in DNS (under any RRType) until it is required.
+While unlikely the forging of a corresponding private key is possible if given enough time (and computational power). As such it is RECOMMENDED that the public key for any DET not be exposed in DNS (under any RRType) until it is required for use in verification by other parties.
 
 Optimally this requires the UAS somehow signal the DIME that a flight using a Specific Session ID will soon be underway or complete. It may also be facilitated under UTM if the USS (which may or may not be a DIME) signals when a given operation using a Session ID goes active.
 
