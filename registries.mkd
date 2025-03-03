@@ -204,7 +204,7 @@ Registration policies - pricing, renewals, registrar and registrant agreements, 
 
 The scope of this document is the DNS registration of DETs with the DNS delegation of the reverse domain of IPv6 Prefix, assigned by IANA for DETs `2001:30::/28` and RRsets used to handle DETs.
 
-Other sectors may adopt this technology. It is recommended that a global Apex (i.e. IPv6 prefix) and international Apex manager be designated for each sector.
+Other sectors may adopt this technology. It is recommended that a global apex (i.e. IPv6 prefix) and international apex manager be designated for each sector.
 
 # Terminology {#terminology}
 
@@ -244,7 +244,7 @@ Due to the nature of the hierarchy split and its relationship to nibble reversin
 
 This document preallocates a subset of RAAs based on the ISO 3166-1 Numeric Nation Code {{ISO3166-1}}. This is to support the initial use case of DETs in UAS RID on an international level. See {{iana-raa}} for the RAA allocations.
 
-The HDA values of 0, 4096, 8192 and 12288 are reserved for operational use of an RAA (a by-product of the above mentioned borrowing of bits), specifically when to register with the Apex and endorse delegations of HDAs in their namespace.
+The HDA values of 0, 4096, 8192 and 12288 are reserved for operational use of an RAA (a by-product of the above mentioned borrowing of bits), specifically when to register with the apex and endorse delegations of HDAs in their namespace.
 
 The administration, management and policy for operation a DIME at any level in the hierarchy (Apex, RAA or HDA), be it external or from a parent level, is out of scope for this document. In some cases, such as the RAAs and HDAs of a nation, these are National Matters which are to be dealt with by those parties accordingly.
 
