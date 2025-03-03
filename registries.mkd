@@ -143,6 +143,53 @@ Authoritative Name Servers of the DNS provide the public information such as the
 
 This document does not specify AAA mechanisms used by Private Information Registries to store and protect Personally Identifiable Information (PII).
 
+## Scope
+
+The scope of this document is the DNS registration of DETs with the DNS delegation of the reverse domain of IPv6 Prefix, assigned by IANA for DETs `2001:30::/28` and RRsets used to handle DETs.
+
+Other sectors may adopt this technology. It is recommended that a global apex (i.e., IPv6 prefix) and international apex manager be designated for each sector.
+
+# Terminology {#terminology}
+
+## Required Terminology
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 {{!RFC2119}} {{!RFC8174}} when, and only when, they appear in all capitals, as shown here.
+
+## Additional Definitions
+
+This document makes use of the terms (USS, etc.) defined in {{RFC9153}}. Other terms (DIME, Endorsement, etc.) are from {{RFC9434}}, while others (RAA, HDA, etc.) are from {{RFC9374}}.
+
+# DET Hierarchy in DNS
+
+{{RFC9374}} defines the HHIT and further specifies an instance of them used for UAS RID called DETs. The HHIT is a 128-bit value that is as an IPv6 address intended primarily as an identifier rather than locator. Its format is in {{hhit-fig}}, shown here for reference, and further information is in {{RFC9374}}.
+
+~~~~
++-------------+--------------+---------------+-------------+
+| IPv6 Prefix | Hierarchy ID | HHIT Suite ID | ORCHID Hash |
+| (28 bits)   | (28 bits)    | (8 bits)      | (64 bits)   |
++-------------+--------------+---------------+-------------+
+             /                \
+            /                  \
+           /                    \-----------------------------\
+          /                                                    \
+         /                                                      \
+        +--------------------------------+-----------------------+
+        | Registered Assigning Authority | HHIT Domain Authority |
+        | (14 bits)                      | (14 bits)             |
+        +--------------------------------+-----------------------+
+~~~~
+{:fig #hhit-fig title="DRIP Entity Tag Breakdown"}
+
+The IPv6 Prefix, assigned by IANA for DETs is `2001:30::/28`. The corresponding domain (nibble reversed as `3.0.0.1.0.0.2.ip6.arpa`) is owned by the IAB.
+
+Due to the nature of the hierarchy split and its relationship to nibble reversing of the IPv6 address, the upper level of hierarchy (i.e., Registered Assigning Authority (RAA)) "borrows" the upper two bits of their respective HHIT Domain Authority (HDA) space for DNS delegation. As such the IPv6 prefix of RAAs are `2001:3x:xxx::/44` and HDAs are `2001:3x:xxxy:yy::/56` with respective nibble reverse domains of `x.x.x.x.3.0.0.1.0.0.2.ip6.arpa` and `y.y.y.x.x.x.x.3.0.0.1.0.0.2.ip6.arpa`.
+
+This document preallocates a subset of RAAs based on the ISO 3166-1 Numeric Nation Code {{ISO3166-1}}. This is to support the initial use case of DETs in UAS RID on an international level. See {{iana-raa}} for the RAA allocations.
+
+The HDA values of 0, 4096, 8192 and 12288 are reserved for operational use of an RAA (a by-product of the above mentioned borrowing of bits), specifically when to register with the apex and endorse delegations of HDAs in their namespace.
+
+The administration, management and policy for operation a DIME at any level in the hierarchy (Apex, RAA or HDA), be it external or from a parent level, is out of scope for this document. In some cases, such as the RAAs and HDAs of a nation, these are national matters which are to be dealt with by those parties accordingly.
+
 ## Use of Existing DNS Models
 
 DRIP relies on the DNS and as such roughly follows the registrant-registrar-registry model. In the UAS ecosystem, the registrant would be the end user who owns/controls the Unmanned Aircraft. They are ultimately responsible for the DET and any other information that gets published in the DNS. Registrants use agents known as registrars to manage their interactions with the registry. Registrars typically provide optional additional services such as DNS hosting.
@@ -201,53 +248,6 @@ Another approach could be to handle DRIP registrations in a comparable way to ho
 Dynamic DRIP registration is another possible solution, for example when the operator of a UAS device registers its corresponding HHIT record and other resources before a flight and deletes them afterwards. This may be feasible in controlled environments with well-behaved actors. However, this approach may not scale since each device is likely to need credentials for updating the IT infrastructure which provisions the DNS.
 
 Registration policies - pricing, renewals, registrar and registrant agreements, etc. - will need to be developed. These considerations should be determined by the CAA, perhaps in consultation with local stakeholders to assess the cost-benefits of these approaches (and others). All of these are out of scope for this document. The specifics for the UAS RID use case are detailed in the rest of document.
-
-## Scope
-
-The scope of this document is the DNS registration of DETs with the DNS delegation of the reverse domain of IPv6 Prefix, assigned by IANA for DETs `2001:30::/28` and RRsets used to handle DETs.
-
-Other sectors may adopt this technology. It is recommended that a global apex (i.e., IPv6 prefix) and international apex manager be designated for each sector.
-
-# Terminology {#terminology}
-
-## Required Terminology
-
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 {{!RFC2119}} {{!RFC8174}} when, and only when, they appear in all capitals, as shown here.
-
-## Additional Definitions
-
-This document makes use of the terms (USS, etc.) defined in {{RFC9153}}. Other terms (DIME, Endorsement, etc.) are from {{RFC9434}}, while others (RAA, HDA, etc.) are from {{RFC9374}}.
-
-# DET Hierarchy in DNS
-
-{{RFC9374}} defines the HHIT and further specifies an instance of them used for UAS RID called DETs. The HHIT is a 128-bit value that is as an IPv6 address intended primarily as an identifier rather than locator. Its format is in {{hhit-fig}}, shown here for reference, and further information is in {{RFC9374}}.
-
-~~~~
-+-------------+--------------+---------------+-------------+
-| IPv6 Prefix | Hierarchy ID | HHIT Suite ID | ORCHID Hash |
-| (28 bits)   | (28 bits)    | (8 bits)      | (64 bits)   |
-+-------------+--------------+---------------+-------------+
-             /                \
-            /                  \
-           /                    \-----------------------------\
-          /                                                    \
-         /                                                      \
-        +--------------------------------+-----------------------+
-        | Registered Assigning Authority | HHIT Domain Authority |
-        | (14 bits)                      | (14 bits)             |
-        +--------------------------------+-----------------------+
-~~~~
-{:fig #hhit-fig title="DRIP Entity Tag Breakdown"}
-
-The IPv6 Prefix, assigned by IANA for DETs is `2001:30::/28`. The corresponding domain (nibble reversed as `3.0.0.1.0.0.2.ip6.arpa`) is owned by the IAB.
-
-Due to the nature of the hierarchy split and its relationship to nibble reversing of the IPv6 address, the upper level of hierarchy (i.e., Registered Assigning Authority (RAA)) "borrows" the upper two bits of their respective HHIT Domain Authority (HDA) space for DNS delegation. As such the IPv6 prefix of RAAs are `2001:3x:xxx::/44` and HDAs are `2001:3x:xxxy:yy::/56` with respective nibble reverse domains of `x.x.x.x.3.0.0.1.0.0.2.ip6.arpa` and `y.y.y.x.x.x.x.3.0.0.1.0.0.2.ip6.arpa`.
-
-This document preallocates a subset of RAAs based on the ISO 3166-1 Numeric Nation Code {{ISO3166-1}}. This is to support the initial use case of DETs in UAS RID on an international level. See {{iana-raa}} for the RAA allocations.
-
-The HDA values of 0, 4096, 8192 and 12288 are reserved for operational use of an RAA (a by-product of the above mentioned borrowing of bits), specifically when to register with the apex and endorse delegations of HDAs in their namespace.
-
-The administration, management and policy for operation a DIME at any level in the hierarchy (Apex, RAA or HDA), be it external or from a parent level, is out of scope for this document. In some cases, such as the RAAs and HDAs of a nation, these are national matters which are to be dealt with by those parties accordingly.
 
 # Public Information Registry {#dns}
 
