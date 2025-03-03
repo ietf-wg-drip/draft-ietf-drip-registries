@@ -325,7 +325,7 @@ The field names and their general typing are borrowed from the ASTM {{F3411}} da
 
 ## DET Prefix Delegation
 
-This document requests that the IANA delegate the `3.0.0.1.0.0.2.ip6.arpa` domain. IANA will be responsible for processing requests under the guidance of the Designated Experts.
+This document requests that IANA manage delegations in the `3.0.0.1.0.0.2.ip6.arpa` domain. Delegations will typically be to sector governing bodies, e.g., for aviation, ICAO. IANA will be responsible for processing requests under the guidance of the Designated Experts.
 
 ## IANA DRIP Registry
 
