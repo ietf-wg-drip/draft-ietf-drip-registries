@@ -225,7 +225,7 @@ This document makes use of the terms (USS, etc.) defined in {{RFC9153}}. Other t
 ~~~~
 +-------------+--------------+---------------+-------------+
 | IPv6 Prefix | Hierarchy ID | HHIT Suite ID | ORCHID Hash |
-| (28-bits)   | (28-bits)    | (8-bits)      | (64-bits)   |
+| (28 bits)   | (28 bits)    | (8 bits)      | (64 bits)   |
 +-------------+--------------+---------------+-------------+
              /                \
             /                  \
@@ -234,7 +234,7 @@ This document makes use of the terms (USS, etc.) defined in {{RFC9153}}. Other t
          /                                                      \
         +--------------------------------+-----------------------+
         | Registered Assigning Authority | HHIT Domain Authority |
-        | (14-bits)                      | (14-bits)             |
+        | (14 bits)                      | (14 bits)             |
         +--------------------------------+-----------------------+
 ~~~~
 {:fig #hhit-fig title="DRIP Entity Tag Breakdown"}
