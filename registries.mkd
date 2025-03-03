@@ -36,6 +36,7 @@ author:
     email: jim@rfc1035.com
 
 normative:
+    RFC4648: # base64
     RFC9374: # drip-det  -- TODO(Editor): Informative?
 
 informative:
@@ -272,7 +273,7 @@ The data MUST be encoded in CBOR bytes. The CDDL of the HHIT Data is provided in
 
 ### Text Representation {#hhit-rr-text}
 
-The data is represented in base64 and may be divided into any number of white-space-separated substrings, down to single base64 digits, which are concatenated to obtain the full object. These substrings can span lines using the standard parenthesis. Note that the data has internal subfields, but these do not appear in the master file representation only a single logical base64 string will appear.
+The data is represented in base64 {{RFC4648}} and may be divided into any number of white-space-separated substrings, down to single base64 digits, which are concatenated to obtain the full object. These substrings can span lines using the standard parenthesis. Note that the data has internal subfields, but these do not appear in the master file representation only a single logical base64 string will appear.
 
 #### Presentation Representation {#hhit-rr-presentation}
 
@@ -305,7 +306,7 @@ The data MUST be encoded in CBOR bytes. The CDDL of the BRID Data is provided in
 
 ### Text Representation {#bcast-rr-text}
 
-The data is represented in base64 and may be divided into any number of white-space-separated substrings, down to single base64 digits, which are concatenated to obtain the full object. These substrings can span lines using the standard parenthesis. Note that the data has internal subfields, but these do not appear in the master file representation only a single logical base64 string will appear.
+The data is represented in base64 {{RFC4648}} and may be divided into any number of white-space-separated substrings, down to single base64 digits, which are concatenated to obtain the full object. These substrings can span lines using the standard parenthesis. Note that the data has internal subfields, but these do not appear in the master file representation only a single logical base64 string will appear.
 
 #### Presentation Representation {#bcast-rr-presentation}
 
