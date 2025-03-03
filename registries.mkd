@@ -61,7 +61,7 @@ normative:
         ISO: 3166-1:2020
 
 informative:
-    drip-dki: I-D.moskowitz-drip-dki
+    drip-dki: I-D.ietf-drip-dki
 
     RFC6841: # dnssec policy
     RFC8126: # iana-guidelines
