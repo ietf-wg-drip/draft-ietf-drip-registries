@@ -319,7 +319,7 @@ The data MAY, for display purposes only, be represented using the Extended Diagn
 ~~~~
 {: #bcast-wire-cddl title="BRID Wire Format CDDL"}
 
-The field names and their general typing are borrowed from the ASTM {{F3411}} data dictionary (Table 1 and Table 2). See that document for additional information on fields semantics and units.
+The field names and their general typing are borrowed from the ASTM {{F3411}} data dictionary (Table 1 and Table 2). See that document for additional context and background information on field semantics and units.
 
 # IANA Considerations
 
