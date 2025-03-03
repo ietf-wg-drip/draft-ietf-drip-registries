@@ -1,39 +1,46 @@
 bcast-rr = {
-    uas_type: nibble-field,
-    uas_ids: [+ uas-id-grp],
-    ? auth: [+ auth-grp],
-    ? self-grp,
-    ? op_type: 0..3,
-    ? area-grp,
-    ? classification-grp,
-    ? operator-grp
+    uas_type => nibble-field,
+    uas_ids => [+ uas-id-grp],
+    ? auth => [+ auth-grp],
+    ? self_id => self-grp,
+    ? area => area-grp,
+    ? classification => classification-grp,
+    ? operator_id => operator-grp
 }
 uas-id-grp = (
     id_type: &uas-id-types, 
     uas_id: bstr .size(20)
 )
-uas-id-types = (none: 0, serial: 1, caa_id: 2, utm_id: 3, session_id: 4)
 auth-grp = (
-    a_type: nibble-field,
+    a_type: &auth-types,
     a_data: bstr .size(1..362)
 )
-area-grp = (
+area-grp = [
     area_count: 1..255,
-    area_radius: float,
-    area_floor: float,
-    area_ceiling: float
-)
-classification-grp = (
-    ua_class: 0..8,
-    eu_class: nibble-field,
-    eu_category: nibble-field
-)
-self-grp = (
-    desc_type: nibble-field,
+    area_radius: float,  # in decameters
+    area_floor: float,   # wgs84-hae in meters
+    area_ceiling: float  # wgs84-hae in meters
+]
+classification-grp = [
+    class_type: 0..8,
+    class: nibble-field,
+    category: nibble-field
+]
+self-grp = [
+    desc_type: 0..255,
     description: tstr .size(23)
-)
-operator-grp = (
-    operator_id_type: nibble-field,
+]
+operator-grp = [
+    operator_id_type: 0..255,
     operator_id: bstr .size(20)
-)
+]
+uas-id-types = (none: 0, serial: 1, session_id: 4)
+auth-types = (none: 0, specific_method: 5)
 nibble-field = 0..15
+uas_type = 0
+uas_ids = 1
+auth = 2
+self_id = 3
+area = 4
+classification = 5
+operator_id = 6
