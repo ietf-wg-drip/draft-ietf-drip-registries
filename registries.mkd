@@ -95,7 +95,7 @@ This document describes the discovery and management of DRIP Entity Tags (DETs) 
 
 Registries are fundamental to Unmanned Aircraft System (UAS) Remote Identification (RID). Only very limited operational information can be sent via Broadcast RID, but extended information is sometimes needed. The most essential element of information from RID is the UAS ID, the unique key for lookup of extended information in relevant registries (see {{rfc9434-fig4}}; Figure 4 of {{RFC9434}}).
 
-~~~~
+~~~~ aasvg
 ***************                                        ***************
 *    UAS1     *                                        *     UAS2    *
 *             *                                        *             *
