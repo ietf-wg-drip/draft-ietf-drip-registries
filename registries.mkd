@@ -95,7 +95,8 @@ This document describes the discovery and management of DRIP Entity Tags (DETs) 
 
 Registries are fundamental to Unmanned Aircraft System (UAS) Remote Identification (RID). Only very limited operational information can be sent via Broadcast RID, but extended information is sometimes needed. The most essential element of information from RID is the UAS ID, the unique key for lookup of extended information in relevant registries (see {{rfc9434-fig4}}; Figure 4 of {{RFC9434}}).
 
-~~~~ aasvg
+{:fig: artwork-align="center"}
+~~~~
 ***************                                        ***************
 *    UAS1     *                                        *     UAS2    *
 *             *                                        *             *
@@ -130,7 +131,7 @@ PSOD: Public Safety Observer Device
 V2I:  Vehicle-to-Infrastructure
 V2V:  Vehicle-to-Vehicle
 ~~~~
-{: #rfc9434-fig4 title="Global UAS RID Usage Scenario (Figure 4 of RFC9434)"}
+{:fig #rfc9434-fig4 title="Global UAS RID Usage Scenario (Figure 4 of RFC9434)"}
 
 When a DRIP Entity Tag (DET) {{RFC9374}} is used as the UAS ID in RID, extended information can be retrieved from a DRIP Identity Management Entity (DIME), which manages registration of and associated lookups from DETs. In this document it is assumed the DIME is a function of UAS Service Suppliers (USS) (Appendix A.2 of {{RFC9434}}) but a DIME can be independent or handled by another entity as well.
 
@@ -154,7 +155,7 @@ By definition, there can only be one registry for a domain name. Since that regi
 
 ### DNS Model Considerations for DIMEs
 
-~~~~ aasvg
+~~~~
 Apex
 Registry/Registrar
 (IANA)
@@ -191,7 +192,7 @@ Registrants                            |
                  | x.x.x.x.x.x.x.x.x.x.x.x.x.x.x.x.5.0. |
                  +======================================+
 ~~~~
-{: #dns-model-fig title="Example DRIP DNS Model"}
+{:fig #dns-model-fig title="Example DRIP DNS Model"}
 
 While the registrant-registrar-registry model is mature and well understood, it may not be appropriate for DRIP registrations in some circumstances. It could add costs and complexity: developing policies and contracts as outlined above. On the other hand, registries and registrars offer customer service/support and can provide the supporting infrastructure for reliable DNS and WHOIS or RDAP service.
 
@@ -221,7 +222,6 @@ This document makes use of the terms (USS, etc.) defined in {{RFC9153}}. Other t
 
 {{RFC9374}} defines the HHIT and further specifies an instance of them used for UAS RID called DETs. The HHIT is a 128-bit value that is as an IPv6 address intended primarily as an identifier rather than locator. Its format is in {{hhit-fig}}, shown here for reference, and further information is in {{RFC9374}}.
 
-{:fig: artwork-align="center"}
 ~~~~
 +-------------+--------------+---------------+-------------+
 | IPv6 Prefix | Hierarchy ID | HHIT Suite ID | ORCHID Hash |
