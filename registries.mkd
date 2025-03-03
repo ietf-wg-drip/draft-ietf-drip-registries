@@ -288,7 +288,7 @@ The data MAY, for display purposes only, be represented using the Extended Diagn
 
 HHIT Entity Type:
 
-: This field is a number with values defined in {{iana-hhit-type}}. It is envisioned that there may be many types of HHITs in use. In some cases it may be helpful to understand the HHITs role in the ecosystem like described in {{drip-dki}}. This field provides such context. This field MAY provide a signal of additional information and/or different handling of the data beyond what is defined in this document.
+: This field is a number with values defined in {{iana-hhit-type}}. It is envisioned that there may be many types of HHITs in use. In some cases, it may be helpful to understand the HHITs role in the ecosystem like described in {{drip-dki}}. This field provides such context. This field MAY provide a signal of additional information and/or different handling of the data beyond what is defined in this document.
 
 HID Abbreviation:
 
