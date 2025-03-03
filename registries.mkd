@@ -205,7 +205,7 @@ Registration policies - pricing, renewals, registrar and registrant agreements, 
 
 The scope of this document is the DNS registration of DETs with the DNS delegation of the reverse domain of IPv6 Prefix, assigned by IANA for DETs `2001:30::/28` and RRsets used to handle DETs.
 
-Other sectors may adopt this technology. It is recommended that a global apex (i.e. IPv6 prefix) and international apex manager be designated for each sector.
+Other sectors may adopt this technology. It is recommended that a global apex (i.e., IPv6 prefix) and international apex manager be designated for each sector.
 
 # Terminology {#terminology}
 
@@ -241,7 +241,7 @@ This document makes use of the terms (USS, etc.) defined in {{RFC9153}}. Other t
 
 The IPv6 Prefix, assigned by IANA for DETs is `2001:30::/28`. The corresponding domain (nibble reversed as `3.0.0.1.0.0.2.ip6.arpa`) is owned by the IAB.
 
-Due to the nature of the hierarchy split and its relationship to nibble reversing of the IPv6 address, the upper level of hierarchy (i.e. Registered Assigning Authority (RAA)) "borrows" the upper two bits of their respective HHIT Domain Authority (HDA) space for DNS delegation. As such the IPv6 prefix of RAAs are `2001:3x:xxx::/44` and HDAs are `2001:3x:xxxy:yy::/56` with respective nibble reverse domains of `x.x.x.x.3.0.0.1.0.0.2.ip6.arpa` and `y.y.y.x.x.x.x.3.0.0.1.0.0.2.ip6.arpa`.
+Due to the nature of the hierarchy split and its relationship to nibble reversing of the IPv6 address, the upper level of hierarchy (i.e., Registered Assigning Authority (RAA)) "borrows" the upper two bits of their respective HHIT Domain Authority (HDA) space for DNS delegation. As such the IPv6 prefix of RAAs are `2001:3x:xxx::/44` and HDAs are `2001:3x:xxxy:yy::/56` with respective nibble reverse domains of `x.x.x.x.3.0.0.1.0.0.2.ip6.arpa` and `y.y.y.x.x.x.x.3.0.0.1.0.0.2.ip6.arpa`.
 
 This document preallocates a subset of RAAs based on the ISO 3166-1 Numeric Nation Code {{ISO3166-1}}. This is to support the initial use case of DETs in UAS RID on an international level. See {{iana-raa}} for the RAA allocations.
 
@@ -296,7 +296,7 @@ HID Abbreviation:
 
 Canonical Registration Certificate:
 
-: This field is reserved for any certificate to endorse registration that contains the DET. It MUST be encoded as X.509 DER. This certificate MAY be self-signed when the entity is acting as a root of trust (i.e. an apex). Such self-signed behavior is defined by policy, such as in {{drip-dki}}, and is out of scope for this document.
+: This field is reserved for any certificate to endorse registration that contains the DET. It MUST be encoded as X.509 DER. This certificate MAY be self-signed when the entity is acting as a root of trust (i.e., an apex). Such self-signed behavior is defined by policy, such as in {{drip-dki}}, and is out of scope for this document.
 
 ## UAS Broadcast RID Resource Record {#bcast-rr}
 
@@ -344,7 +344,7 @@ RAA Allocations:
 | 4000 - 16375  | Reserved  | N/A                        | N/A                             |
 | 16376 - 16383 | Allocated | DRIP WG (Experimental Use) | This RFC                        |
 
-To support DNS delegation in `ip6.arpa` a single RAA is given 4 delegations by borrowing the upper two bits of HDA space. This enables a clean nibble boundary in DNS to delegate from (i.e. the prefix `2001:3x:xxx0::/44`). These HDAs (0, 4096, 8192 and 12288) are reserved for the RAA.
+To support DNS delegation in `ip6.arpa` a single RAA is given 4 delegations by borrowing the upper two bits of HDA space. This enables a clean nibble boundary in DNS to delegate from (i.e., the prefix `2001:3x:xxx0::/44`). These HDAs (0, 4096, 8192 and 12288) are reserved for the RAA.
 
 The mapping between ISO 3166-1 Numeric Numbers and RAAs can be found as a CSV file on [GitHub](https://github.com/ietf-wg-drip/draft-ietf-drip-registries/blob/main/iso3166-raa.csv). Each Nation is assigned four RAAs that are left to the national authority for their purpose. For RAAs under this range, a shorter prefix of `2001:3x:xx00::/40` MAY be delegated to each CAA, which covers all 4 RAAs (and reserved HDAs) assigned to them.
 
