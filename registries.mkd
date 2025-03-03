@@ -341,14 +341,24 @@ RAA Allocations:
 | ------------- | --------- | -------------------------- | ------------------------------- |
 | 0 - 3         | Reserved  | N/A                        | N/A                             |
 | 4 - 3999      | Allocated | ISO 3166-1 Countries       | This RFC                        |
-| 4000 - 16375  | Reserved  | N/A                        | N/A                             |
-| 16376 - 16383 | Allocated | DRIP WG (Experimental Use) | This RFC                        |
+| 4000 - 15359  | Reserved  | N/A                        | N/A                             |
+| 15360 - 16383 | Allocated | Experimental Use           | This RFC                        |
 
 To support DNS delegation in `ip6.arpa` a single RAA is given 4 delegations by borrowing the upper two bits of HDA space. This enables a clean nibble boundary in DNS to delegate from (i.e., the prefix `2001:3x:xxx0::/44`). These HDAs (0, 4096, 8192 and 12288) are reserved for the RAA.
 
 The mapping between ISO 3166-1 Numeric Numbers and RAAs can be found as a CSV file on [GitHub](https://github.com/ietf-wg-drip/draft-ietf-drip-registries/blob/main/iso3166-raa.csv). Each Nation is assigned four RAAs that are left to the national authority for their purpose. For RAAs under this range, a shorter prefix of `2001:3x:xx00::/40` MAY be delegated to each CAA, which covers all 4 RAAs (and reserved HDAs) assigned to them.
 
-Requests in the DRIP WG allocation block MUST be forwarded to the contact point in the DRIP WG to evaluate the request and MUST contain a desired/proposed length of time for the allocation. Allocations in the block are not permanent and have a limited time the delegation is to be supported. The length of the time proposed is evaluated on a case-by-case basis by the DRIP WG.
+#### Expert Guidance {#raa-guidance}
+
+A request for a value and/or range is judged on the specific application of its use (i.e. like the ISO 3166 range for UAS). Common applications should reuse exsiting allocated space if possible before allocation of a new value/range.
+
+Single point allocations are allowed to individual entities but it is recommended that allocations are made in groupings of 4 to maintain a cleaner nibble boundry.
+
+#### Registration Form {#raa-form}
+
+- Allocation Title
+- Contact Information: contact point such as email or person operating allocation
+- Reference: public document reference for allocation, containing required information to register for HDAs under it
 
 ### HHIT Entity Type {#iana-hhit-type}
 
@@ -356,9 +366,9 @@ This document requests a new registry for HHIT Entity Type under the [DRIP regis
 
 HHIT Entity Type:
 
-: numeric, field of the HHIT RRType to encode the HHIT Entity Type. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined:
+: numeric, field of the HHIT RRType to encode the HHIT Entity Type. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined by this document:
 
-| Value         | Type                                       | Reference    |
+| Value         | HHIT Type                                  | Reference    |
 | ------------- | ------------------------------------------ | ------------ |
 | 0             | Not Defined                                | This RFC     |
 | 1             | DRIP Identity Management Entity (DIME)     | This RFC     |
@@ -380,9 +390,19 @@ HHIT Entity Type:
 | 24            | Network RID Service Provider (SP)          | This RFC     |
 | 25            | Network RID Display Provider (DP)          | This RFC     |
 | 26            | Supplemental Data Service Provider (SDSP)  | This RFC     |
-| 27 - 65535    | Reserved                                   | N/A          |
 
-Future additions to this registry MUST NOT be allowed if they can be covered under an existing registration.
+The remaining values (27 to 18446744073709551615) are left unallocated.
+
+#### Expert Guidance {#hhit-guidance}
+
+The value space of HHIT Entity Types is rather large, but care should still be given to conflicting or confusing allocations. Justification should be provided if there is an existing allocation that could be used. Future additions to this registry MUST NOT be allowed if they can be covered under an existing registration.
+
+#### Registration Template {#hhit-form}
+
+For registration the following template is to be used:
+
+- HHIT Type: title to be used for the requested value
+- Reference: public reference document allocating the value
 
 # Security Considerations
 
