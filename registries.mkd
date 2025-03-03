@@ -404,7 +404,7 @@ While unlikely the forging of a corresponding private key is possible if given e
 
 Optimally this requires the UAS somehow signal the DIME that a flight using a Specific Session ID will soon be underway or complete. It may also be facilitated under UTM if the USS (which may or may not be a DIME) signals when a given operation using a Session ID goes active.
 
-# Contributors
+# Acknowledgements
 
 Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LLC) for their early work on the DRIP registries concept. Their early contributions laid the foundations for the content and processes of this architecture and document.
 
