@@ -3,7 +3,7 @@ coding: utf-8
 
 title: DRIP Entity Tags (DET) in the Domain Name System (DNS)
 abbrev: DET in DNS
-docname: draft-ietf-drip-registries-24
+docname: draft-ietf-drip-registries-25
 category: std
 
 ipr: trust200902
@@ -84,6 +84,7 @@ informative:
     RFC7720:
     RFC3912:
     RFC4786:
+    STD88:
 
 --- abstract
 
@@ -161,7 +162,7 @@ This document makes use of the terms (USS, etc.) defined in {{RFC9153}}. Other t
 
 # DET Hierarchy in DNS
 
-{{RFC9374}} defines the HHIT and further specifies an instance of them used for UAS RID called DETs. The HHIT is a 128-bit value that is as an IPv6 address intended primarily as an identifier rather than locator. Its format is in {{hhit-fig}}, shown here for reference, and further information is in {{RFC9374}}.
+{{RFC9374}} defines the HHIT and further specifies an instance of them used for UAS RID called DETs. The HHIT/DET is a 128-bit value that is as an IPv6 address intended primarily as an identifier rather than locator. Its format is in {{hhit-fig}}, shown here for reference, and further information is in {{RFC9374}}.
 
 ~~~~
 +-------------+--------------+---------------+-------------+
@@ -188,7 +189,7 @@ This document preallocates a subset of RAAs based on the ISO 3166-1 Numeric Nati
 
 The HDA values of 0, 4096, 8192 and 12288 are reserved for operational use of an RAA (a by-product of the above mentioned borrowing of bits), specifically when to register with the apex and endorse delegations of HDAs in their namespace.
 
-The administration, management and policy for operation a DIME at any level in the hierarchy (Apex, RAA or HDA), be it external or from a parent level, is out of scope for this document. In some cases, such as the RAAs and HDAs of a nation, these are national matters which are to be dealt with by those parties accordingly.
+The administration, management and policy for operation a DIME at any level in the hierarchy (Apex, RAA or HDA), be it external or from a parent level, is out of scope for this document. In some cases, such as the RAAs and HDAs of a nation, these are National Matters which are to be dealt with by those parties accordingly.
 
 ## Use of Existing DNS Models
 
@@ -261,7 +262,9 @@ DNSSEC is strongly RECOMMENDED (especially for RAA-level and higher zones). When
 
 UAS specific information, such as physical characteristics, MAY also be stored in DNS but is out of scope for this document.
 
-Lookups of the above RRTypes are performed with the standard DNS methodology using the nibble reversed DET as the query name affixed to the `ip6.arpa` domain apex and asking for the specific RRType. The HHIT RRType provides the public key for signature verification and URIs via the certificate. The BRID RRType provides static Broadcast RID information such as the Broadcast Endorsements sent following {{RFC9575}}.
+A DET IPv6 address gets mapped into domain names using the scheme defined in {{STD88}}. However DNS lookups of these names query for HHIT and/or BRID resource records rather than the PTR resource records conventionally used in reverse lookups of IP addresses. For example, the HHIT resource record for the DET `2001:30::1` would be returned from a DNS lookup for the HHIT QTYPE for `1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.3.0.0.1.0.0.2.ip6.arpa.`.
+
+The HHIT RRType provides the public key for signature verification and URIs via the certificate. The BRID RRType provides static Broadcast RID information such as the Broadcast Endorsements sent following {{RFC9575}}.
 
 # Resource Records
 
@@ -412,7 +415,7 @@ The Registrar and Registry are commonly used concepts in the DNS. These componen
 
 If DNSSEC is used, a DNSSEC Practice Statement SHOULD be developed and published. It SHOULD explain how DNSSEC has been deployed and what security measures are in place. {{RFC6841}} documents a Framework for DNSSEC Policies and DNSSEC Practice Statements.
 
-The interfaces and protocol specifications for registry-registrar interactions are intentionally not specified in this document. These will depend on nationally defined policy and prevailing local circumstances. It is expected registry-registrar activity will use the Extensible Provisioning Protocol (EPP) {{STD69}}. The registry SHOULD provide a lookup service such as WHOIS {{RFC3912}} or RDAP {{STD95}} to provide public information about registered domain names.
+The interfaces and protocol specifications for registry-registrar interactions are intentionally not specified in this document. These will depend on nationally defined policy and prevailing local circumstances. It is expected registry-registrar activity will use the Extensible Provisioning Protocol (EPP) {{STD69}}. The registry SHOULD provide a lookup service such as WHOIS {{RFC3912}} or RDAP {{STD95}} to publish public information about registered domain names.
 
 Decisions about DNS or registry best practices and other operational matters SHOULD be made by the CAA, ideally in consultation with local stakeholders. This document RECOMMENDS that DNSSEC SHOULD be used by both Apex (to control RAA levels) and RAA (to control HDA level) zones.
 
