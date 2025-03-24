@@ -148,8 +148,6 @@ This document does not specify AAA mechanisms used by Private Information Regist
 
 The scope of this document is the DNS registration of DETs with the DNS delegation of the reverse domain of IPv6 Prefix, assigned by IANA for DETs `2001:30::/28` and RRsets used to handle DETs.
 
-Other sectors may adopt this technology. It is recommended that a global apex (i.e., IPv6 prefix) and international apex manager be designated for each sector.
-
 # Terminology {#terminology}
 
 ## Required Terminology
@@ -181,7 +179,7 @@ This document makes use of the terms (USS, etc.) defined in {{RFC9153}}. Other t
 ~~~~
 {:fig #hhit-fig title="DRIP Entity Tag Breakdown"}
 
-The IPv6 Prefix, assigned by IANA for DETs is `2001:30::/28`. The corresponding domain (nibble reversed as `3.0.0.1.0.0.2.ip6.arpa`) is owned by the IAB.
+{{RFC9374}} assigns the IPv6 prefix `2001:30::/28` for DETs. Its corresponding domain name for reverse lookups is `3.0.0.1.0.0.2.ip6.arpa.`. The IAB has administrative control of this domain name.
 
 Due to the nature of the hierarchy split and its relationship to nibble reversing of the IPv6 address, the upper level of hierarchy (i.e., Registered Assigning Authority (RAA)) "borrows" the upper two bits of their respective HHIT Domain Authority (HDA) space for DNS delegation. As such the IPv6 prefix of RAAs are `2001:3x:xxx::/44` and HDAs are `2001:3x:xxxy:yy::/56` with respective nibble reverse domains of `x.x.x.x.3.0.0.1.0.0.2.ip6.arpa` and `y.y.y.x.x.x.x.3.0.0.1.0.0.2.ip6.arpa`.
 
@@ -189,7 +187,7 @@ This document preallocates a subset of RAAs based on the ISO 3166-1 Numeric Nati
 
 The HDA values of 0, 4096, 8192 and 12288 are reserved for operational use of an RAA (a by-product of the above mentioned borrowing of bits), specifically when to register with the apex and endorse delegations of HDAs in their namespace.
 
-The administration, management and policy for operation a DIME at any level in the hierarchy (Apex, RAA or HDA), be it external or from a parent level, is out of scope for this document. In some cases, such as the RAAs and HDAs of a nation, these are National Matters which are to be dealt with by those parties accordingly.
+The administration, management and policy for operation a DIME at any level in the hierarchy (Apex, RAA or HDA) is out of scope for this document. For RAAs or DETs allocated on a per-country basis, these considerations should be be determined by the appropriate national authorities, presumably the Civil Aviation Authority (CAA).
 
 ## Use of Existing DNS Models
 
@@ -252,13 +250,13 @@ Registration policies - pricing, renewals, registrar and registrant agreements, 
 
 # Public Information Registry {#dns}
 
-Per {{RFC9434}} all information classified, by all parties involved, as public is stored in the DNS, specifically Authoritative Name Servers, to satisfy REG-1 from {{RFC9153}}.
+Per {{RFC9434}} all information classified as public is stored in the DNS, specifically Authoritative Name Servers, to satisfy REG-1 from {{RFC9153}}.
 
-Authoritative Name Servers use domain names as handles and data is stored in Resource Records (RR) with associated RRTypes. This document defines two new RRTypes, one for HHIT metadata (HHIT, {{hhit-rr}}) and another for UAS Broadcast RID information (BRID, {{bcast-rr}}). The former RRType is particularly important as it contains a URI (as part of the certificate) that point to Private Information resources.
+Authoritative Name Servers use domain names as identifiers and data is stored in Resource Records (RR) with associated RRTypes. This document defines two new RRTypes, one for HHIT metadata (HHIT, {{hhit-rr}}) and another for UAS Broadcast RID information (BRID, {{bcast-rr}}). The former RRType is particularly important as it contains a URI (as part of the certificate) that point to Private Information resources.
 
-DETs, being IPv6 addresses, are to be under `ip6.arpa` (nibble reversed per convention) and MUST ultimately resolve, at minimum, to an HHIT RRType. Depending on local circumstances or additional use cases other RRTypes MAY be present. For UAS RID the BRID RRType MUST be present to provide the Broadcast Endorsements defined in {{RFC9575}}.
+DETs, being IPv6 addresses, are to be under `ip6.arpa` (nibble reversed per convention) and MUST to an HHIT RRType. Depending on local circumstances or additional use cases other RRTypes MAY be present. For UAS RID the BRID RRType MUST be present to provide the Broadcast Endorsements defined in {{RFC9575}}.
 
-DNSSEC is strongly RECOMMENDED (especially for RAA-level and higher zones). When a DIME decides to use DNSSEC they SHOULD define a framework for cryptographic algorithms and key management {{RFC6841}}. This may be influenced by frequency of updates, size of the zone, and policies.
+DNSSEC is strongly RECOMMENDED. When a DIME decides to use DNSSEC they SHOULD define a framework for cryptographic algorithms and key management {{RFC6841}}. This may be influenced by frequency of updates, size of the zone, and policies.
 
 UAS specific information, such as physical characteristics, MAY also be stored in DNS but is out of scope for this document.
 
@@ -276,7 +274,7 @@ The data MUST be encoded in CBOR {{RFC8949}} bytes. The CDDL {{RFC8610}} of the 
 
 ### Text Representation {#hhit-rr-text}
 
-The data is represented in base64 {{RFC4648}} and may be divided into any number of white-space-separated substrings, down to single base64 digits, which are concatenated to obtain the full object. These substrings can span lines using the standard parenthesis. Note that the data has internal subfields, but these do not appear in the master file representation only a single logical base64 string will appear.
+The data are represented in base64 {{RFC4648}} and may be divided into any number of white-space-separated substrings, down to single base64 digits, which are concatenated to obtain the full object. These substrings can span lines using the standard parenthesis. Note that the data has internal subfields, but these do not appear in the master file representation only a single logical base64 string will appear.
 
 #### Presentation Representation {#hhit-rr-presentation}
 
@@ -309,7 +307,7 @@ The data MUST be encoded in CBOR {{RFC8949}} bytes. The CDDL {{RFC8610}} of the 
 
 ### Text Representation {#bcast-rr-text}
 
-The data is represented in base64 {{RFC4648}} and may be divided into any number of white-space-separated substrings, down to single base64 digits, which are concatenated to obtain the full object. These substrings can span lines using the standard parenthesis. Note that the data has internal subfields, but these do not appear in the master file representation only a single logical base64 string will appear.
+The data are represented in base64 {{RFC4648}} and may be divided into any number of white-space-separated substrings, down to single base64 digits, which are concatenated to obtain the full object. These substrings can span lines using the standard parenthesis. Note that the data has internal subfields, but these do not appear in the master file representation only a single logical base64 string will appear.
 
 #### Presentation Representation {#bcast-rr-presentation}
 
@@ -328,7 +326,7 @@ The field names and their general typing are borrowed from the ASTM {{F3411}} da
 
 ## DET Prefix Delegation
 
-This document requests that IANA manage delegations in the `3.0.0.1.0.0.2.ip6.arpa` domain. Delegations will typically be to sector governing bodies, e.g., for aviation, ICAO. IANA will be responsible for processing requests under the guidance of the Designated Experts.
+This document requests that IANA manage delegations in the `3.0.0.1.0.0.2.ip6.arpa` domain. The IAB is requested to appoint a designated expert to co-ordinate these delegations and liaise with IANA and CAAs as appropriate.
 
 ## IANA DRIP Registry
 
@@ -353,9 +351,9 @@ The mapping between ISO 3166-1 Numeric Numbers and RAAs can be found as a CSV fi
 
 #### Expert Guidance {#raa-guidance}
 
-A request for a value and/or range is judged on the specific application of its use (i.e. like the ISO 3166 range for UAS). Common applications should reuse exsiting allocated space if possible before allocation of a new value/range.
+A request for a value and/or range is judged on the specific application of its use (i.e. like the ISO 3166 range for UAS). Common applications should reuse existing allocated space if possible before allocation of a new value/range.
 
-Single point allocations are allowed to individual entities but it is recommended that allocations are made in groupings of 4 to maintain a cleaner nibble boundry.
+Single point allocations are allowed to individual entities but it is recommended that allocations are made in groupings of 4 to maintain a cleaner nibble boundary.
 
 #### Registration Form {#raa-form}
 
@@ -409,7 +407,7 @@ For registration the following template is to be used:
 
 # Security Considerations
 
-## DNS Operational Considerations
+## DNS Operational & Registration Considerations
 
 The Registrar and Registry are commonly used concepts in the DNS. These components interface the DIME into the DNS hierarchy and thus operation SHOULD follow best common practices, specifically in security (such as running DNSSEC) as appropriate. The following RFC provide suitable guidance: {{RFC7720}}, {{RFC4033}}, {{RFC4034}}, {{RFC4035}}, {{RFC5155}}, {{RFC8945}}, {{RFC2182}}, {{RFC4786}}, {{RFC3007}}.
 
@@ -417,9 +415,9 @@ If DNSSEC is used, a DNSSEC Practice Statement SHOULD be developed and published
 
 The interfaces and protocol specifications for registry-registrar interactions are intentionally not specified in this document. These will depend on nationally defined policy and prevailing local circumstances. It is expected registry-registrar activity will use the Extensible Provisioning Protocol (EPP) {{STD69}}. The registry SHOULD provide a lookup service such as WHOIS {{RFC3912}} or RDAP {{STD95}} to publish public information about registered domain names.
 
-Decisions about DNS or registry best practices and other operational matters SHOULD be made by the CAA, ideally in consultation with local stakeholders. This document RECOMMENDS that DNSSEC SHOULD be used by both Apex (to control RAA levels) and RAA (to control HDA level) zones.
+Decisions about DNS or registry best practices and other operational matters that influence security SHOULD be made by the CAA, ideally in consultation with local stakeholders.
 
-The guidance above is intended to reduce the likelihood of interoperability problems and/or minimise security and stability concerns. For instance, validation and authentication of DNS responses depends on DNSSEC. If this is not used, entities using DRIP will be vulnerable to DNS spoofing attacks and could be exposed to bogus data. Some regulatory and legal considerations are expected to be simplified by providing a lookup service for access to public information about registered domain names.
+The guidance above is intended to reduce the likelihood of interoperability problems and/or minimise security and stability concerns. For instance, validation and authentication of DNS responses depends on DNSSEC. If this is not used, entities using DRIP will be vulnerable to DNS spoofing attacks and could be exposed to bogus data. Some regulatory and legal considerations are expected to be simplified by providing a lookup service for access to public information about registered domain names for DETs.
 
 ## Public Key Exposure
 
