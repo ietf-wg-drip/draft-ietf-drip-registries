@@ -338,12 +338,12 @@ RAA Allocations:
 
 : a 14-bit value used to represent RAAs. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values/ranges are defined:
 
-| RAA Value(s)  | Status    | Allocation                 | Reference                       |
-| ------------- | --------- | -------------------------- | ------------------------------- |
-| 0 - 3         | Reserved  | N/A                        | N/A                             |
-| 4 - 3999      | Allocated | ISO 3166-1 Countries       | This RFC                        |
-| 4000 - 15359  | Reserved  | N/A                        | N/A                             |
-| 15360 - 16383 | Allocated | Experimental Use           | This RFC                        |
+| RAA Value(s)  | Allocation                 | Reference                       |
+| ------------- | -------------------------- | ------------------------------- |
+| 0 - 3         | Reserved                   | N/A                             |
+| 4 - 3999      | ISO 3166-1 Countries       | This RFC                        |
+| 4000 - 15359  | Unallocated                | N/A                             |
+| 15360 - 16383 | Experimental Use           | This RFC                        |
 
 To support DNS delegation in `ip6.arpa` a single RAA is given 4 delegations by borrowing the upper two bits of HDA space. This enables a clean nibble boundary in DNS to delegate from (i.e., the prefix `2001:3x:xxx0::/44`). These HDAs (0, 4096, 8192 and 12288) are reserved for the RAA.
 
@@ -367,7 +367,15 @@ This document requests a new registry for HHIT Entity Type under the [DRIP regis
 
 HHIT Entity Type:
 
-: numeric, field of the HHIT RRType to encode the HHIT Entity Type. Future additions to this registry are to be made through Expert Review (Section 4.5 of {{RFC8126}}). The following values are defined by this document:
+: numeric, field of the HHIT RRType to encode the HHIT Entity Type. This is broken into three ranges and future additions to this registery are as follows:
+
+| Range | Registration Mechanism |
+| ----- | ------------------ |
+| 0 - 4294967295 | Expert Review (Section 4.5 of {{RFC8126}}) |
+| 4294967296 - 18446744069414584319 | First Come First Served (Section 4.4 of {{RFC8126}}) |
+| 18446744069414584320 - 18446744073709551615 | Experimental Use |
+
+The following values are defined by this document:
 
 | Value         | HHIT Type                                  | Reference    |
 | ------------- | ------------------------------------------ | ------------ |
@@ -392,8 +400,6 @@ HHIT Entity Type:
 | 25            | Network RID Display Provider (DP)          | This RFC     |
 | 26            | Supplemental Data Service Provider (SDSP)  | This RFC     |
 
-The remaining values (27 to 18446744073709551615) are left unallocated.
-
 #### Expert Guidance {#hhit-guidance}
 
 The value space of HHIT Entity Types is rather large, but care should still be given to conflicting or confusing allocations. Justification should be provided if there is an existing allocation that could be used. Future additions to this registry MUST NOT be allowed if they can be covered under an existing registration.
@@ -402,8 +408,10 @@ The value space of HHIT Entity Types is rather large, but care should still be g
 
 For registration the following template is to be used:
 
-- HHIT Type: title to be used for the requested value
-- Reference: public reference document allocating the value
+- HHIT Type: title (and optional abbreviation) to be used for the requested value
+- Reference: public document allocating the value and any additional information such as semantics. This can be a URL pointing to an Internet-Draft, IETF RFC, or web-page.
+
+For registration in the FCFS range, a point of contact MUST also be provided (if not part of the reference).
 
 # Security Considerations
 
