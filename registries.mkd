@@ -326,7 +326,17 @@ The field names and their general typing are borrowed from the ASTM {{F3411}} da
 
 ## DET Prefix Delegation
 
-This document requests that IANA manage delegations in the `3.0.0.1.0.0.2.ip6.arpa` domain. The IAB is requested to appoint a designated expert to co-ordinate these delegations and liaise with IANA and CAAs as appropriate.
+This document requests that IANA manage delegations in the `3.0.0.1.0.0.2.ip6.arpa` domain. The IAB is requested to appoint a Designated Expert (DE) to co-ordinate these delegations and liaise with IANA and CAAs as appropriate.
+
+The DE will check delegation requests for DET address space that get submitted to IANA. Since there is no control over who submits these delegation requests or the address space they refer to, a degree of checking is necessary. The DE will liaise with IANA on the outcome of these checks.
+
+For delegation requests relating to a country’s DET address space, the DE will liaise with that country’s CAA to verify these requests are genuine. This will ensure delegations don’t go to impostors and the CAA is aware about what’s being done with its National Resources, ie the IPv6 addresses for its DET address space.
+
+Parts of the DET address space are allocated for experimental use. The DE is expected to process these delegation requests on a first-come, first-served basis. They would not need engagement with ICAO or CAAs.
+
+The DE will have the discretion to perform minimal technical checks on delegations - for instance that there at least two name servers that answer authoritatively, SPoF avoidance, etc - but not enforce these.
+
+The DE will be expected to liaise with IANA to develop a DNSSEC Practice Statement if/when there’s a demand for DNSSEC deploymemt for DRIP.
 
 ## IANA DRIP Registry
 
