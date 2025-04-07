@@ -357,11 +357,11 @@ RAA Allocations:
 
 To support DNS delegation in `ip6.arpa` a single RAA is given 4 delegations by borrowing the upper two bits of HDA space. This enables a clean nibble boundary in DNS to delegate from (i.e., the prefix `2001:3x:xxx0::/44`). These HDAs (0, 4096, 8192 and 12288) are reserved for the RAA.
 
-The mapping between ISO 3166-1 Numeric Numbers and RAAs can be found as a CSV file on [GitHub](https://github.com/ietf-wg-drip/draft-ietf-drip-registries/blob/main/iso3166-raa.csv). Each Nation is assigned four RAAs that are left to the national authority for their purpose. For RAAs under this range, a shorter prefix of `2001:3x:xx00::/40` MAY be delegated to each CAA, which covers all 4 RAAs (and reserved HDAs) assigned to them.
+The mapping between ISO 3166-1 Numeric Nation Codes and RAAs is specified as a CSV file on [GitHub](https://github.com/ietf-wg-drip/draft-ietf-drip-registries/blob/main/iso3166-raa.csv). Each Nation is assigned four RAAs that are left to the national authority for their purpose. For RAAs under this range, a shorter prefix of `2001:3x:xx00::/40` MAY be delegated to each CAA, which covers all 4 RAAs (and reserved HDAs) assigned to them.
 
 #### Expert Guidance {#raa-guidance}
 
-A request for a value and/or range is judged on the specific application of its use (i.e. like the ISO 3166 range for UAS). Common applications should reuse existing allocated space if possible before allocation of a new value/range.
+A request for a value and/or range is judged on the specific application of its use (i.e., like the ISO 3166 range for UAS). Common applications should reuse existing allocated space if possible before allocation of a new value/range.
 
 Single point allocations are allowed to individual entities but it is recommended that allocations are made in groupings of 4 to maintain a cleaner nibble boundary.
 
