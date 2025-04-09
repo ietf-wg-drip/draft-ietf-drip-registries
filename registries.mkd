@@ -450,3 +450,412 @@ Optimally this requires the UAS somehow signal the DIME that a flight using a Sp
 Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LLC) for their early work on the DRIP registries concept. Their early contributions laid the foundations for the content and processes of this architecture and document.
 
 --- back
+
+# Example Zone Files & RRType Contents
+
+An example zone file `ip6.arpa`, run by IANA, is not shown. It would contain NS RRTypes to delegate to a respective RAA. To avoid any future collisions with production deployments an apex of `ip6.example.com` is used instead of `ip6.arpa`. All hexidecimal strings in the examples are broken into the lengths of a word, for document formatting purposes.
+
+The RAA of `16376` and HDA of `10` were used in the examples.
+
+## Example RAA
+
+### Authentication HHIT {#raa-hhits}
+
+~~~~
+$ORIGIN 5.0.0.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.example.com.
+7.b.0.a.1.9.e.1.7.5.1.a.0.6.e.5. IN HHIT (
+    gwppM2ZmOCAwMDAwWQFGMIIBQjCB9aAD
+    AgECAgE1MAUGAytlcDArMSkwJwYDVQQD
+    DCAyMDAxMDAzZmZlMDAwMDA1NWU2MGEx
+    NTcxZTkxYTBiNzAeFw0yNTA0MDkyMDU2
+    MjZaFw0yNTA0MDkyMTU2MjZaMB0xGzAZ
+    BgNVBAMMEkRSSVAtUkFBLUEtMTYzNzYt
+    MDAqMAUGAytlcAMhAJmQ1bBLcqGAZtQJ
+    K1LH1JlPt8Fr1+jB9ED/qNBP8eE/o0ww
+    SjAPBgNVHRMBAf8EBTADAQH/MDcGA1Ud
+    EQEB/wQtMCuHECABAD/+AAAFXmChVx6R
+    oLeGF2h0dHBzOi8vcmFhLmV4YW1wbGUu
+    Y29tMAUGAytlcANBALUPjhIB3rwqXQep
+    r9/VDB+hhtwuWZIw1OUkEuDrF6DCkgc7
+    5widXnXa5/uDfdKL7dZ83mPHm2Tf32Dv
+    b8AzEw8=
+)
+~~~~
+{: title="RAA Auth HHIT RRType Example"}
+
+~~~~
+[
+    10,
+    "3ff8 0000",
+    h'308201423081F5A00302010202013530
+    0506032B6570302B312930270603550403
+    0C20323030313030336666653030303030
+    3535653630613135373165393161306237
+    301E170D3235303430393230353632365A
+    170D3235303430393231353632365A301D
+    311B301906035504030C12445249502D52
+    41412D412D31363337362D30302A300506
+    032B65700321009990D5B04B72A18066D4
+    092B52C7D4994FB7C16BD7E8C1F440FFA8
+    D04FF1E13FA34C304A300F0603551D1301
+    01FF040530030101FF30370603551D1101
+    01FF042D302B87102001003FFE0000055E
+    60A1571E91A0B7861768747470733A2F2F
+    7261612E6578616D706C652E636F6D3005
+    06032B6570034100B50F8E1201DEBC2A5D
+    07A9AFDFD50C1FA186DC2E599230D4E524
+    12E0EB17A0C292073BE7089D5E75DAE7FB
+    837DD28BEDD67CDE63C79B64DFDF60EF6F
+    C033130F'
+]
+
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 53 (0x35)
+        Signature Algorithm: ED25519
+        Issuer: CN = 2001003ffe0000055e60a1571e91a0b7
+        Validity
+            Not Before: Apr  9 20:56:26 2025 GMT
+            Not After : Apr  9 21:56:26 2025 GMT
+        Subject: CN = DRIP-RAA-A-16376-0
+        Subject Public Key Info:
+            Public Key Algorithm: ED25519
+                ED25519 Public-Key:
+                pub:
+                    99:90:d5:b0:4b:72:a1:80:66:d4:09:2b:52:c7:d4:
+                    99:4f:b7:c1:6b:d7:e8:c1:f4:40:ff:a8:d0:4f:f1:
+                    e1:3f
+        X509v3 extensions:
+            X509v3 Basic Constraints: critical
+                CA:TRUE
+            X509v3 Subject Alternative Name: critical
+                IP Address:2001:3F:FE00:5:5E60:A157:1E91:A0B7,
+                URI:https://raa.example.com
+    Signature Algorithm: ED25519
+    Signature Value:
+        b5:0f:8e:12:01:de:bc:2a:5d:07:a9:af:df:d5:0c:1f:a1:86:
+        dc:2e:59:92:30:d4:e5:24:12:e0:eb:17:a0:c2:92:07:3b:e7:
+        08:9d:5e:75:da:e7:fb:83:7d:d2:8b:ed:d6:7c:de:63:c7:9b:
+        64:df:df:60:ef:6f:c0:33:13:0f
+~~~~
+{: title="7.b.0.a.1.9.e.1.7.5.1.a.0.6.e.5. Decoded HHIT RRType CBOR and Certificate"}
+
+### Delegation of HDA
+
+~~~~
+$ORIGIN c.d.f.f.3.0.0.1.0.0.2.ip6.example.com.
+a.0.0. IN NS ns1.hda-10.example.com
+~~~~
+{: title="HDA Delegation Example"}
+
+## Example HDA
+
+### Authentication & Issue HHITs {#hda-hhits}
+
+~~~~
+$ORIGIN 5.0.a.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.example.com.
+0.a.9.0.7.2.4.d.5.4.e.e.5.1.6.6.5.0. IN HHIT (
+    gw5pM2ZmOCAwMDBhWQFHMIIBQzCB9qAD
+    AgECAgFfMAUGAytlcDArMSkwJwYDVQQD
+    DCAyMDAxMDAzZmZlMDAwMDA1NWU2MGEx
+    NTcxZTkxYTBiNzAeFw0yNTA0MDkyMTAz
+    MTlaFw0yNTA0MDkyMjAzMTlaMB4xHDAa
+    BgNVBAMME0RSSVAtSERBLUEtMTYzNzYt
+    MTAwKjAFBgMrZXADIQDOaB424RQa61YN
+    bna8eWt7fLRU5GPMsfEt4wo4AQGAP6NM
+    MEowDwYDVR0TAQH/BAUwAwEB/zA3BgNV
+    HREBAf8ELTArhxAgAQA//gAKBWYV7kXU
+    JwmghhdodHRwczovL3JhYS5leGFtcGxl
+    LmNvbTAFBgMrZXADQQAhMpOSOmgMkJY1
+    f+B9nTgawUjK4YEERBtczMknHDkOowX0
+    ynbaLN60TYe9hqN6+CJ3SN8brJke3hpM
+    gorvhDkJ
+)
+8.2.e.6.5.2.b.6.7.3.4.d.e.0.6.2.5.0. IN HHIT (
+    gw9pM2ZmOCAwMDBhWQFHMIIBQzCB9qAD
+    AgECAgFYMAUGAytlcDArMSkwJwYDVQQD
+    DCAyMDAxMDAzZmZlMDAwYTA1NjYxNWVl
+    NDVkNDI3MDlhMDAeFw0yNTA0MDkyMTA1
+    MTRaFw0yNTA0MDkyMjA1MTRaMB4xHDAa
+    BgNVBAMME0RSSVAtSERBLUktMTYzNzYt
+    MTAwKjAFBgMrZXADIQCCM/2utQaLwUhZ
+    0ROg7fz43AeBTj3Sdl5rW4LgTQcFl6NM
+    MEowDwYDVR0TAQH/BAUwAwEB/zA3BgNV
+    HREBAf8ELTArhxAgAQA//gAKBSYO1Ddr
+    JW4ohhdodHRwczovL2hkYS5leGFtcGxl
+    LmNvbTAFBgMrZXADQQBa8lZyftxHJqDF
+    Vgv4Rt+cMUmc8aQwet4UZdO3yQOB9uq4
+    sLVAScaZCWjC0nmeRkgVRhize1esfyi3
+    RRU44IAE
+)
+~~~~
+{: title="HDA Auth/Issue HHIT RRType Example"}
+
+~~~~
+[
+    14,
+    "3ff8 000a",
+    h'308201433081F6A00302010202015F30
+    0506032B6570302B312930270603550403
+    0C20323030313030336666653030303030
+    3535653630613135373165393161306237
+    301E170D3235303430393231303331395A
+    170D3235303430393232303331395A301E
+    311C301A06035504030C13445249502D48
+    44412D412D31363337362D3130302A3005
+    06032B6570032100CE681E36E1141AEB56
+    0D6E76BC796B7B7CB454E463CCB1F12DE3
+    0A380101803FA34C304A300F0603551D13
+    0101FF040530030101FF30370603551D11
+    0101FF042D302B87102001003FFE000A05
+    6615EE45D42709A0861768747470733A2F
+    2F7261612E6578616D706C652E636F6D30
+    0506032B6570034100213293923A680C90
+    96357FE07D9D381AC148CAE18104441B5C
+    CCC9271C390EA305F4CA76DA2CDEB44D87
+    BD86A37AF8227748DF1BAC991EDE1A4C82
+    8AEF843909'
+]
+
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 95 (0x5f)
+        Signature Algorithm: ED25519
+        Issuer: CN = 2001003ffe0000055e60a1571e91a0b7
+        Validity
+            Not Before: Apr  9 21:03:19 2025 GMT
+            Not After : Apr  9 22:03:19 2025 GMT
+        Subject: CN = DRIP-HDA-A-16376-10
+        Subject Public Key Info:
+            Public Key Algorithm: ED25519
+                ED25519 Public-Key:
+                pub:
+                    ce:68:1e:36:e1:14:1a:eb:56:0d:6e:76:bc:79:6b:
+                    7b:7c:b4:54:e4:63:cc:b1:f1:2d:e3:0a:38:01:01:
+                    80:3f
+        X509v3 extensions:
+            X509v3 Basic Constraints: critical
+                CA:TRUE
+            X509v3 Subject Alternative Name: critical
+                IP Address:2001:3F:FE00:A05:6615:EE45:D427:9A0,
+                URI:https://raa.example.com
+    Signature Algorithm: ED25519
+    Signature Value:
+        21:32:93:92:3a:68:0c:90:96:35:7f:e0:7d:9d:38:1a:c1:48:
+        ca:e1:81:04:44:1b:5c:cc:c9:27:1c:39:0e:a3:05:f4:ca:76:
+        da:2c:de:b4:4d:87:bd:86:a3:7a:f8:22:77:48:df:1b:ac:99:
+        1e:de:1a:4c:82:8a:ef:84:39:09
+~~~~
+{: title="0.a.9.0.7.2.4.d.5.4.e.e.5.1.6.6.5.0. Decoded Auth HHIT RRType CBOR and Certificate"}
+
+~~~~
+[
+    15,
+    "3ff8 000a",
+    h'308201433081F6A00302010202015830
+    0506032B6570302B312930270603550403
+    0C20323030313030336666653030306130
+    3536363135656534356434323730396130
+    301E170D3235303430393231303531345A
+    170D3235303430393232303531345A301E
+    311C301A06035504030C13445249502D48
+    44412D492D31363337362D3130302A3005
+    06032B65700321008233FDAEB5068BC148
+    59D113A0EDFCF8DC07814E3DD2765E6B5B
+    82E04D070597A34C304A300F0603551D13
+    0101FF040530030101FF30370603551D11
+    0101FF042D302B87102001003FFE000A05
+    260ED4376B256E28861768747470733A2F
+    2F6864612E6578616D706C652E636F6D30
+    0506032B65700341005AF256727EDC4726
+    A0C5560BF846DF9C31499CF1A4307ADE14
+    65D3B7C90381F6EAB8B0B54049C6990968
+    C2D2799E4648154618B37B57AC7F28B745
+    1538E08004'
+]
+
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 88 (0x58)
+        Signature Algorithm: ED25519
+        Issuer: CN = 2001003ffe000a056615ee45d42709a0
+        Validity
+            Not Before: Apr  9 21:05:14 2025 GMT
+            Not After : Apr  9 22:05:14 2025 GMT
+        Subject: CN = DRIP-HDA-I-16376-10
+        Subject Public Key Info:
+            Public Key Algorithm: ED25519
+                ED25519 Public-Key:
+                pub:
+                    82:33:fd:ae:b5:06:8b:c1:48:59:d1:13:a0:ed:fc:
+                    f8:dc:07:81:4e:3d:d2:76:5e:6b:5b:82:e0:4d:07:
+                    05:97
+        X509v3 extensions:
+            X509v3 Basic Constraints: critical
+                CA:TRUE
+            X509v3 Subject Alternative Name: critical
+                IP Address:2001:3F:FE00:A05:260E:D437:6B25:6E28,
+                URI:https://hda.example.com
+    Signature Algorithm: ED25519
+    Signature Value:
+        5a:f2:56:72:7e:dc:47:26:a0:c5:56:0b:f8:46:df:9c:31:49:
+        9c:f1:a4:30:7a:de:14:65:d3:b7:c9:03:81:f6:ea:b8:b0:b5:
+        40:49:c6:99:09:68:c2:d2:79:9e:46:48:15:46:18:b3:7b:57:
+        ac:7f:28:b7:45:15:38:e0:80:04
+~~~~
+{: title="8.2.e.6.5.2.b.6.7.3.4.d.e.0.6.2.5.0. Decoded Issue HHIT RRType CBOR and Certificate"}
+
+### Registratant HHIT & BRID
+
+~~~~
+$ORIGIN 5.0.a.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.example.com.
+2.b.6.c.b.4.a.9.9.6.4.2.8.0.3.1. IN HHIT (
+    gxJpM2ZmOCAwMDBhWQEYMIIBFDCBx6AD
+    AgECAgFUMAUGAytlcDArMSkwJwYDVQQD
+    DCAyMDAxMDAzZmZlMDAwYTA1MjYwZWQ0
+    Mzc2YjI1NmUyODAeFw0yNTA0MDkyMTEz
+    MDBaFw0yNTA0MDkyMjEzMDBaMAAwKjAF
+    BgMrZXADIQDJLi+dl+iWD5tfFlT4sJA5
+    +drcW88GHqxPDOp56Oh3+qM7MDkwNwYD
+    VR0RAQH/BC0wK4cQIAEAP/4ACgUTCCRp
+    mkvGsoYXaHR0cHM6Ly9oZGEuZXhhbXBs
+    ZS5jb20wBQYDK2VwA0EA0DbcdngC7/BB
+    /aLjZmLieo0ZFCDbd/KIxAy+3X2KtT4J
+    todVxRMPAkN6o008gacbNfTG8p9npEcD
+    eYhesl2jBQ==
+)
+2.b.6.c.b.4.a.9.9.6.4.2.8.0.3.1. IN BRID (
+    owAAAYIEUQEgAQA//gAKBRMIJGmaS8ay
+    AogFWIkB+t72Zwrt9mcgAQA//gAABV5g
+    oVcekaC3mZDVsEtyoYBm1AkrUsfUmU+3
+    wWvX6MH0QP+o0E/x4T8gAQA//gAABV5g
+    oVcekaC3vC9m1JguvXt7W2o4wxPumaT1
+    IP3TQN3fQP28hpInSIlsSwq8UCNjm2ad
+    7pdTvm2EqfOJQNPKClvRZm4qTO5FDAVY
+    iQGX4PZnp+72ZyABAD/+AAoFZhXuRdQn
+    CaDOaB424RQa61YNbna8eWt7fLRU5GPM
+    sfEt4wo4AQGAPyABAD/+AAAFXmChVx6R
+    oLfv3q+mLRB3ya5TmjY8+3CzdoDZT9RZ
+    +XpN5hDiA6JyyxBJvUewxLzPNhTXQp8v
+    ED71XAE82tMmt3fB4zbzWNQLBViJAQrh
+    9mca7/ZnIAEAP/4ACgUmDtQ3ayVuKIIz
+    /a61BovBSFnRE6Dt/PjcB4FOPdJ2Xmtb
+    guBNBwWXIAEAP/4ACgVmFe5F1CcJoIjy
+    CriJCxAyAWTOHPmlHL02MKSpsHviiTze
+    qwBH9K/Rrz41CYix9HazAIOAZO8FcfU5
+    M+WLLJZoaQWBHnMbTQwFWIkB3OL2Z+zw
+    9mcgAQA//gAKBRMIJGmaS8ayyS4vnZfo
+    lg+bXxZU+LCQOfna3FvPBh6sTwzqeejo
+    d/ogAQA//gAKBSYO1DdrJW4ogOfc8jTi
+    mYLmTOOyFZoUx2jOOwtB1jnqUJr6bYaw
+    MoPrR3MlKGBGWsVz1yXNqUURoCqYdwsY
+    e61vd5i6YJqnAQ==
+)
+~~~~
+{: title="Registrant HHIT/BRID RRType Example"}
+
+~~~~
+[
+    18,
+    "3ff8 000a",
+    h'308201143081C7A00302010202015430
+    0506032B6570302B312930270603550403
+    0C20323030313030336666653030306130
+    3532363065643433373662323536653238
+    301E170D3235303430393231313330305A
+    170D3235303430393232313330305A3000
+    302A300506032B6570032100C92E2F9D97
+    E8960F9B5F1654F8B09039F9DADC5BCF06
+    1EAC4F0CEA79E8E877FAA33B3039303706
+    03551D110101FF042D302B87102001003F
+    FE000A05130824699A4BC6B28617687474
+    70733A2F2F6864612E6578616D706C652E
+    636F6D300506032B6570034100D036DC76
+    7802EFF041FDA2E36662E27A8D191420DB
+    77F288C40CBEDD7D8AB53E09B68755C513
+    0F02437AA34D3C81A71B35F4C6F29F67A4
+    470379885EB25DA305'
+]
+
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 84 (0x54)
+        Signature Algorithm: ED25519
+        Issuer: CN = 2001003ffe000a05260ed4376b256e28
+        Validity
+            Not Before: Apr  9 21:13:00 2025 GMT
+            Not After : Apr  9 22:13:00 2025 GMT
+        Subject:
+        Subject Public Key Info:
+            Public Key Algorithm: ED25519
+                ED25519 Public-Key:
+                pub:
+                    c9:2e:2f:9d:97:e8:96:0f:9b:5f:16:54:f8:b0:90:
+                    39:f9:da:dc:5b:cf:06:1e:ac:4f:0c:ea:79:e8:e8:
+                    77:fa
+        X509v3 extensions:
+            X509v3 Subject Alternative Name: critical
+                IP Address:2001:3F:FE00:A05:1308:2469:9A4B:C6B2,
+                URI:https://hda.example.com
+    Signature Algorithm: ED25519
+    Signature Value:
+        d0:36:dc:76:78:02:ef:f0:41:fd:a2:e3:66:62:e2:7a:8d:19:
+        14:20:db:77:f2:88:c4:0c:be:dd:7d:8a:b5:3e:09:b6:87:55:
+        c5:13:0f:02:43:7a:a3:4d:3c:81:a7:1b:35:f4:c6:f2:9f:67:
+        a4:47:03:79:88:5e:b2:5d:a3:05
+~~~~
+{: title="2.b.6.c.b.4.a.9.9.6.4.2.8.0.3.1. Decoded HHIT RRType CBOR and Certificate"}
+
+~~~~
+{
+    0: 0,
+    1: [4, h'012001003FFE000A05130824699A4BC6B2'],
+    2: [
+        5,
+        h'01FADEF6670AEDF6672001003FFE0000
+        055E60A1571E91A0B79990D5B04B72A180
+        66D4092B52C7D4994FB7C16BD7E8C1F440
+        FFA8D04FF1E13F2001003FFE0000055E60
+        A1571E91A0B7BC2F66D4982EBD7B7B5B6A
+        38C313EE99A4F520FDD340DDDF40FDBC86
+        922748896C4B0ABC5023639B669DEE9753
+        BE6D84A9F38940D3CA0A5BD1666E2A4CEE
+        450C',
+        5,
+        h'0197E0F667A7EEF6672001003FFE000A
+        056615EE45D42709A0CE681E36E1141AEB
+        560D6E76BC796B7B7CB454E463CCB1F12D
+        E30A380101803F2001003FFE0000055E60
+        A1571E91A0B7EFDEAFA62D1077C9AE539A
+        363CFB70B37680D94FD459F97A4DE610E2
+        03A272CB1049BD47B0C4BCCF3614D7429F
+        2F103EF55C013CDAD326B777C1E336F358
+        D40B',
+        5,
+        h'010AE1F6671AEFF6672001003FFE000A
+        05260ED4376B256E288233FDAEB5068BC1
+        4859D113A0EDFCF8DC07814E3DD2765E6B
+        5B82E04D0705972001003FFE000A056615
+        EE45D42709A088F20AB8890B10320164CE
+        1CF9A51CBD3630A4A9B07BE2893CDEAB00
+        47F4AFD1AF3E350988B1F476B300838064
+        EF0571F53933E58B2C96686905811E731B
+        4D0C',
+        5,
+        h'01DCE2F667ECF0F6672001003FFE000A
+        05130824699A4BC6B2C92E2F9D97E8960F
+        9B5F1654F8B09039F9DADC5BCF061EAC4F
+        0CEA79E8E877FA2001003FFE000A05260E
+        D4376B256E2880E7DCF234E29982E64CE3
+        B2159A14C768CE3B0B41D639EA509AFA6D
+        86B03283EB4773252860465AC573D725CD
+        A94511A02A98770B187BAD6F7798BA609A
+        A701'
+    ]
+}
+~~~~
+{: title="2.b.6.c.b.4.a.9.9.6.4.2.8.0.3.1. Decoded BRID RRType CBOR"}
