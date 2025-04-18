@@ -3,7 +3,7 @@ coding: utf-8
 
 title: DRIP Entity Tags (DET) in the Domain Name System (DNS)
 abbrev: DET in DNS
-docname: draft-ietf-drip-registries-25
+docname: draft-ietf-drip-registries-26
 category: std
 
 ipr: trust200902
@@ -242,7 +242,7 @@ Registrants                            |
 
 While the registrant-registrar-registry model is mature and well understood, it may not be appropriate for DRIP registrations in some circumstances. It could add costs and complexity: developing policies and contracts as outlined above. On the other hand, registries and registrars offer customer service/support and can provide the supporting infrastructure for reliable DNS and WHOIS or RDAP service.
 
-Another approach could be to handle DRIP registrations in a comparable way to how IP address space gets provisioned. Here, blocks of addresses get delegated to a "trusted" third party, typically an ISP, who then issues IP addresses to its customers. For DRIP, blocks of IP addresses could be delegated from the `3.0.0.1.0.0.2.ip6.arpa` domain (reverse domain of prefix allocated by {{RFC9374}}) to an entity chosen by the appropriate Civil Aviation Authority (CAA). This third party would be responsible for the corresponding DNS and WHOIS or RDAP infrastructure for these IP address blocks. They would also provision the Hierarchial Host Identity Tag (HHIT, {{RFC9374}}) records for these IP addresses. In principle a manufacturer or vendor of UAS devices could provide that role. This is shown as an example in {{dns-model-fig}}.
+Another approach could be to handle DRIP registrations in a comparable way to how IP address space gets provisioned. Here, blocks of addresses get delegated to a "trusted" third party, typically an ISP, who then issues IP addresses to its customers. For DRIP, blocks of IP addresses could be delegated from the `3.0.0.1.0.0.2.ip6.arpa` domain (reverse domain of prefix allocated by {{RFC9374}}) to an entity chosen by the appropriate Civil Aviation Authority (CAA). This third party would be responsible for the corresponding DNS and WHOIS or RDAP infrastructure for these IP address blocks. They would also provision the Hierarchical Host Identity Tag (HHIT, {{RFC9374}}) records for these IP addresses. In principle a manufacturer or vendor of UAS devices could provide that role. This is shown as an example in {{dns-model-fig}}.
 
 Dynamic DRIP registration is another possible solution, for example when the operator of a UAS device registers its corresponding HHIT record and other resources before a flight and deletes them afterwards. This may be feasible in controlled environments with well-behaved actors. However, this approach may not scale since each device is likely to need credentials for updating the IT infrastructure which provisions the DNS.
 
@@ -289,15 +289,15 @@ The data MAY, for display purposes only, be represented using the Extended Diagn
 
 HHIT Entity Type:
 
-: This field is a number with values defined in {{iana-hhit-type}}. It is envisioned that there may be many types of HHITs in use. In some cases, it may be helpful to understand the HHITs role in the ecosystem like described in {{drip-dki}}. This field provides such context. This field MAY provide a signal of additional information and/or different handling of the data beyond what is defined in this document.
+: The `HHIT Entity Type` field is a number with values defined in {{iana-hhit-type}}. It is envisioned that there may be many types of HHITs in use. In some cases, it may be helpful to understand the HHITs role in the ecosystem like described in {{drip-dki}}. This field provides such context. This field MAY provide a signal of additional information and/or different handling of the data beyond what is defined in this document.
 
 HID Abbreviation:
 
-: This field is a string meant to provide an abbreviation to the HID structure for display devices. The convention for such abbreviations is a matter of local policy. Absent of such a policy, this field MUST be filled with the four chracter hexadecimal representations of the RAA and HDA (in that order) with a seperator character such as a space. For example a DET with an RAA value of 10 and HDA value of 20 would be abbreviated as: `000A 0014`.
+: The `HID Abbreviation` field is a string meant to provide an abbreviation to the HID structure of a DET for display devices. The convention for such abbreviations is a matter of local policy. Absent of such a policy, this field MUST be filled with the four character hexadecimal representations of the RAA and HDA (in that order) with a separator character such as a space. For example a DET with an RAA value of 10 and HDA value of 20 would be abbreviated as: `000A 0014`.
 
 Canonical Registration Certificate:
 
-: This field is reserved for any certificate to endorse registration that contains the DET. It MUST be encoded as X.509 DER. This certificate MAY be self-signed when the entity is acting as a root of trust (i.e., an apex). Such self-signed behavior is defined by policy, such as in {{drip-dki}}, and is out of scope for this document.
+: The `Canonical Registration Certificate` field is reserved for any certificate to endorse registration that contains the DET. It MUST be encoded as X.509 DER. This certificate MAY be self-signed when the entity is acting as a root of trust (i.e., an apex). Such self-signed behavior is defined by policy, such as in {{drip-dki}}, and is out of scope for this document.
 
 ## UAS Broadcast RID Resource Record {#bcast-rr}
 
@@ -320,7 +320,7 @@ The data MAY, for display purposes only, be represented using the Extended Diagn
 ~~~~
 {: #bcast-wire-cddl title="BRID Wire Format CDDL"}
 
-The field names and their general typing are borrowed from the ASTM {{F3411}} data dictionary (Table 1 and Table 2). See that document for additional context and background information on aviation application-specific interperation of the field semantics. The excplicitly enumerated values included in the CDDL above are relevant to DRIP for its operation. Other values may be valid but are outside the scope of DRIP operation. Application-specific fields, such as UAS Typeare transported and authenticated by DRIP but are regarded as opaque user data to DRIP.
+The field names and their general typing are borrowed from the ASTM {{F3411}} data dictionary (Table 1 and Table 2). See that document for additional context and background information on aviation application-specific interpretation of the field semantics. The explicitly enumerated values included in the CDDL above are relevant to DRIP for its operation. Other values may be valid but are outside the scope of DRIP operation. Application-specific fields, such as UAS Type are transported and authenticated by DRIP but are regarded as opaque user data to DRIP.
 
 # IANA Considerations
 
@@ -336,7 +336,7 @@ Parts of the DET address space are allocated for experimental use. The DE is exp
 
 The DE will have the discretion to perform minimal technical checks on delegations - for instance that there at least two name servers that answer authoritatively, SPoF avoidance, etc - but not enforce these.
 
-The DE will be expected to liaise with IANA to develop a DNSSEC Practice Statement if/when there’s a demand for DNSSEC deploymemt for DRIP.
+The DE will be expected to liaise with IANA to develop a DNSSEC Practice Statement if/when there’s a demand for DNSSEC deployment for DRIP.
 
 ## IANA DRIP Registry
 
@@ -377,7 +377,7 @@ This document requests a new registry for HHIT Entity Type under the [DRIP regis
 
 HHIT Entity Type:
 
-: numeric, field of the HHIT RRType to encode the HHIT Entity Type. This is broken into three ranges and future additions to this registery are as follows:
+: numeric, field of the HHIT RRType to encode the HHIT Entity Type. This is broken into three ranges and future additions to this registry are as follows:
 
 | Range | Registration Mechanism |
 | ----- | ------------------ |
@@ -453,9 +453,9 @@ Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LL
 
 # Example Zone Files & RRType Contents
 
-An example zone file `ip6.arpa`, run by IANA, is not shown. It would contain NS RRTypes to delegate to a respective RAA. To avoid any future collisions with production deployments an apex of `ip6.example.com` is used instead of `ip6.arpa`. All hexidecimal strings in the examples are broken into the lengths of a word, for document formatting purposes.
+An example zone file `ip6.arpa`, run by IANA, is not shown. It would contain NS RRTypes to delegate to a respective RAA. To avoid any future collisions with production deployments an apex of `ip6.example.com` is used instead of `ip6.arpa`. All hexadecimal strings in the examples are broken into the lengths of a word, for document formatting purposes.
 
-The RAA of `16376` and HDA of `10` were used in the examples.
+The RAA of `RAA=16376, HDA=0` and HDA of `RAA=16376, HDA=10` were used in the examples.
 
 ## Example RAA
 
