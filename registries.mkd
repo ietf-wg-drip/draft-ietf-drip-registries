@@ -181,7 +181,7 @@ This document makes use of the terms (USS, etc.) defined in {{RFC9153}}. Other t
 
 {{RFC9374}} assigns the IPv6 prefix `2001:30::/28` for DETs. Its corresponding domain name for reverse lookups is `3.0.0.1.0.0.2.ip6.arpa.`. The IAB has administrative control of this domain name.
 
-Due to the nature of the hierarchy split and its relationship to nibble reversing of the IPv6 address, the upper level of hierarchy (i.e., Registered Assigning Authority (RAA)) "borrows" the upper two bits of their respective HHIT Domain Authority (HDA) space for DNS delegation. As such the IPv6 prefix of RAAs are `2001:3x:xxx::/44` and HDAs are `2001:3x:xxxy:yy::/56` with respective nibble reverse domains of `x.x.x.x.3.0.0.1.0.0.2.ip6.arpa.` and `y.y.y.x.x.x.x.3.0.0.1.0.0.2.ip6.arpa.`.
+Due to the nature of the hierarchy split and its relationship to nibble reversing of the IPv6 address, the upper level of hierarchy (i.e., Registered Assigning Authority (RAA)) "borrows" the upper two bits of their respective HHIT Domain Authority (HDA) space for DNS delegation. As such the IPv6 prefix of RAAs are `2001:3x:xxx0::/44` and HDAs are `2001:3x:xxxy:yy00::/56` with respective nibble reverse domains of `x.x.x.x.3.0.0.1.0.0.2.ip6.arpa.` and `y.y.y.x.x.x.x.3.0.0.1.0.0.2.ip6.arpa.`.
 
 This document preallocates a subset of RAAs based on the ISO 3166-1 Numeric Nation Code {{ISO3166-1}}. This is to support the initial use case of DETs in UAS RID on an international level. See {{iana-raa}} for the RAA allocations.
 
