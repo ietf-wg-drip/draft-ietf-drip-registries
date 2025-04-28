@@ -355,7 +355,20 @@ RAA Allocations:
 | 4000 - 15359  | Unallocated                | N/A                             |
 | 15360 - 16383 | Experimental Use           | This RFC                        |
 
-To support DNS delegation in `ip6.arpa` a single RAA is given 4 delegations by borrowing the upper two bits of HDA space. This enables a clean nibble boundary in DNS to delegate from (i.e., the prefix `2001:3x:xxx0::/44`). These HDAs (0, 4096, 8192 and 12288) are reserved for the RAA.
+To support DNS delegation in `ip6.arpa.` a single RAA is given 4 delegations by borrowing the upper two bits of HDA space (see {{raa-borrowing}} for an example). This enables a clean nibble boundary in DNS to delegate from (i.e., the prefix `2001:3x:xxx0::/44`). These HDAs (0, 4096, 8192 and 12288) are reserved for the RAA.
+
+~~~~
+ 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 0 0 0 0 0 0 0 0 0 0
+ 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1 9 8 7 6 5 4 3 2 1 0
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|           0           | x |         RAA=16376         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    0   |   0   |   0   |   0   |   E   |   F   |   F     HDA=0,x=00
+    0   |   0   |   0   |   1   |   E   |   F   |   F     HDA=4096,x=01
+    0   |   0   |   0   |   2   |   E   |   F   |   F     HDA=8192,x=10
+    0   |   0   |   0   |   3   |   E   |   F   |   F     HDA=12288,x=11
+~~~~
+{:fig #raa-borrowing title="Example Bit Borrowing of RAA=16376"}
 
 The mapping between ISO 3166-1 Numeric Nation Codes and RAAs is specified as a CSV file on [GitHub](https://github.com/ietf-wg-drip/draft-ietf-drip-registries/blob/main/iso3166-raa.csv). Each Nation is assigned four RAAs that are left to the national authority for their purpose. For RAAs under this range, a shorter prefix of `2001:3x:xx00::/40` MAY be delegated to each CAA, which covers all 4 RAAs (and reserved HDAs) assigned to them.
 
