@@ -1,7 +1,7 @@
 ---
 coding: utf-8
 
-title: DRIP Entity Tags (DET) in the Domain Name System (DNS)
+title: DRIP Entity Tags in the Domain Name System
 abbrev: DET in DNS
 docname: draft-ietf-drip-registries-26
 category: std
