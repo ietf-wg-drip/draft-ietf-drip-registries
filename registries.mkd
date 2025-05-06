@@ -268,7 +268,7 @@ The HHIT RRType provides the public key for signature verification and URIs via 
 
 ## HHIT Resource Record {#hhit-rr}
 
-The HHIT Resource Record is a metadata record for various bits of HHIT specific information that isn't available in the pre-existing HIP RRType. It does not replace the HIP RRType. The primary advantage of this RRType over the existing RRType is the inclusion of a certificate containing an entity's public key signed by the registrar, or other trust anchor, to confirm registration.
+The HHIT Resource Record (RR) is a metadata record for various bits of HHIT specific information that isn't available in the pre-existing HIP RRType. The HHIT RRType does not replace the HIP RRType. The primary advantage of the HHIT RRType over the existing RRType is the inclusion of a certificate containing an entity's public key signed by the registrar, or other trust anchor, to confirm registration.
 
 The data MUST be encoded in CBOR {{RFC8949}} bytes. The CDDL {{RFC8610}} of the data is provided in {{hhit-wire-cddl}}.
 
