@@ -1,4 +1,4 @@
-A. Submission Date: TBD
+A. Submission Date: 07 MAY 2025
 
 B.1 Submission Type:  [x] New RRTYPE  [ ] Modification to RRTYPE
 B.2 Kind of RR:  [x] Data RR  [ ] Meta-RR
@@ -6,7 +6,7 @@ B.2 Kind of RR:  [x] Data RR  [ ] Meta-RR
 C. Contact Information for submitter (will be publicly posted):
     Name: Adam Wiethuechter
     Email Address: adam.wiethuechter@axenterprize.com
-    International telephone number: TBD
+    International telephone number: None
     Other contact handles: None
 
 D. Motivation for the new RRTYPE application.
