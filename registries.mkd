@@ -339,7 +339,7 @@ Parts of the DET address space are allocated for experimental use. The DE is exp
 
 The DE will have the discretion to perform minimal technical checks on delegations - for instance that there are at least two name servers that answer authoritatively, SPoF avoidance, etc - but not enforce these.
 
-The DE will be expected to liaise with IANA to develop a DNSSEC Practice Statement if/when there’s a demand for DNSSEC deployment for DRIP.
+The DE will be expected to liaise with IANA to develop a DNSSEC Practice Statement for delegations in `3.0.0.1.0.2.ipv6.arpa.` if/when there’s a demand for DNSSEC deployment for DRIP.
 
 ## IANA DRIP Registry
 
@@ -453,7 +453,7 @@ The interfaces and protocol specifications for registry-registrar interactions a
 
 Decisions about DNS or registry best practices and other operational matters that influence security SHOULD be made by the CAA, ideally in consultation with local stakeholders.
 
-The guidance above is intended to reduce the likelihood of interoperability problems and minimize security and stability concerns. For instance, validation and authentication of DNS responses depends on DNSSEC. If this is not used, entities using DRIP will be vulnerable to DNS spoofing attacks and could be exposed to bogus data. Some regulatory and legal considerations are expected to be simplified by providing a lookup service for access to public information about registered domain names for DETs.
+The guidance above is intended to reduce the likelihood of interoperability problems and minimize security and stability concerns. For instance, validation and authentication of DNS responses depends on DNSSEC. If this is not used, entities using DRIP will be vulnerable to DNS spoofing attacks and could be exposed to bogus data. DRIP DNS responses that have not been validated by DNSSEC could contain bogus data which have the potential to create serious security problems and operational concerns for DRIP entities. These threats include denial of service attacks, replay attacks, impersonation or cloning of UAVs, hijacking of DET registrations, injection of corrupt metadata and compromising established trust architecture/relationships. Some regulatory and legal considerations are expected to be simplified by providing a lookup service for access to public information about registered domain names for DETs.
 
 When DNSSEC is not in use, clients MUST "walk" the tree of certificates, locating each certificate by performing DNS lookups of HHIT RRTypes for each DET, which endorse each DETs inclusion into the hierarchy. The collection of these certificates (which provide both signature protection from the parent entity and the public key of the entity) is the only way without DNSSEC to prove valid registration. The data within the BRID RRType has no direct endorsement when not protected by DNSSEC. The contents of the BRID RRType `auth` key, containing the Endorsements, SHOULD be validated, similiar to the certificates mentioned previously.
 
