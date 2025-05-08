@@ -255,7 +255,7 @@ Per {{RFC9434}} all information classified as public is stored in the DNS, speci
 
 Authoritative Name Servers use domain names as identifiers and data is stored in Resource Records (RR) with associated RRTypes. This document defines two new RRTypes, one for HHIT metadata (HHIT, {{hhit-rr}}) and another for UAS Broadcast RID information (BRID, {{bcast-rr}}). The former RRType is particularly important as it contains a URI (as part of the certificate) that points to Private Information resources.
 
-DETs, being IPv6 addresses, are to be under `ip6.arpa.` (nibble reversed per convention) and MUST resolve to an HHIT RRType. Depending on local circumstances or additional use cases other RRTypes MAY be present. For UAS RID the BRID RRType MUST be present to provide the Broadcast Endorsements defined in {{RFC9575}}.
+DETs, being IPv6 addresses, are to be under `ip6.arpa.` (nibble reversed per convention) and MUST resolve to an HHIT RRType. Depending on local circumstances or additional use cases other RRTypes MAY be present. For UAS RID the BRID RRType MUST be present to provide the Broadcast Endorsements (BEs) defined in {{Section 3.1.2.1 of RFC9575}}.
 
 DNSSEC is strongly RECOMMENDED. When a DIME decides to use DNSSEC they SHOULD define a framework for cryptographic algorithms and key management {{RFC6841}}. This may be influenced by frequency of updates, size of the zone, and policies.
 
