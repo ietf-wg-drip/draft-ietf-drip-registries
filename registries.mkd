@@ -85,6 +85,7 @@ informative:
     RFC3912:
     RFC4786:
     STD88:
+    RFC5280:
 
 --- abstract
 
@@ -268,7 +269,7 @@ The HHIT RRType provides the public key for signature verification and URIs via 
 
 ## HHIT Resource Record {#hhit-rr}
 
-The HHIT Resource Record (RR) is a metadata record for various bits of HHIT specific information that isn't available in the pre-existing HIP RRType. The HHIT RRType does not replace the HIP RRType. The primary advantage of the HHIT RRType over the existing RRType is the inclusion of a certificate containing an entity's public key signed by the registrar, or other trust anchor, to confirm registration.
+The HHIT Resource Record (RR) is a metadata record for various bits of HHIT specific information that isn't available in the pre-existing HIP RRType. The HHIT RRType does not replace the HIP RRType. The primary advantage of the HHIT RRType over the existing RRType is the mandatory inclusion of a certificate containing an entity's public key signed by the registrar, or other trust anchor, to confirm registration.
 
 The data MUST be encoded in CBOR {{RFC8949}} bytes. The CDDL {{RFC8610}} of the data is provided in {{hhit-wire-cddl}}.
 
@@ -287,6 +288,8 @@ The data MAY, for display purposes only, be represented using the Extended Diagn
 ~~~~
 {: #hhit-wire-cddl title="HHIT Wire Format CDDL"}
 
+All fields of the HHIT RRType MUST be included to be properly formed.
+
 HHIT Entity Type:
 
 : The `HHIT Entity Type` field is a number with values defined in {{iana-hhit-type}}. It is envisioned that there may be many types of HHITs in use. In some cases, it may be helpful to understand the HHITs role in the ecosystem like described in {{drip-dki}}. This field provides such context. This field MAY provide a signal of additional information and/or different handling of the data beyond what is defined in this document.
@@ -297,7 +300,7 @@ HID Abbreviation:
 
 Canonical Registration Certificate:
 
-: The `Canonical Registration Certificate` field is reserved for any certificate to endorse registration that contains the DET. It MUST be encoded as X.509 DER. This certificate MAY be self-signed when the entity is acting as a root of trust (i.e., an apex). Such self-signed behavior is defined by policy, such as in {{drip-dki}}, and is out of scope for this document.
+: The `Canonical Registration Certificate` field is for a certificate endorsing registration of the DET. It MUST be encoded as X.509 DER {{RFC5280}}. This certificate MAY be self-signed when the entity is acting as a root of trust (i.e., an apex). Such self-signed behavior is defined by policy, such as in {{drip-dki}}, and is out of scope for this document.
 
 ## UAS Broadcast RID Resource Record {#bcast-rr}
 
