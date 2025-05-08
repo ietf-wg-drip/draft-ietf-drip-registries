@@ -457,13 +457,13 @@ The guidance above is intended to reduce the likelihood of interoperability prob
 
 When DNSSEC is not in use, clients MUST "walk" the tree of certificates, locating each certificate by performing DNS lookups of HHIT RRTypes for each DET, which endorse each DETs inclusion into the hierarchy. The collection of these certificates (which provide both signature protection from the parent entity and the public key of the entity) is the only way without DNSSEC to prove valid registration. The data within the BRID RRType has no direct endorsement when not protected by DNSSEC. The contents of the BRID RRType `auth` key, containing the Endorsements, SHOULD be validated, similiar to the certificates mentioned previously.
 
-## Public Key Exposure
+## DET & Public Key Exposure
 
-DETs are built upon asymmetric keys. As such the public key must be revealed to enable clients to perform signature verifications. {{RFC9374}} security considerations cover various attacks on such keys.
+DETs are built upon asymmetric keys. As such the public key must be revealed to enable clients to perform signature verifications. {{RFC9374}} security considerations cover various attacks on such keys. While unlikely, the forging of a corresponding private key is possible if given enough time (and computational power).
 
-While unlikely, the forging of a corresponding private key is possible if given enough time (and computational power). As such it is RECOMMENDED that the public key for any DET not be exposed in DNS (under any RRType) unless and until it is required for use in verification by other parties.
+When practical, it is RECOMMENDED that no RRTypes under a DET's specific domain name be published unless and until it is required for use by other parties. Such action would cause at least the HHIT RRType to not be in DNS, protecting the public key in the certificate from being exposed before its needed. The combination of this "just in time" publishing mechanism and DNSSEC is out of scope for this document.
 
-Optimally this requires the UAS somehow signal the DIME that a flight using a Specific Session ID will soon be underway or complete. It may also be facilitated under UTM if the USS (which may or may not be a DIME) signals when a given operation using a Session ID goes active.
+Optimally this requires that the UAS somehow signal the DIME that a flight using a Specific Session ID will soon be underway or complete. It may also be facilitated under UTM if the USS (which may or may not be a DIME) signals when a given operation using a Session ID goes active.
 
 # Acknowledgements
 
