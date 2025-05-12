@@ -505,7 +505,7 @@ $ORIGIN 5.0.0.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.example.com.
 
 ~~~~
 [
-    10,
+    10,  # Reserved (RAA Auth from DKI)
     "3ff8 0000",
     h'308201423081F5A00302010202013530
     0506032B6570302B312930270603550403
@@ -559,7 +559,7 @@ Certificate:
         08:9d:5e:75:da:e7:fb:83:7d:d2:8b:ed:d6:7c:de:63:c7:9b:
         64:df:df:60:ef:6f:c0:33:13:0f
 ~~~~
-{: title="7.b.0.a.1.9.e.1.7.5.1.a.0.6.e.5. Decoded HHIT RRType CBOR and Certificate"}
+{: title="2001:3F:FE00:5:5E60:A157:1E91:A0B7 Decoded HHIT RRType CBOR and Certificate"}
 
 ### Delegation of HDA
 
@@ -614,7 +614,7 @@ $ORIGIN 5.0.a.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.example.com.
 
 ~~~~
 [
-    14,
+    14,  # Reserved (HDA Auth from DKI)
     "3ff8 000a",
     h'308201433081F6A00302010202015F30
     0506032B6570302B312930270603550403
@@ -668,11 +668,11 @@ Certificate:
         da:2c:de:b4:4d:87:bd:86:a3:7a:f8:22:77:48:df:1b:ac:99:
         1e:de:1a:4c:82:8a:ef:84:39:09
 ~~~~
-{: title="0.a.9.0.7.2.4.d.5.4.e.e.5.1.6.6.5.0. Decoded Auth HHIT RRType CBOR and Certificate"}
+{: title="2001:3F:FE00:A05:6615:EE45:D427:9A0 Decoded Auth HHIT RRType CBOR and Certificate"}
 
 ~~~~
 [
-    15,
+    15,  # Reserved (HDA Issue from DKI)
     "3ff8 000a",
     h'308201433081F6A00302010202015830
     0506032B6570302B312930270603550403
@@ -726,7 +726,7 @@ Certificate:
         40:49:c6:99:09:68:c2:d2:79:9e:46:48:15:46:18:b3:7b:57:
         ac:7f:28:b7:45:15:38:e0:80:04
 ~~~~
-{: title="8.2.e.6.5.2.b.6.7.3.4.d.e.0.6.2.5.0. Decoded Issue HHIT RRType CBOR and Certificate"}
+{: title="2001:3F:FE00:A05:260E:D437:6B25:6E28 Decoded Issue HHIT RRType CBOR and Certificate"}
 
 ### Registratant HHIT & BRID
 
@@ -779,7 +779,7 @@ $ORIGIN 5.0.a.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.example.com.
 
 ~~~~
 [
-    18,
+    18,  # Uncrewed Aircraft System (UAS)
     "3ff8 000a",
     h'308201143081C7A00302010202015430
     0506032B6570302B312930270603550403
@@ -828,7 +828,7 @@ Certificate:
         c5:13:0f:02:43:7a:a3:4d:3c:81:a7:1b:35:f4:c6:f2:9f:67:
         a4:47:03:79:88:5e:b2:5d:a3:05
 ~~~~
-{: title="2.b.6.c.b.4.a.9.9.6.4.2.8.0.3.1. Decoded HHIT RRType CBOR and Certificate"}
+{: title="2001:3F:FE00:A05:1308:2469:9A4B:C6B2 Decoded HHIT RRType CBOR and Certificate"}
 
 ~~~~
 {
@@ -878,4 +878,4 @@ Certificate:
     ]
 }
 ~~~~
-{: title="2.b.6.c.b.4.a.9.9.6.4.2.8.0.3.1. Decoded BRID RRType CBOR"}
+{: title="2001:3F:FE00:A05:1308:2469:9A4B:C6B2 Decoded BRID RRType CBOR"}
