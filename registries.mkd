@@ -726,7 +726,7 @@ Certificate:
         40:49:c6:99:09:68:c2:d2:79:9e:46:48:15:46:18:b3:7b:57:
         ac:7f:28:b7:45:15:38:e0:80:04
 ~~~~
-{: title="2001:3F:FE00:A05:260E:D437:6B25:6E28 Decoded Issue HHIT RRType CBOR and Certificate"}
+{: title="2001:3f:fe00:a05:260e:d437:6b25:6e28 Decoded Issue HHIT RRType CBOR and Certificate"}
 
 ### Registratant HHIT & BRID
 
