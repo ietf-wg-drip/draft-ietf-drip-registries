@@ -668,7 +668,7 @@ Certificate:
         da:2c:de:b4:4d:87:bd:86:a3:7a:f8:22:77:48:df:1b:ac:99:
         1e:de:1a:4c:82:8a:ef:84:39:09
 ~~~~
-{: title="2001:3F:FE00:A05:6615:EE45:D427:9A0 Decoded Auth HHIT RRType CBOR and Certificate"}
+{: title="2001:3f:fe00:a05:6615:ee45:d427:9a0 Decoded Auth HHIT RRType CBOR and Certificate"}
 
 ~~~~
 [
