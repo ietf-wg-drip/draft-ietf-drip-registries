@@ -828,7 +828,7 @@ Certificate:
         c5:13:0f:02:43:7a:a3:4d:3c:81:a7:1b:35:f4:c6:f2:9f:67:
         a4:47:03:79:88:5e:b2:5d:a3:05
 ~~~~
-{: title="2001:3F:FE00:A05:1308:2469:9A4B:C6B2 Decoded HHIT RRType CBOR and Certificate"}
+{: title="2001:3f:fe00:a05:1308:2469:9a4b:c6b2 Decoded HHIT RRType CBOR and Certificate"}
 
 ~~~~
 {
