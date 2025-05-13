@@ -559,7 +559,7 @@ Certificate:
         08:9d:5e:75:da:e7:fb:83:7d:d2:8b:ed:d6:7c:de:63:c7:9b:
         64:df:df:60:ef:6f:c0:33:13:0f
 ~~~~
-{: title="2001:3F:FE00:5:5E60:A157:1E91:A0B7 Decoded HHIT RRType CBOR and Certificate"}
+{: title="2001:3f:fe00:5:5e60:a157:1e91:a0b7 Decoded HHIT RRType CBOR and Certificate"}
 
 ### Delegation of HDA
 
