@@ -878,4 +878,4 @@ Certificate:
     ]
 }
 ~~~~
-{: title="2001:3F:FE00:A05:1308:2469:9A4B:C6B2 Decoded BRID RRType CBOR"}
+{: title="2001:3f:fe00:a05:1308:2469:9a4b:c6b2 Decoded BRID RRType CBOR"}
