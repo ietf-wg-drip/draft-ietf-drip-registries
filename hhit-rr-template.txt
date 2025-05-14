@@ -1,4 +1,4 @@
-A. Submission Date: 07 MAY 2025
+A. Submission Date: 14 MAY 2025
 
 B.1 Submission Type:  [x] New RRTYPE  [ ] Modification to RRTYPE
 B.2 Kind of RR:  [x] Data RR  [ ] Meta-RR
@@ -19,7 +19,12 @@ registration.
 
 E. Description of the proposed RR type.
 
-The RRTYPE is encoded in CBOR. The CDDL for the CBOR is as follows:
+The HHIT RRType (HHIT) is a metadata record for various bits of HHIT
+specific information that isn't available in the pre-existing HIP RRType.
+
+The wire format of the RDATA section is CBOR-encoded data.
+
+The CDDL specification for the CBOR-encoded data is as follows:
 
 hhit-rr = [
     hhit-entity-type: uint,
@@ -27,8 +32,7 @@ hhit-rr = [
     canonical-registration-cert: bstr
 ]
 
-In text, the RDATA is represented using a base64 string.
-The length field is not represented as it is implicitly known.
+The presentation format of the RDATA section is the base64-encoded CBOR data.
 
 F. What existing RRTYPE or RRTYPEs come closest to filling that need
     and why are they unsatisfactory?

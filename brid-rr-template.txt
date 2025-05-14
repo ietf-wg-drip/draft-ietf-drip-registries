@@ -1,4 +1,4 @@
-A. Submission Date: 07 MAY 2025
+A. Submission Date: 14 MAY 2025
 
 B.1 Submission Type:  [x] New RRTYPE  [ ] Modification to RRTYPE
 B.2 Kind of RR:  [x] Data RR  [ ] Meta-RR
@@ -19,7 +19,14 @@ obtain anything missed.
 
 E. Description of the proposed RR type.
 
-The RRTYPE is encoded in CBOR. The CDDL for the CBOR is as follows:
+The UAS Broadcast RID RRType (BRID) is a format to hold
+public information typically sent of the UAS Broadcast RID that is static.
+It can act as a data source if information is not received over
+Broadcast RID or for cross validation.
+
+The wire format of the RDATA section is CBOR-encoded data.
+
+The CDDL specification for the CBOR-encoded data is as follows:
 
 bcast-rr = {
     uas_type => nibble-field,
@@ -68,8 +75,7 @@ area = 4
 classification = 5
 operator_id = 6
 
-In text, the RDATA is represented using a base64 string.
-The length field is not represented as it is implicitly known.
+The presentation format of the RDATA section is the base64-encoded CBOR data.
 
 F. What existing RRTYPE or RRTYPEs come closest to filling that need
     and why are they unsatisfactory?
