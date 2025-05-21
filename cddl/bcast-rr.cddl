@@ -7,14 +7,14 @@ bcast-rr = {
     ? classification => classification-grp,
     ? operator_id => operator-grp
 }
-uas-id-grp = (
+uas-id-grp = [
     id_type: &uas-id-types, 
     uas_id: bstr .size(20)
-)
-auth-grp = (
+]
+auth-grp = [
     a_type: &auth-types,
     a_data: bstr .size(1..362)
-)
+]
 area-grp = [
     area_count: 1..255,
     area_radius: float,  # in decameters
