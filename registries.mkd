@@ -373,7 +373,7 @@ To support DNS delegation in `ip6.arpa.` a single RAA is given 4 delegations by 
 ~~~~
 {:fig #raa-borrowing title="Example Bit Borrowing of RAA=16376"}
 
-The mapping between ISO 3166-1 Numeric Nation Codes and RAAs has specified and documented by IANA. Each Nation is assigned four RAAs that are left to the national authority for their purpose. For RAAs under this range, a shorter prefix of `2001:3x:xx00::/40` MAY be delegated to each CAA, which covers all 4 RAAs (and reserved HDAs) assigned to them.
+The mapping between ISO 3166-1 Numeric Nation Codes and RAAs is specified and documented by IANA. Each Nation is assigned four RAAs that are left to the national authority for their purpose. For RAAs under this range, a shorter prefix of `2001:3x:xx00::/40` MAY be delegated to each CAA, which covers all 4 RAAs (and reserved HDAs) assigned to them.
 
 > The CSV file found for the ISO to RAA mapping is on [GitHub](https://github.com/ietf-wg-drip/draft-ietf-drip-registries/commit/a8da51bfcafcdf91878f8862c52830aa736782c9). RFC Editor, please remove this note after IANA initializes the registry but before publication.
 
