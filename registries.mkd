@@ -345,7 +345,7 @@ The DE will be expected to liaise with IANA to develop a DNSSEC Practice Stateme
 
 ### DRIP RAA Allocations {#iana-raa}
 
-This document requests a new registry for RAA Allocations under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml) to be managed by IANA.
+This document requests a new registry for RAA Allocations under the [DRIP registry group](https://www.iana.org/assignments/drip) to be managed by IANA.
 
 RAA Allocations:
 
@@ -391,7 +391,7 @@ For registration the following template is to be used:
 
 ### HHIT Entity Type {#iana-hhit-type}
 
-This document requests a new registry for HHIT Entity Type under the [DRIP registry group](https://www.iana.org/assignments/drip/drip.xhtml).
+This document requests a new registry for HHIT Entity Type under the [DRIP registry group](https://www.iana.org/assignments/drip).
 
 HHIT Entity Type:
 
