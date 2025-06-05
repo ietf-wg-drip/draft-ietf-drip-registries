@@ -265,7 +265,7 @@ DETs, being IPv6 addresses, are to be under `ip6.arpa.` (nibble reversed per {{S
 
 DNSSEC is strongly RECOMMENDED. When a DIME decides to use DNSSEC they SHOULD define a framework for cryptographic algorithms and key management {{RFC6841}}. This may be influenced by frequency of updates, size of the zone, and policies.
 
-UAS specific information, such as physical characteristics, may also be stored in DNS but is out of scope for this document.
+UAS-specific information, such as physical characteristics, may also be stored in DNS but is out of scope for this document.
 
 A DET IPv6 address gets mapped into domain names using the scheme defined in {{STD88}}. However DNS lookups of these names query for HHIT and/or BRID resource records rather than the PTR resource records conventionally used in reverse lookups of IP addresses. For example, the HHIT resource record for the DET `2001:30::1` would be returned from a DNS lookup for the HHIT QTYPE for `1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.3.0.0.1.0.0.2.ip6.arpa.`.
 
@@ -275,7 +275,7 @@ The HHIT RRType provides the public key for signature verification and URIs via 
 
 ## HHIT Resource Record {#hhit-rr}
 
-The HHIT Resource Record (HHIT, RRType 67) is a metadata record for various bits of HHIT specific information that isn't available in the pre-existing HIP RRType. The HHIT RRType does not replace the HIP RRType. The primary advantage of the HHIT RRType over the existing RRType is the mandatory inclusion of the `Canonical Registration Certificate` containing an entity's public key signed by the registrar, or other trust anchor, to confirm registration.
+The HHIT Resource Record (HHIT, RRType 67) is a metadata record for various bits of HHIT-specific information that isn't available in the pre-existing HIP RRType. The HHIT RRType does not replace the HIP RRType. The primary advantage of the HHIT RRType over the existing RRType is the mandatory inclusion of the `Canonical Registration Certificate` containing an entity's public key signed by the registrar, or other trust anchor, to confirm registration.
 
 The data MUST be encoded in CBOR {{RFC8949}} bytes. The CDDL {{RFC8610}} of the data is provided in {{hhit-wire-cddl}}.
 
@@ -339,7 +339,7 @@ This document requests that IANA manage delegations in the `3.0.0.1.0.0.2.ip6.ar
 
 The DE will check delegation requests for DET address space that get submitted to IANA. Since there is no control over who submits these delegation requests or the address space they refer to, a degree of checking is necessary. The DE will liaise with IANA on the outcome of these checks.
 
-For delegation requests relating to a country’s DET address space, the DE will liaise with that country’s CAA to verify these requests are genuine. This will ensure delegations don’t go to impostors and the CAA is aware about what’s being done with its National Resources, ie the IPv6 addresses for its DET address space.
+For delegation requests relating to a country’s DET address space, the DE will liaise with that country’s CAA to verify these requests are genuine. This will ensure delegations don’t go to impostors and the CAA is aware about what’s being done with its National Resources, i.e. the IPv6 addresses for its DET address space.
 
 Parts of the DET address space are allocated for experimental use. The DE is expected to process these delegation requests on a first-come, first-served basis. They would not need engagement with ICAO or CAAs.
 
@@ -453,7 +453,7 @@ For registration in the FCFS range, a point of contact MUST also be provided (if
 
 ## DNS Operational & Registration Considerations
 
-The Registrar and Registry are commonly used concepts in the DNS. These components interface the DIME into the DNS hierarchy and thus operation SHOULD follow best common practices, specifically in security (such as running DNSSEC) as appropriate. The following RFC provide suitable guidance: {{RFC7720}}, {{RFC4033}}, {{RFC4034}}, {{RFC4035}}, {{RFC5155}}, {{RFC8945}}, {{RFC2182}}, {{RFC4786}}, {{RFC3007}}.
+The Registrar and Registry are commonly used concepts in the DNS. These components interface the DIME into the DNS hierarchy and thus operation SHOULD follow best common practices, specifically in security (such as running DNSSEC) as appropriate. {{RFC7720}}, {{RFC4033}}, {{RFC4034}}, {{RFC4035}}, {{RFC5155}}, {{RFC8945}}, {{RFC2182}}, {{RFC4786}}, and {{RFC3007}} provide suitable guidance.
 
 If DNSSEC is used, a DNSSEC Practice Statement SHOULD be developed and published. It SHOULD explain how DNSSEC has been deployed and what security measures are in place. {{RFC6841}} documents a Framework for DNSSEC Policies and DNSSEC Practice Statements. A self-signed entity (i.e. an entity that self-signed it certificate as part of the HHIT RRType) MUST use DNSSEC.
 
