@@ -157,7 +157,13 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ## Additional Definitions
 
-This document makes use of the terms and abbreviations (e.g., USS) defined in {{Section 2.2 of RFC9153}}. Other terms and abbreviations (e.g., DRIP Identity Management Entity (DIME) and Endorsement) are from {{Section 2 of RFC9434}}, while others (e.g., Registered Assigning Authority (RAA) and HHIT Domain Authority (HDA)) are from {{Section 2 of RFC9374}}.
+This document makes use of the terms and abbreviations from previous DRIP documents. Below are subsets, grouped by original document, of terms used this document. Please see those documents for additional context, definitions and any further referenced material.
+
+From {{Section 2.2 of RFC9153}} this document uses: AAA, CAA, GCS, PII, Observer, Operator, UA, UAS, USS, and UTM.
+
+From {{Section 2 of RFC9434}} this document uses: Certificate, DIME, and Endorsement.
+
+From {{Section 2 of RFC9374}} this document uses: HDA, HID, and RAA.
 
 # DET Hierarchy in DNS
 
