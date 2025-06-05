@@ -483,7 +483,7 @@ Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LL
 
 An example zone file `ip6.arpa.`, run by IANA, is not shown. It would contain NS RRTypes to delegate to a respective RAA. To avoid any future collisions with production deployments an apex of `ip6.example.com.` is used instead of `ip6.arpa.`. All hexadecimal strings in the examples are broken into the lengths of a word, for document formatting purposes.
 
-The RAA of `RAA=16376, HDA=0` and HDA of `RAA=16376, HDA=10` were used in the examples.
+An RAA with the HID of `RAA=16376, HDA=0` and HDA of the HID `RAA=16376, HDA=10` were used in the examples.
 
 ## Example RAA
 
