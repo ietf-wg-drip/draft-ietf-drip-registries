@@ -159,7 +159,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 This document makes use of the terms and abbreviations from previous DRIP documents. Below are subsets, grouped by original document, of terms used this document. Please see those documents for additional context, definitions and any further referenced material.
 
-From {{Section 2.2 of RFC9153}} this document uses: AAA, CAA, GCS, PII, Observer, Operator, UA, UAS, USS, and UTM.
+From {{Section 2.2 of RFC9153}} this document uses: AAA, CAA, GCS, ICAO, PII, Observer, Operator, UA, UAS, USS, and UTM.
 
 From {{Section 2 of RFC9434}} this document uses: Certificate, DIME, and Endorsement.
 
