@@ -463,7 +463,7 @@ Decisions about DNS or registry best practices and other operational matters tha
 
 The guidance above is intended to reduce the likelihood of interoperability problems and minimize security and stability concerns. For instance, validation and authentication of DNS responses depends on DNSSEC. If this is not used, entities using DRIP will be vulnerable to DNS spoofing attacks and could be exposed to bogus data. DRIP DNS responses that have not been validated by DNSSEC could contain bogus data which have the potential to create serious security problems and operational concerns for DRIP entities. These threats include denial of service attacks, replay attacks, impersonation or cloning of UAVs, hijacking of DET registrations, injection of corrupt metadata and compromising established trust architecture/relationships. Some regulatory and legal considerations are expected to be simplified by providing a lookup service for access to public information about registered domain names for DETs.
 
-When DNSSEC is not in use, due to the length of the ORCHID hash selected for DETs ({{Section 7.5 of RFC9374}}), clients MUST "walk" the tree of certificates locating each certificate by performing DNS lookups of HHIT RRTypes for each DET verifying inclusion into the hierarchy. The collection of these certificates (which provide both signature protection from the parent entity and the public key of the entity) is the only way without DNSSEC to prove valid registration. The data within the BRID RRType has no direct endorsement when not protected by DNSSEC. The contents of the BRID RRType `auth` key, containing the Endorsements, SHOULD be validated, similiar to the certificates mentioned previously.
+When DNSSEC is not in use, due to the length of the ORCHID hash selected for DETs ({{Section 3.5 of RFC9374}}), clients MUST "walk" the tree of certificates locating each certificate by performing DNS lookups of HHIT RRTypes for each DET verifying inclusion into the hierarchy. The collection of these certificates (which provide both signature protection from the parent entity and the public key of the entity) is the only way without DNSSEC to prove valid registration. The data within the BRID RRType has no direct endorsement when not protected by DNSSEC. The contents of the BRID RRType `auth` key, containing the Endorsements, SHOULD be validated, similiar to the certificates mentioned previously.
 
 ## DET & Public Key Exposure
 
@@ -483,7 +483,7 @@ Thanks to Stuart Card (AX Enterprize, LLC) and Bob Moskowitz (HTT Consulting, LL
 
 An example zone file `ip6.arpa.`, run by IANA, is not shown. It would contain NS RRTypes to delegate to a respective RAA. To avoid any future collisions with production deployments an apex of `ip6.example.com.` is used instead of `ip6.arpa.`. All hexadecimal strings in the examples are broken into the lengths of a word, for document formatting purposes.
 
-An RAA with the HID of `RAA=16376, HDA=0` and HDA of the HID `RAA=16376, HDA=10` were used in the examples.
+An RAA with a HID of `RAA=16376, HDA=0` and HDA with a the HID `RAA=16376, HDA=10` were used in the examples.
 
 ## Example RAA
 
