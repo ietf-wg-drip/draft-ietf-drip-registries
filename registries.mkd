@@ -191,7 +191,7 @@ The administration, management and policy for the operation of a DIME at any lev
 
 DRIP relies on the DNS and as such roughly follows the registrant-registrar-registry model. In the UAS ecosystem, the registrant would be the end user who owns/controls the Unmanned Aircraft. They are ultimately responsible for the DET and any other information that gets published in the DNS. Registrants use agents known as registrars to manage their interactions with the registry. Registrars typically provide optional additional services such as DNS hosting.
 
-The registry maintains a database of the registered domain names and their related metadata such as the contact details for domain name holder and the relevant registrar. The registry provides DNS service for the zone apex which contains delegation information for domain names. Registries generally provide services such RDAP {{STD95}} or equivilant to publish metadata about the registered domain names and their registrants and registrars.
+The registry maintains a database of the registered domain names and their related metadata such as the contact details for domain name holder and the relevant registrar. The registry provides DNS service for the zone apex which contains delegation information for domain names. Registries generally provide services such RDAP {{STD95}} or equivalent to publish metadata about the registered domain names and their registrants and registrars.
 
 Registrants have contracts with registrars who in turn have contracts with registries. Payments follow this model too: the registrant buys services from a registrar who pays for services provided by the registry.
 
@@ -252,7 +252,7 @@ Per {{RFC9434}} all information classified as public is stored in the DNS, speci
 
 Authoritative Name Servers use domain names as identifiers and data is stored in Resource Records (RR) with associated RRTypes. This document defines two new RRTypes, one for HHIT metadata (HHIT, {{hhit-rr}}) and another for UAS Broadcast RID information (BRID, {{bcast-rr}}). The former RRType is particularly important as it contains a URI (as part of the certificate) that points to Private Information resources.
 
-DETs, being IPv6 addresses, are to be under `ip6.arpa.` (nibble reversed per Section 2.5 of {{STD88}}) and MUST resolve to an HHIT RRType. Depending on local circumstances or additional use cases other RRTypes MAY be present. For UAS RID the BRID RRType MUST be present to provide the Broadcast Endorsements (BEs) defined in {{Section 3.1.2.1 of RFC9575}}.
+DETs, being IPv6 addresses, are to be under `ip6.arpa.` (nibble reversed per Section 2.5 of {{STD88}}) and MUST resolve to an HHIT RRType. Depending on local circumstances or additional use cases other RRTypes MAY be present (for example the inclusion of the DS RRTypes or equivalent when using DNSSEC). For UAS RID the BRID RRType MUST be present to provide the Broadcast Endorsements (BEs) defined in {{Section 3.1.2.1 of RFC9575}}.
 
 DNSSEC MUST be used for apex entities (those which use a self-signed `Canonical Registration Certificate`) and is RECOMMENDED for other entities. When a DIME decides to use DNSSEC they SHOULD define a framework for cryptographic algorithms and key management {{RFC6841}}. This may be influenced by frequency of updates, size of the zone, and policies.
 
@@ -448,7 +448,7 @@ The Registrar and Registry are commonly used concepts in the DNS. These componen
 
 If DNSSEC is used, a DNSSEC Practice Statement SHOULD be developed and published. It SHOULD explain how DNSSEC has been deployed and what security measures are in place. {{RFC6841}} documents a Framework for DNSSEC Policies and DNSSEC Practice Statements. A self-signed entity (i.e. an entity that self-signed it certificate as part of the HHIT RRType) MUST use DNSSEC.
 
-The interfaces and protocol specifications for registry-registrar interactions are intentionally not specified in this document. These will depend on nationally defined policy and prevailing local circumstances. It is expected registry-registrar activity will use the Extensible Provisioning Protocol (EPP) {{STD69}} or equivilant. The registry SHOULD provide a lookup service such as RDAP {{STD95}} or equivilant to publish public information about registered domain names.
+The interfaces and protocol specifications for registry-registrar interactions are intentionally not specified in this document. These will depend on nationally defined policy and prevailing local circumstances. It is expected registry-registrar activity will use the Extensible Provisioning Protocol (EPP) {{STD69}} or equivalent. The registry SHOULD provide a lookup service such as RDAP {{STD95}} or equivalent to publish public information about registered domain names.
 
 Decisions about DNS or registry best practices and other operational matters that influence security SHOULD be made by the CAA, ideally in consultation with local stakeholders.
 
