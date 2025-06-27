@@ -63,28 +63,20 @@ normative:
 informative:
     drip-dki: I-D.ietf-drip-dki
 
+    BCP237: # dnssec
+
+    STD13:  # dns
+    STD69:  # epp
+    STD95:  # rdap
+    STD88:  # ipv6
+
+    RFC5280: # X.509 PKI
     RFC6841: # dnssec policy
     RFC8126: # iana-guidelines
     RFC8610: # cddl
     RFC9153: # drip-requirements
     RFC9434: # drip-arch
     RFC9575: # drip-auth
-
-    # helpful DNS rfcs
-    STD13:  # dns
-    STD69:  # epp
-    STD95:  # rdap
-    RFC4033:
-    RFC5155:
-    RFC8945:
-    RFC4034:
-    RFC4035:
-    RFC3007:
-    RFC2182:
-    RFC7720:
-    RFC4786:
-    STD88:
-    RFC5280:
 
 --- abstract
 
@@ -452,7 +444,7 @@ For registration in the FCFS range, a point of contact MUST also be provided (if
 
 ## DNS Operational & Registration Considerations
 
-The Registrar and Registry are commonly used concepts in the DNS. These components interface the DIME into the DNS hierarchy and thus operation SHOULD follow best common practices, specifically in security (such as running DNSSEC) as appropriate. {{RFC7720}}, {{RFC4033}}, {{RFC4034}}, {{RFC4035}}, {{RFC5155}}, {{RFC8945}}, {{RFC2182}}, {{RFC4786}}, and {{RFC3007}} provide suitable guidance.
+The Registrar and Registry are commonly used concepts in the DNS. These components interface the DIME into the DNS hierarchy and thus operation SHOULD follow best common practices, specifically in security (such as running DNSSEC) as appropriate. {{BCP237}} provides suitable guidance.
 
 If DNSSEC is used, a DNSSEC Practice Statement SHOULD be developed and published. It SHOULD explain how DNSSEC has been deployed and what security measures are in place. {{RFC6841}} documents a Framework for DNSSEC Policies and DNSSEC Practice Statements. A self-signed entity (i.e. an entity that self-signed it certificate as part of the HHIT RRType) MUST use DNSSEC.
 
