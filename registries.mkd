@@ -500,7 +500,9 @@ $ORIGIN 5.0.0.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.example.com.
     b8AzEw8=
 )
 ~~~~
-{: title="RAA Auth HHIT RRType Example"}
+{: #raa-rr-zone title="RAA Auth HHIT RRType Example"}
+
+{{raa-rr-cbor}} shows the CBOR decoded RDATA in the HHIT RRType found in {{raa-rr-zone}}.
 
 ~~~~
 [
@@ -528,7 +530,9 @@ $ORIGIN 5.0.0.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.example.com.
     C033130F'
 ]
 ~~~~
-{: title="2001:3f:fe00:5:5e60:a157:1e91:a0b7 Decoded HHIT RRType CBOR"}
+{: #raa-rr-cbor title="2001:3f:fe00:5:5e60:a157:1e91:a0b7 Decoded HHIT RRType CBOR"}
+
+{{raa-rr-cert}} shows the decoded DER X.509 found in {{raa-rr-cbor}}.
 
 ~~~~
 Certificate:
@@ -561,7 +565,7 @@ Certificate:
         08:9d:5e:75:da:e7:fb:83:7d:d2:8b:ed:d6:7c:de:63:c7:9b:
         64:df:df:60:ef:6f:c0:33:13:0f
 ~~~~
-{: title="2001:3f:fe00:5:5e60:a157:1e91:a0b7 Decoded Certificate"}
+{: #raa-rr-cert title="2001:3f:fe00:5:5e60:a157:1e91:a0b7 Decoded Certificate"}
 
 ### Delegation of HDA
 
@@ -612,7 +616,9 @@ $ORIGIN 5.0.a.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.example.com.
     RRU44IAE
 )
 ~~~~
-{: title="HDA Auth/Issue HHIT RRType Example"}
+{: #hda-rr-zone title="HDA Auth/Issue HHIT RRType Example"}
+
+{{hdaa-rr-cbor}} shows the CBOR decoded RDATA in the HHIT RRType found in {{hda-rr-zone}}.
 
 ~~~~
 [
@@ -640,7 +646,9 @@ $ORIGIN 5.0.a.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.example.com.
     8AEF843909'
 ]
 ~~~~
-{: title="2001:3f:fe00:a05:6615:ee45:d427:9a0 Decoded HHIT RRType CBOR"}
+{: #hdaa-rr-cbor title="2001:3f:fe00:a05:6615:ee45:d427:9a0 Decoded HHIT RRType CBOR"}
+
+{{hdaa-rr-cert}} shows the decoded DER X.509 found in {{hdaa-rr-cbor}}.
 
 ~~~~
 Certificate:
@@ -673,7 +681,9 @@ Certificate:
         da:2c:de:b4:4d:87:bd:86:a3:7a:f8:22:77:48:df:1b:ac:99:
         1e:de:1a:4c:82:8a:ef:84:39:09
 ~~~~
-{: title="2001:3f:fe00:a05:6615:ee45:d427:9a0 Decoded Certificate"}
+{: #hdaa-rr-cert title="2001:3f:fe00:a05:6615:ee45:d427:9a0 Decoded Certificate"}
+
+{{hdai-rr-cbor}} shows the CBOR decoded RDATA in the HHIT RRType found in {{hda-rr-zone}}.
 
 ~~~~
 [
@@ -701,7 +711,9 @@ Certificate:
     1538E08004'
 ]
 ~~~~
-{: title="2001:3f:fe00:a05:260e:d437:6b25:6e28 Decoded HHIT RRType CBOR"}
+{: #hdai-rr-cbor title="2001:3f:fe00:a05:260e:d437:6b25:6e28 Decoded HHIT RRType CBOR"}
+
+{{hdai-rr-cert}} shows the decoded DER X.509 found in {{hdai-rr-cbor}}.
 
 ~~~~
 Certificate:
@@ -734,7 +746,7 @@ Certificate:
         40:49:c6:99:09:68:c2:d2:79:9e:46:48:15:46:18:b3:7b:57:
         ac:7f:28:b7:45:15:38:e0:80:04
 ~~~~
-{: title="2001:3f:fe00:a05:260e:d437:6b25:6e28 Decoded Certificate"}
+{: #hdai-rr-cert title="2001:3f:fe00:a05:260e:d437:6b25:6e28 Decoded Certificate"}
 
 ### Registratant HHIT & BRID
 
@@ -783,7 +795,9 @@ $ORIGIN 5.0.a.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.example.com.
     e61vd5i6YJqnAQ==
 )
 ~~~~
-{: title="Registrant HHIT/BRID RRType Example"}
+{: #uas-rr-zone title="Registrant HHIT/BRID RRType Example"}
+
+{{uas-rr-cbor}} shows the CBOR decoded RDATA in the HHIT RRType found in {{uas-rr-zone}}.
 
 ~~~~
 [
@@ -808,7 +822,9 @@ $ORIGIN 5.0.a.0.0.0.e.f.f.3.0.0.1.0.0.2.ip6.example.com.
     470379885EB25DA305'
 ]
 ~~~~
-{: title="2001:3f:fe00:a05:1308:2469:9a4b:c6b2 Decoded HHIT RRType CBOR"}
+{: #uas-rr-cbor title="2001:3f:fe00:a05:1308:2469:9a4b:c6b2 Decoded HHIT RRType CBOR"}
+
+{{uas-rr-cert}} shows the decoded DER X.509 found in {{uas-rr-cbor}}.
 
 ~~~~
 Certificate:
@@ -839,7 +855,9 @@ Certificate:
         c5:13:0f:02:43:7a:a3:4d:3c:81:a7:1b:35:f4:c6:f2:9f:67:
         a4:47:03:79:88:5e:b2:5d:a3:05
 ~~~~
-{: title="2001:3f:fe00:a05:1308:2469:9a4b:c6b2 Decoded Certificate"}
+{: #uas-rr-cert title="2001:3f:fe00:a05:1308:2469:9a4b:c6b2 Decoded Certificate"}
+
+{{uas-rr-brid}} shows the CBOR decoded RDATA of the BRID RRType in {{uas-rr-zone}}.
 
 ~~~~
 {
@@ -889,4 +907,4 @@ Certificate:
     ]
 }
 ~~~~
-{: title="2001:3f:fe00:a05:1308:2469:9a4b:c6b2 Decoded BRID RRType CBOR"}
+{: #uas-rr-brid title="2001:3f:fe00:a05:1308:2469:9a4b:c6b2 Decoded BRID RRType CBOR"}
