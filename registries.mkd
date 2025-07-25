@@ -422,13 +422,32 @@ This document requests a new registry for HHIT Entity Type under the [DRIP regis
 
 HHIT Entity Type:
 
-: numeric, field of the HHIT RRType to encode the HHIT Entity Type. This is broken into three ranges based on a 64-bit prefix and future additions to this registry are as follows:
+: numeric, field of the HHIT RRType to encode the HHIT Entity Type. All entries in this registry are under a First Come First Served ({{Section 4.4 of RFC8126}}) policy.
 
-| Hex Prefix              | Decimal Range                               | Registration Mechanism |
-| ----------------------- | ------------------------------------------- | ---------------------- |
-| 0x00000000              | 0 - 4294967295                              | Expert Review {{Section 4.5 of RFC8126}} |
-| 0x00000001 - 0xFFFFFFFE | 4294967296 - 18446744069414584319           | First Come First Served {{Section 4.4 of RFC8126}} |
-| 0xFFFFFFFF              | 18446744069414584320 - 18446744073709551615 | Experimental Use |
+#### HHIT Type Registry Fields
+
+Value:
+
+: HHIT Type value of entry.
+
+HHIT Type:
+
+: Name of the entry and optional abbreviation.
+
+Reference:
+
+: Public document allocating the value and any additional information such as semantics. This can be a URL pointing to an Internet-Draft, IETF RFC, or web-page.
+
+#### HHIT Type Registration Form
+
+~~~~
+Value:
+HHIT Type:
+Reference:
+~~~~
+{: #hhit-form title="HHIT Type Registration Form"}
+
+#### Initial Values
 
 The following values are defined by this document:
 
@@ -436,16 +455,12 @@ The following values are defined by this document:
 | ------------- | ------------------------------------------ | ------------ |
 | 0             | Not Defined                                | This RFC     |
 | 1             | DRIP Identity Management Entity (DIME)     | This RFC     |
-| 2 - 4         | Reserved                                   | This RFC     |
 | 5             | Apex                                       | This RFC     |
-| 6 - 8         | Reserved                                   | This RFC     |
 | 9             | Registered Assigning Authority (RAA)       | This RFC     |
-| 10 - 12       | Reserved                                   | This RFC     |
 | 13            | HHIT Domain Authority (HDA)                | This RFC     |
-| 14 - 15       | Reserved                                   | This RFC     |
-| 16            | Uncrewed Aircraft (UA)                     | This RFC     |
+| 16            | Unmanned Aircraft (UA)                     | This RFC     |
 | 17            | Ground Control Station (GCS)               | This RFC     |
-| 18            | Uncrewed Aircraft System (UAS)             | This RFC     |
+| 18            | Unmanned Aircraft System (UAS)             | This RFC     |
 | 19            | Remote Identification (RID) Module         | This RFC     |
 | 20            | Pilot                                      | This RFC     |
 | 21            | Operator                                   | This RFC     |
@@ -455,19 +470,7 @@ The following values are defined by this document:
 | 25            | Network RID Display Provider (DP)          | This RFC     |
 | 26            | Supplemental Data Service Provider (SDSP)  | This RFC     |
 | 27            | Crowd Sourced RID Finder                   | This RFC     |
-
-#### Expert Guidance {#hhit-guidance}
-
-Justification should be provided if there is an existing allocation that could be used. Future additions to this registry MUST NOT be allowed if they can be covered under an existing registration.
-
-#### Registration Template {#hhit-form}
-
-For registration the following template is to be used:
-
-- HHIT Type: title (and optional abbreviation) to be used for the requested value.
-- Reference: public document allocating the value and any additional information such as semantics. This can be a URL pointing to an Internet-Draft, IETF RFC, or web-page.
-
-For registration in the FCFS range, a point of contact MUST also be provided (if not part of the reference).
+{: #hhit-initial title="HHIT Entity Type Initial Values"}
 
 # Security Considerations
 
