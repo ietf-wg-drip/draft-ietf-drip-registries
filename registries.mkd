@@ -436,7 +436,7 @@ HHIT Type:
 
 Reference:
 
-: Public document allocating the value and any additional information such as semantics. This can be a URL pointing to an Internet-Draft, IETF RFC, or web-page.
+: Public document allocating the value and any additional information such as semantics. This can be a URL pointing to an Internet-Draft, IETF RFC, or web-page among others.
 
 #### HHIT Type Registration Form
 
