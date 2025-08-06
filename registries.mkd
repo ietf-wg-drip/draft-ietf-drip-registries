@@ -3,7 +3,7 @@ coding: utf-8
 
 title: DRIP Entity Tags in the Domain Name System
 abbrev: DET in DNS
-docname: draft-ietf-drip-registries-31
+docname: draft-ietf-drip-registries-32
 category: std
 
 ipr: trust200902
@@ -70,6 +70,7 @@ informative:
     STD95:  # rdap
     STD88:  # ipv6
 
+    RFC1918: # private IPv4
     RFC5280: # X.509 PKI
     RFC6841: # dnssec policy
     RFC8126: # iana-guidelines
@@ -326,7 +327,7 @@ The field names and their general typing are borrowed from the ASTM {{F3411}} da
 
 ## DET Prefix Delegation
 
-The DET Prefix domain, i.e., `3.0.0.1.0.0.2.ip6.arpa.`, is managed by the IANA following the usual IANA rules. IANA will liaise, as needed, with the International Civil Aviation Organization (ICAO) to verify the authenticity of delegations to CAAs (see {{iso-range}}).
+The reverse domain for the DET Prefix, i.e., `3.0.0.1.0.0.2.ip6.arpa.`, is managed by the IANA following the usual IANA rules. IANA will liaise, as needed, with the International Civil Aviation Organization (ICAO) to verify the authenticity of delegations to CAAs (see {{iso-range}}).
 
 ## IANA DRIP Registry
 
@@ -343,8 +344,8 @@ RAA Allocations:
 | 0 - 3         | Reserved                   | N/A                                                |
 | 4 - 3999      | ISO 3166-1 Countries       | IESG Approval ({{Section 4.10 of RFC8126}}), {{iso-range}} |
 | 4000 - 8191   | Reserved                   | N/A |
-| 8192 - 15359  | Additional Use             | First Come First Served ({{Section 4.4 of RFC8126}}), {{fcfs-range}} |
-| 15360 - 16383 | Experimental Use           | Experimental Use ({{Section 4.2 of RFC8126}}), {{experimental-range}} |
+| 8192 - 15359  | Unassigned                 | First Come First Served ({{Section 4.4 of RFC8126}}) |
+| 15360 - 16383 | Private Use                | Private Use ({{Section 4.1 of RFC8126}}), {{experimental-range}} |
 {: #raa-ranges title="RAA Ranges"}
 
 #### RAA Allocation Fields
@@ -383,7 +384,7 @@ The `NS RRType Content (HDA=X)` fields are used by IANA to perform the DNS deleg
 
 #### Handling Nibble Split {#nibble-split}
 
-To support DNS delegation in `ip6.arpa.` a single RAA is given 4 delegations by borrowing the upper two bits of HDA space (see {{raa-borrowing}} for an example). This enables a clean nibble boundary in DNS to delegate from (i.e., the prefix `2001:3x:xxx0::/44`). These HDAs (0, 4096, 8192 and 12288) are reserved for the RAA.
+To support DNS delegation in `3.0.0.1.0.0.2.ip6.arpa.` a single RAA is given 4 delegations by borrowing the upper two bits of HDA space (see {{raa-borrowing}} for an example). This enables a clean nibble boundary in DNS to delegate from (i.e., the prefix `2001:3x:xxx0::/44`). These HDAs (0, 4096, 8192 and 12288) are reserved for the RAA.
 
 ~~~~
  7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 0 0 0 0 0 0 0 0 0 0
@@ -406,15 +407,11 @@ This range is set to IESG Approval ({{Section 4.10 of RFC8126}}) and IANA will l
 
 > The CSV file found for the ISO to RAA mapping is on [GitHub](https://github.com/ietf-wg-drip/draft-ietf-drip-registries/commit/a8da51bfcafcdf91878f8862c52830aa736782c9). RFC Editor, please remove this note after IANA initializes the registry but before publication.
 
-#### Additional Range {#fcfs-range}
+#### Private Range {#experimental-range}
 
-A block of the RAA range is set aside, under a First Come First Served ({{Section 4.4 of RFC8126}}) policy, for future activities that may or may not be part of aviation. Registrations are made using {{raa-form}}.
+{{RFC1918}} specifies safe use of private IPv4 addresses. One aspect is that such addresses should never appear in the source or destination address fields of an IPv4 packet on the global Internet, but only within private networks with ingress/egress controls at their Internet gateways. Another aspect is that if nibble-reversed lookup in DNS is desired it can only provided by private DNS servers as zone delegations from the global root will not be performed for this address range. HHITs generally and DETs specifically share these aspects. Thus the RAAs (with its subordinate HDAs) in this range may be used in like manner and IANA will not delegate any value in this range to any party (as per Private Use, {{Section 4.1 of RFC8126}}).
 
-#### Experimental Range {#experimental-range}
-
-It should be noted that nibble-reversed HHITs may be spliced onto any part of the domain name tree. For example during the development of this specification `rid.aero` was used a surrogate to `ip6.arpa` and setup by the authors to mimic the expected use in the latter. When spliced into another part of the tree any RAA value may be used, under that specific splice point, as they do not collide with those officially delegated under `3.0.0.1.0.0.2.ip6.arpa.` or any other splice point. Use of such a method is not conformant with this specification and should only be used for private testing. Clients will have to perform special lookups in the forward tree and not rely on `ip6.arpa` for resolution.
-
-The primary use of the experimental range is to provide a space in the official reverse-tree for prospective RAAs to confirm a globally interoperable implementation for clients expecting to use a proper reverse lookup through `ip6.arpa.` before official deployment and delegation. For such to occur a delegation under `3.0.0.1.0.0.2.ip6.arpa.` must be requested to IANA. If a specific RAA value is requested and not available, IANA will provide the RAA value to use and perform the delegation using provided NS RRType contents.
+One anticipated acceptable use of the private range is for experimentation and testing prior to request allocation or assignment from IANA.
 
 ### HHIT Entity Type {#iana-hhit-type}
 
