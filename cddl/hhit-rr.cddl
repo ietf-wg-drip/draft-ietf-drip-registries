@@ -1,5 +1,5 @@
 hhit-rr = [
     hhit-entity-type: uint,
-    abbreviation: tstr .size(15), 
-    registration-cert: bstr
+    hid-abbreviation: tstr .size(15),
+    canonical-registration-cert: bstr
 ]
